@@ -1,0 +1,6 @@
+cpu_refresh_seconds = 5
+disk_refresh_seconds = 60
+trash_path = ''
+log_path = ''
+log_max_size = 100
+log_max_age = 30

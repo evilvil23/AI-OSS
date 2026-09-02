@@ -1,0 +1,7580 @@
+[1]
+ID = 1
+Name = 'C:'
+ParentID = 0
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'C:\'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T14:00:11.3779498+08:00
+UpdatedAt = 2026-08-22T14:00:11.3779498+08:00
+
+[10]
+ID = 10
+Name = 'FileGeeBackup'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\FileGeeBackup'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6810782+08:00
+UpdatedAt = 2026-08-22T20:50:03.6810782+08:00
+
+[100]
+ID = 100
+Name = '1b3uwaco.scq'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\1b3uwaco.scq'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5214175+08:00
+UpdatedAt = 2026-08-22T21:14:58.5214175+08:00
+
+[101]
+ID = 101
+Name = '1c82d888-8e4a-4422-bf9b-a599ce2cf375.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\1c82d888-8e4a-4422-bf9b-a599ce2cf375.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5235719+08:00
+UpdatedAt = 2026-08-22T21:14:58.5235719+08:00
+
+[102]
+ID = 102
+Name = '1deca7d5-fb15-4191-b73d-b788e0e1a382.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\1deca7d5-fb15-4191-b73d-b788e0e1a382.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5251394+08:00
+UpdatedAt = 2026-08-22T21:14:58.5251394+08:00
+
+[103]
+ID = 103
+Name = '1f823222-1109-4c08-a2cf-4fce63726f40.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\1f823222-1109-4c08-a2cf-4fce63726f40.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5268367+08:00
+UpdatedAt = 2026-08-22T21:14:58.5268367+08:00
+
+[104]
+ID = 104
+Name = '249decd0-e507-4273-bc5d-e8c0a7c4f956.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\249decd0-e507-4273-bc5d-e8c0a7c4f956.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5278714+08:00
+UpdatedAt = 2026-08-22T21:14:58.5278714+08:00
+
+[105]
+ID = 105
+Name = '261.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\261.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5305961+08:00
+UpdatedAt = 2026-08-22T21:14:58.5305961+08:00
+
+[106]
+ID = 106
+Name = '26e8b297-932f-44a9-a3ef-a4cbcfe0a59b.png'
+ParentID = 71
+IsDir = false
+Size = 1108300
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\26e8b297-932f-44a9-a3ef-a4cbcfe0a59b.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5316139+08:00
+UpdatedAt = 2026-08-22T21:14:58.5316139+08:00
+
+[107]
+ID = 107
+Name = '2a8651af-29d9-4d70-bddb-f4876331ac8e.png'
+ParentID = 71
+IsDir = false
+Size = 364886
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\2a8651af-29d9-4d70-bddb-f4876331ac8e.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5339571+08:00
+UpdatedAt = 2026-08-22T21:14:58.5339571+08:00
+
+[108]
+ID = 108
+Name = '2dd3532d-cfb2-4812-9305-3f78cc46de48.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 370070
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\2dd3532d-cfb2-4812-9305-3f78cc46de48.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5355393+08:00
+UpdatedAt = 2026-08-22T21:14:58.5355393+08:00
+
+[109]
+ID = 109
+Name = '2f723d67-1915-4333-bbec-b6bbfb277dbd.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\2f723d67-1915-4333-bbec-b6bbfb277dbd.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5373687+08:00
+UpdatedAt = 2026-08-22T21:14:58.5373687+08:00
+
+[11]
+ID = 11
+Name = 'GamePP Wonderful Moment'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\GamePP Wonderful Moment'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6810782+08:00
+UpdatedAt = 2026-08-22T20:50:03.6810782+08:00
+
+[110]
+ID = 110
+Name = '3038af7e-f7b5-4940-9561-e318625f3423.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\3038af7e-f7b5-4940-9561-e318625f3423.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5390037+08:00
+UpdatedAt = 2026-08-22T21:14:58.5390037+08:00
+
+[111]
+ID = 111
+Name = '35152643-d7df-4fba-a928-e43f799280c4.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\35152643-d7df-4fba-a928-e43f799280c4.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5415759+08:00
+UpdatedAt = 2026-08-22T21:14:58.5415759+08:00
+
+[112]
+ID = 112
+Name = '35E1.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\35E1.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5433906+08:00
+UpdatedAt = 2026-08-22T21:14:58.5433906+08:00
+
+[113]
+ID = 113
+Name = '38a414c7-2f46-4f1d-a719-1ef9b370c7fe.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\38a414c7-2f46-4f1d-a719-1ef9b370c7fe.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5444726+08:00
+UpdatedAt = 2026-08-22T21:14:58.5444726+08:00
+
+[114]
+ID = 114
+Name = '39015bea-3c7e-4627-9a48-725c6acd2505.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 370070
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\39015bea-3c7e-4627-9a48-725c6acd2505.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5469641+08:00
+UpdatedAt = 2026-08-22T21:14:58.5469641+08:00
+
+[115]
+ID = 115
+Name = '3b5bf2b3-dab5-4336-834e-7a55ecd927ea.png'
+ParentID = 71
+IsDir = false
+Size = 109334
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\3b5bf2b3-dab5-4336-834e-7a55ecd927ea.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.549319+08:00
+UpdatedAt = 2026-08-22T21:14:58.549319+08:00
+
+[116]
+ID = 116
+Name = '40558b22-4197-4828-ac52-4d5b011b7d08.tmp.node'
+ParentID = 71
+IsDir = false
+Size = 1123840
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\40558b22-4197-4828-ac52-4d5b011b7d08.tmp.node'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5509329+08:00
+UpdatedAt = 2026-08-22T21:14:58.5509329+08:00
+
+[117]
+ID = 117
+Name = '4250cfaa-16ad-4156-80ac-270484f57d9e.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4250cfaa-16ad-4156-80ac-270484f57d9e.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5532641+08:00
+UpdatedAt = 2026-08-22T21:14:58.5532641+08:00
+
+[118]
+ID = 118
+Name = '42bc565d-2df9-4992-9aa5-98d2c64dff0c.png'
+ParentID = 71
+IsDir = false
+Size = 338431
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\42bc565d-2df9-4992-9aa5-98d2c64dff0c.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5548104+08:00
+UpdatedAt = 2026-08-22T21:14:58.5548104+08:00
+
+[119]
+ID = 119
+Name = '449aadc8-deb4-4da8-b047-ac75116a9857.tmp.node'
+ParentID = 71
+IsDir = false
+Size = 1123840
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\449aadc8-deb4-4da8-b047-ac75116a9857.tmp.node'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5563266+08:00
+UpdatedAt = 2026-08-22T21:14:58.5563266+08:00
+
+[12]
+ID = 12
+Name = 'MC_Backup'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\MC_Backup'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6816552+08:00
+UpdatedAt = 2026-08-22T20:50:03.6816552+08:00
+
+[120]
+ID = 120
+Name = '459b0e47-9897-4b71-96f5-58023e0e7efa.png'
+ParentID = 71
+IsDir = false
+Size = 183804
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\459b0e47-9897-4b71-96f5-58023e0e7efa.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5583841+08:00
+UpdatedAt = 2026-08-22T21:14:58.5583841+08:00
+
+[121]
+ID = 121
+Name = '4824f879-c412-49e5-9663-8f03476d66c5.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4824f879-c412-49e5-9663-8f03476d66c5.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5604007+08:00
+UpdatedAt = 2026-08-22T21:14:58.5604007+08:00
+
+[122]
+ID = 122
+Name = '4DB5.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4DB5.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5619082+08:00
+UpdatedAt = 2026-08-22T21:14:58.5619082+08:00
+
+[123]
+ID = 123
+Name = '4a389ce4-f93e-49f2-a782-f71d07354613.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4a389ce4-f93e-49f2-a782-f71d07354613.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5636333+08:00
+UpdatedAt = 2026-08-22T21:14:58.5636333+08:00
+
+[124]
+ID = 124
+Name = '4cegj4fh.at4'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4cegj4fh.at4'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5657999+08:00
+UpdatedAt = 2026-08-22T21:14:58.5657999+08:00
+
+[125]
+ID = 125
+Name = '4e213ce2-5b3e-453f-8edf-1a5e4d7ab0bf.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\4e213ce2-5b3e-453f-8edf-1a5e4d7ab0bf.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5698169+08:00
+UpdatedAt = 2026-08-22T21:14:58.5698169+08:00
+
+[126]
+ID = 126
+Name = '50e17e7c-6b07-45b5-a2d1-65a262139213.png'
+ParentID = 71
+IsDir = false
+Size = 124602
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\50e17e7c-6b07-45b5-a2d1-65a262139213.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5785139+08:00
+UpdatedAt = 2026-08-22T21:14:58.5785139+08:00
+
+[127]
+ID = 127
+Name = '51918ce4-fd42-4f31-9167-44909605cdc4.tmp.node'
+ParentID = 71
+IsDir = false
+Size = 1123840
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\51918ce4-fd42-4f31-9167-44909605cdc4.tmp.node'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5785139+08:00
+UpdatedAt = 2026-08-22T21:14:58.5785139+08:00
+
+[128]
+ID = 128
+Name = '520fc419-04cb-4515-9c9a-1afb96913414.png'
+ParentID = 71
+IsDir = false
+Size = 79655
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\520fc419-04cb-4515-9c9a-1afb96913414.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5828039+08:00
+UpdatedAt = 2026-08-22T21:14:58.5828039+08:00
+
+[129]
+ID = 129
+Name = '5363ecf8-dd14-41e4-b5f4-b8b85169e08e.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\5363ecf8-dd14-41e4-b5f4-b8b85169e08e.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5848031+08:00
+UpdatedAt = 2026-08-22T21:14:58.5848031+08:00
+
+[13]
+ID = 13
+Name = 'MediaID.bin'
+ParentID = 5
+IsDir = false
+Size = 528
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\MediaID.bin'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.682161+08:00
+UpdatedAt = 2026-08-22T20:50:03.682161+08:00
+
+[130]
+ID = 130
+Name = '5a6332c0-d887-4b5f-8419-d3d4a7153d35.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\5a6332c0-d887-4b5f-8419-d3d4a7153d35.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5878046+08:00
+UpdatedAt = 2026-08-22T21:14:58.5878046+08:00
+
+[131]
+ID = 131
+Name = '62b07be7-5861-4da9-982a-8dc157662793.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\62b07be7-5861-4da9-982a-8dc157662793.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5898222+08:00
+UpdatedAt = 2026-08-22T21:14:58.5898222+08:00
+
+[132]
+ID = 132
+Name = '66de7ef6-5201-48f6-9253-b62bded6ec21'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\66de7ef6-5201-48f6-9253-b62bded6ec21'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5918347+08:00
+UpdatedAt = 2026-08-22T21:14:58.5918347+08:00
+
+[133]
+ID = 133
+Name = '67dae067-0b7b-4fe1-960a-a2be05dccf8e.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\67dae067-0b7b-4fe1-960a-a2be05dccf8e.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5969492+08:00
+UpdatedAt = 2026-08-22T21:14:58.5969492+08:00
+
+[134]
+ID = 134
+Name = '69252bf3-c863-423d-9b23-68d791f354a4.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\69252bf3-c863-423d-9b23-68d791f354a4.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5989491+08:00
+UpdatedAt = 2026-08-22T21:14:58.5989491+08:00
+
+[135]
+ID = 135
+Name = '6ac91059-7157-4cbb-bc0a-2e560af32e59.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\6ac91059-7157-4cbb-bc0a-2e560af32e59.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6004519+08:00
+UpdatedAt = 2026-08-22T21:14:58.6004519+08:00
+
+[136]
+ID = 136
+Name = '6d30d136-5fea-41aa-ad51-15e93790993e.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\6d30d136-5fea-41aa-ad51-15e93790993e.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6036088+08:00
+UpdatedAt = 2026-08-22T21:14:58.6036088+08:00
+
+[137]
+ID = 137
+Name = '6e8dee12-9aae-47f7-9301-a99670bed0d5.png'
+ParentID = 71
+IsDir = false
+Size = 27211
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\6e8dee12-9aae-47f7-9301-a99670bed0d5.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.60661+08:00
+UpdatedAt = 2026-08-22T21:14:58.60661+08:00
+
+[138]
+ID = 138
+Name = '7053d2f3-4e21-479c-85e1-988f15f5e861.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\7053d2f3-4e21-479c-85e1-988f15f5e861.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6086103+08:00
+UpdatedAt = 2026-08-22T21:14:58.6086103+08:00
+
+[139]
+ID = 139
+Name = '7976457e-bf7f-43cf-ae82-11aeea1ef049.png'
+ParentID = 71
+IsDir = false
+Size = 43655
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\7976457e-bf7f-43cf-ae82-11aeea1ef049.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6131956+08:00
+UpdatedAt = 2026-08-22T21:14:58.6131956+08:00
+
+[14]
+ID = 14
+Name = 'SINEVIL-COMPUTE'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\SINEVIL-COMPUTE'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6826817+08:00
+UpdatedAt = 2026-08-22T20:50:03.6826817+08:00
+
+[140]
+ID = 140
+Name = '7c24fd70-3ffd-48d9-ac39-8b38849708bd.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\7c24fd70-3ffd-48d9-ac39-8b38849708bd.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6158034+08:00
+UpdatedAt = 2026-08-22T21:14:58.6158034+08:00
+
+[141]
+ID = 141
+Name = '8601d3b8-8289-4cbe-ae6d-59a006ba0ddd.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\8601d3b8-8289-4cbe-ae6d-59a006ba0ddd.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6178037+08:00
+UpdatedAt = 2026-08-22T21:14:58.6178037+08:00
+
+[142]
+ID = 142
+Name = '87934841-db10-466c-a878-d70812bd4d24.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\87934841-db10-466c-a878-d70812bd4d24.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6208215+08:00
+UpdatedAt = 2026-08-22T21:14:58.6208215+08:00
+
+[143]
+ID = 143
+Name = '8b926c81-6446-4227-8ab6-3405bd97633c.png'
+ParentID = 71
+IsDir = false
+Size = 838069
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\8b926c81-6446-4227-8ab6-3405bd97633c.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6359175+08:00
+UpdatedAt = 2026-08-22T21:14:58.6359175+08:00
+
+[144]
+ID = 144
+Name = '908a5d91-ec9a-4d53-ab2e-ea95b2e60432.png'
+ParentID = 71
+IsDir = false
+Size = 243083
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\908a5d91-ec9a-4d53-ab2e-ea95b2e60432.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6419325+08:00
+UpdatedAt = 2026-08-22T21:14:58.6419325+08:00
+
+[145]
+ID = 145
+Name = '94d2a9f0-70bd-43fe-b702-abe509143848.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\94d2a9f0-70bd-43fe-b702-abe509143848.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6438685+08:00
+UpdatedAt = 2026-08-22T21:14:58.6438685+08:00
+
+[146]
+ID = 146
+Name = '95ff60db-bc47-404a-a7de-4a16b81f32c3.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\95ff60db-bc47-404a-a7de-4a16b81f32c3.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6463703+08:00
+UpdatedAt = 2026-08-22T21:14:58.6463703+08:00
+
+[147]
+ID = 147
+Name = '96641658-3683-4a83-bb9c-c461df450f1a.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\96641658-3683-4a83-bb9c-c461df450f1a.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6493733+08:00
+UpdatedAt = 2026-08-22T21:14:58.6493733+08:00
+
+[148]
+ID = 148
+Name = 'BDAE.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\BDAE.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6518818+08:00
+UpdatedAt = 2026-08-22T21:14:58.6518818+08:00
+
+[149]
+ID = 149
+Name = 'CBD2.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\CBD2.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6538908+08:00
+UpdatedAt = 2026-08-22T21:14:58.6538908+08:00
+
+[15]
+ID = 15
+Name = 'SteamBackup'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\SteamBackup'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.683194+08:00
+UpdatedAt = 2026-08-22T20:50:03.683194+08:00
+
+[150]
+ID = 150
+Name = 'DELA4CC.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELA4CC.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6578896+08:00
+UpdatedAt = 2026-08-22T21:14:58.6578896+08:00
+
+[151]
+ID = 151
+Name = 'DELAA55.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELAA55.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6592505+08:00
+UpdatedAt = 2026-08-22T21:14:58.6592505+08:00
+
+[152]
+ID = 152
+Name = 'DELACAD.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELACAD.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.663262+08:00
+UpdatedAt = 2026-08-22T21:14:58.663262+08:00
+
+[153]
+ID = 153
+Name = 'DELB226.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELB226.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6672624+08:00
+UpdatedAt = 2026-08-22T21:14:58.6672624+08:00
+
+[154]
+ID = 154
+Name = 'DELB47E.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELB47E.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6692779+08:00
+UpdatedAt = 2026-08-22T21:14:58.6692779+08:00
+
+[155]
+ID = 155
+Name = 'DELBA07.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DELBA07.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6717862+08:00
+UpdatedAt = 2026-08-22T21:14:58.6717862+08:00
+
+[156]
+ID = 156
+Name = 'DiagOutputDir'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\DiagOutputDir'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6755892+08:00
+UpdatedAt = 2026-08-22T21:14:58.6755892+08:00
+
+[157]
+ID = 157
+Name = 'Diagnostics'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\Diagnostics'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6775876+08:00
+UpdatedAt = 2026-08-22T21:14:58.6775876+08:00
+
+[158]
+ID = 158
+Name = 'GamePPUpdate'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\GamePPUpdate'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6816044+08:00
+UpdatedAt = 2026-08-22T21:14:58.6816044+08:00
+
+[159]
+ID = 159
+Name = 'HWiNFO_x64_215.sys'
+ParentID = 71
+IsDir = false
+Size = 60080
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\HWiNFO_x64_215.sys'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6846067+08:00
+UpdatedAt = 2026-08-22T21:14:58.6846067+08:00
+
+[16]
+ID = 16
+Name = 'SteamLibrary'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\SteamLibrary'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.683709+08:00
+UpdatedAt = 2026-08-22T20:50:03.683709+08:00
+
+[160]
+ID = 160
+Name = 'MSDK'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\MSDK'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.686608+08:00
+UpdatedAt = 2026-08-22T21:14:58.686608+08:00
+
+[161]
+ID = 161
+Name = 'NotifyIconGeneratedAumid_1446694536856946636.png'
+ParentID = 71
+IsDir = false
+Size = 302
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\NotifyIconGeneratedAumid_1446694536856946636.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6886066+08:00
+UpdatedAt = 2026-08-22T21:14:58.6886066+08:00
+
+[162]
+ID = 162
+Name = 'NotifyIconGeneratedAumid_16572625645365478045.png'
+ParentID = 71
+IsDir = false
+Size = 2381
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\NotifyIconGeneratedAumid_16572625645365478045.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6921095+08:00
+UpdatedAt = 2026-08-22T21:14:58.6921095+08:00
+
+[163]
+ID = 163
+Name = 'NotifyIconGeneratedAumid_1699069558987187302.png'
+ParentID = 71
+IsDir = false
+Size = 1878
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\NotifyIconGeneratedAumid_1699069558987187302.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6941121+08:00
+UpdatedAt = 2026-08-22T21:14:58.6941121+08:00
+
+[164]
+ID = 164
+Name = 'NuGetScratch'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\NuGetScratch'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.6971121+08:00
+UpdatedAt = 2026-08-22T21:14:58.6971121+08:00
+
+[165]
+ID = 165
+Name = 'QQ_1787153607740.png'
+ParentID = 71
+IsDir = false
+Size = 5717
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787153607740.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7011242+08:00
+UpdatedAt = 2026-08-22T21:14:58.7011242+08:00
+
+[166]
+ID = 166
+Name = 'QQ_1787202324238.png'
+ParentID = 71
+IsDir = false
+Size = 291831
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787202324238.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7036441+08:00
+UpdatedAt = 2026-08-22T21:14:58.7036441+08:00
+
+[167]
+ID = 167
+Name = 'QQ_1787223980174.png'
+ParentID = 71
+IsDir = false
+Size = 146799
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787223980174.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7068658+08:00
+UpdatedAt = 2026-08-22T21:14:58.7068658+08:00
+
+[168]
+ID = 168
+Name = 'QQ_1787224201613.png'
+ParentID = 71
+IsDir = false
+Size = 174068
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787224201613.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7108945+08:00
+UpdatedAt = 2026-08-22T21:14:58.7108945+08:00
+
+[169]
+ID = 169
+Name = 'QQ_1787224406309.png'
+ParentID = 71
+IsDir = false
+Size = 160327
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787224406309.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7140321+08:00
+UpdatedAt = 2026-08-22T21:14:58.7140321+08:00
+
+[170]
+ID = 170
+Name = 'QQ_1787224664645.png'
+ParentID = 71
+IsDir = false
+Size = 140879
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787224664645.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7175427+08:00
+UpdatedAt = 2026-08-22T21:14:58.7175427+08:00
+
+[171]
+ID = 171
+Name = 'QQ_1787225322985.png'
+ParentID = 71
+IsDir = false
+Size = 52987
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787225322985.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7205413+08:00
+UpdatedAt = 2026-08-22T21:14:58.7205413+08:00
+
+[172]
+ID = 172
+Name = 'QQ_1787244293412.png'
+ParentID = 71
+IsDir = false
+Size = 363394
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787244293412.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7217189+08:00
+UpdatedAt = 2026-08-22T21:14:58.7217189+08:00
+
+[173]
+ID = 173
+Name = 'QQ_1787295461239.png'
+ParentID = 71
+IsDir = false
+Size = 429361
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787295461239.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7270244+08:00
+UpdatedAt = 2026-08-22T21:14:58.7270244+08:00
+
+[174]
+ID = 174
+Name = 'QQ_1787295850381.png'
+ParentID = 71
+IsDir = false
+Size = 264011
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787295850381.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7350463+08:00
+UpdatedAt = 2026-08-22T21:14:58.7350463+08:00
+
+[175]
+ID = 175
+Name = 'QQ_1787307469936.png'
+ParentID = 71
+IsDir = false
+Size = 110998
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787307469936.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7395552+08:00
+UpdatedAt = 2026-08-22T21:14:58.7395552+08:00
+
+[176]
+ID = 176
+Name = 'QQ_1787311914312.png'
+ParentID = 71
+IsDir = false
+Size = 232007
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787311914312.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7440906+08:00
+UpdatedAt = 2026-08-22T21:14:58.7440906+08:00
+
+[177]
+ID = 177
+Name = 'QQ_1787361651161.png'
+ParentID = 71
+IsDir = false
+Size = 24784
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787361651161.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.747599+08:00
+UpdatedAt = 2026-08-22T21:14:58.747599+08:00
+
+[178]
+ID = 178
+Name = 'QQ_1787380959355.png'
+ParentID = 71
+IsDir = false
+Size = 88794
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\QQ_1787380959355.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7519857+08:00
+UpdatedAt = 2026-08-22T21:14:58.7519857+08:00
+
+[179]
+ID = 179
+Name = 'Setup Log 2026-08-21 #001.txt'
+ParentID = 71
+IsDir = false
+Size = 2664472
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\Setup Log 2026-08-21 #001.txt'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7544916+08:00
+UpdatedAt = 2026-08-22T21:14:58.7544916+08:00
+
+[18]
+ID = 18
+Name = 'WindowsImageBackup'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\WindowsImageBackup'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6852146+08:00
+UpdatedAt = 2026-08-22T20:50:03.6852146+08:00
+
+[180]
+ID = 180
+Name = 'Teamo-0.2.19-updater-TobXrV'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\Teamo-0.2.19-updater-TobXrV'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7564917+08:00
+UpdatedAt = 2026-08-22T21:14:58.7564917+08:00
+
+[181]
+ID = 181
+Name = 'TestAdminSaveSettingsAppliesLogger1147118435'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestAdminSaveSettingsAppliesLogger1147118435'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7600473+08:00
+UpdatedAt = 2026-08-22T21:14:58.7600473+08:00
+
+[182]
+ID = 182
+Name = 'TestAdminSaveSettingsAppliesLogger2125514973'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestAdminSaveSettingsAppliesLogger2125514973'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7640667+08:00
+UpdatedAt = 2026-08-22T21:14:58.7640667+08:00
+
+[183]
+ID = 183
+Name = 'TestCleanupExpiredByMaxAge2308803682'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestCleanupExpiredByMaxAge2308803682'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7660665+08:00
+UpdatedAt = 2026-08-22T21:14:58.7660665+08:00
+
+[184]
+ID = 184
+Name = 'TestCleanupExpiredByMaxAge4176779851'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestCleanupExpiredByMaxAge4176779851'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7695721+08:00
+UpdatedAt = 2026-08-22T21:14:58.7695721+08:00
+
+[185]
+ID = 185
+Name = 'TestInitAndCurrent1914106441'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestInitAndCurrent1914106441'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7725793+08:00
+UpdatedAt = 2026-08-22T21:14:58.7725793+08:00
+
+[186]
+ID = 186
+Name = 'TestInitAndCurrent3140226368'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestInitAndCurrent3140226368'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7752884+08:00
+UpdatedAt = 2026-08-22T21:14:58.7752884+08:00
+
+[187]
+ID = 187
+Name = 'TestRotateAndCleanupByMaxBackups579888434'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\TestRotateAndCleanupByMaxBackups579888434'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7782993+08:00
+UpdatedAt = 2026-08-22T21:14:58.7782993+08:00
+
+[188]
+ID = 188
+Name = 'Timwp.log'
+ParentID = 71
+IsDir = false
+Size = 19092
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\Timwp.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7818274+08:00
+UpdatedAt = 2026-08-22T21:14:58.7818274+08:00
+
+[189]
+ID = 189
+Name = 'VS'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\VS'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7845085+08:00
+UpdatedAt = 2026-08-22T21:14:58.7845085+08:00
+
+[19]
+ID = 19
+Name = 'msdownld.tmp'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\msdownld.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6858879+08:00
+UpdatedAt = 2026-08-22T20:50:03.6858879+08:00
+
+[190]
+ID = 190
+Name = 'WSLDVCPlugin'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\WSLDVCPlugin'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7875226+08:00
+UpdatedAt = 2026-08-22T21:14:58.7875226+08:00
+
+[191]
+ID = 191
+Name = 'WinGet'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\WinGet'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7890249+08:00
+UpdatedAt = 2026-08-22T21:14:58.7890249+08:00
+
+[192]
+ID = 192
+Name = 'XiaomiClipboard'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\XiaomiClipboard'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7942426+08:00
+UpdatedAt = 2026-08-22T21:14:58.7942426+08:00
+
+[193]
+ID = 193
+Name = 'a39aceb7-3cf3-4b24-95a2-dfc8630ab050.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\a39aceb7-3cf3-4b24-95a2-dfc8630ab050.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.7962453+08:00
+UpdatedAt = 2026-08-22T21:14:58.7962453+08:00
+
+[194]
+ID = 194
+Name = 'a557d885-9eca-4f2e-be85-9f1e21eed777.png'
+ParentID = 71
+IsDir = false
+Size = 44814
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\a557d885-9eca-4f2e-be85-9f1e21eed777.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8003383+08:00
+UpdatedAt = 2026-08-22T21:14:58.8003383+08:00
+
+[195]
+ID = 195
+Name = 'a5znfdiu.xzs'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\a5znfdiu.xzs'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8028501+08:00
+UpdatedAt = 2026-08-22T21:14:58.8028501+08:00
+
+[196]
+ID = 196
+Name = 'ac1e62ef-87d8-4787-8cd5-745502915085.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ac1e62ef-87d8-4787-8cd5-745502915085.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.809131+08:00
+UpdatedAt = 2026-08-22T21:14:58.809131+08:00
+
+[197]
+ID = 197
+Name = 'add1c926-6df1-49e6-ac1b-3857ab34d282.png'
+ParentID = 71
+IsDir = false
+Size = 175390
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\add1c926-6df1-49e6-ac1b-3857ab34d282.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8142186+08:00
+UpdatedAt = 2026-08-22T21:14:58.8142186+08:00
+
+[198]
+ID = 198
+Name = 'af1f5c90-289b-42a4-a625-ea5a9d8f8b24.png'
+ParentID = 71
+IsDir = false
+Size = 37723
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\af1f5c90-289b-42a4-a625-ea5a9d8f8b24.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8176629+08:00
+UpdatedAt = 2026-08-22T21:14:58.8176629+08:00
+
+[199]
+ID = 199
+Name = 'afc07354-041e-4802-9127-4471f0612783.png'
+ParentID = 71
+IsDir = false
+Size = 3595379
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\afc07354-041e-4802-9127-4471f0612783.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8216048+08:00
+UpdatedAt = 2026-08-22T21:14:58.8216048+08:00
+
+[2]
+ID = 2
+Name = 'S:'
+ParentID = 0
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T14:00:11.385203+08:00
+UpdatedAt = 2026-08-22T14:00:11.385203+08:00
+
+[20]
+ID = 20
+Name = 'regedit.reg'
+ParentID = 5
+IsDir = false
+Size = 770237668
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\regedit.reg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6863953+08:00
+UpdatedAt = 2026-08-22T20:50:03.6863953+08:00
+
+[200]
+ID = 200
+Name = 'app_unlock.ico'
+ParentID = 71
+IsDir = false
+Size = 72997
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\app_unlock.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8256075+08:00
+UpdatedAt = 2026-08-22T21:14:58.8256075+08:00
+
+[201]
+ID = 201
+Name = 'arms-rum-preload.cjs'
+ParentID = 71
+IsDir = false
+Size = 344
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\arms-rum-preload.cjs'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8296083+08:00
+UpdatedAt = 2026-08-22T21:14:58.8296083+08:00
+
+[202]
+ID = 202
+Name = 'b18503a2-1621-4dbb-93ea-895963e98535.png'
+ParentID = 71
+IsDir = false
+Size = 128647
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b18503a2-1621-4dbb-93ea-895963e98535.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8328415+08:00
+UpdatedAt = 2026-08-22T21:14:58.8328415+08:00
+
+[203]
+ID = 203
+Name = 'b1f1c7c6-ca7d-4801-9acf-3bce3ce10236.png'
+ParentID = 71
+IsDir = false
+Size = 57676
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b1f1c7c6-ca7d-4801-9acf-3bce3ce10236.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8369612+08:00
+UpdatedAt = 2026-08-22T21:14:58.8369612+08:00
+
+[204]
+ID = 204
+Name = 'b55e2658-728b-4119-a7de-ace38ae2ddaf.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b55e2658-728b-4119-a7de-ace38ae2ddaf.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8416438+08:00
+UpdatedAt = 2026-08-22T21:14:58.8416438+08:00
+
+[205]
+ID = 205
+Name = 'b7f29e1b-6232-4983-a3ca-0ae806b5f0d9.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b7f29e1b-6232-4983-a3ca-0ae806b5f0d9.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8446502+08:00
+UpdatedAt = 2026-08-22T21:14:58.8446502+08:00
+
+[206]
+ID = 206
+Name = 'b8142021-8319-40b4-bcf6-34af0e7203b6.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b8142021-8319-40b4-bcf6-34af0e7203b6.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8481605+08:00
+UpdatedAt = 2026-08-22T21:14:58.8481605+08:00
+
+[207]
+ID = 207
+Name = 'b9c596dc-9736-44fc-9507-272ecc191feb.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\b9c596dc-9736-44fc-9507-272ecc191feb.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8551727+08:00
+UpdatedAt = 2026-08-22T21:14:58.8551727+08:00
+
+[208]
+ID = 208
+Name = 'bc0a83e9-1696-403c-897f-94d07305a2d3.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 370070
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\bc0a83e9-1696-403c-897f-94d07305a2d3.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8582322+08:00
+UpdatedAt = 2026-08-22T21:14:58.8582322+08:00
+
+[209]
+ID = 209
+Name = 'bcb2dc8c-cbca-4f9e-978d-5131d6c52d09.png'
+ParentID = 71
+IsDir = false
+Size = 59249
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\bcb2dc8c-cbca-4f9e-978d-5131d6c52d09.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8618888+08:00
+UpdatedAt = 2026-08-22T21:14:58.8618888+08:00
+
+[21]
+ID = 21
+Name = '迅雷下载'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\迅雷下载'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6869046+08:00
+UpdatedAt = 2026-08-22T20:50:03.6869046+08:00
+
+[210]
+ID = 210
+Name = 'bd8aff8c-0c16-4e80-b321-ecbcbe3294e2.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\bd8aff8c-0c16-4e80-b321-ecbcbe3294e2.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8638911+08:00
+UpdatedAt = 2026-08-22T21:14:58.8638911+08:00
+
+[211]
+ID = 211
+Name = 'bf6ae1a3-6abb-48e5-8d5a-1b455f38cb4d.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\bf6ae1a3-6abb-48e5-8d5a-1b455f38cb4d.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8698998+08:00
+UpdatedAt = 2026-08-22T21:14:58.8698998+08:00
+
+[212]
+ID = 212
+Name = 'c4196c4c-c416-44fc-85e0-20f81fcf4fe4.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\c4196c4c-c416-44fc-85e0-20f81fcf4fe4.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8734099+08:00
+UpdatedAt = 2026-08-22T21:14:58.8734099+08:00
+
+[213]
+ID = 213
+Name = 'c7092c20-6299-4fcf-9294-54fcf781a2b3.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\c7092c20-6299-4fcf-9294-54fcf781a2b3.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8768525+08:00
+UpdatedAt = 2026-08-22T21:14:58.8768525+08:00
+
+[214]
+ID = 214
+Name = 'c7f3faaf-575f-48ab-807e-8396bc3364cc.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\c7f3faaf-575f-48ab-807e-8396bc3364cc.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8798565+08:00
+UpdatedAt = 2026-08-22T21:14:58.8798565+08:00
+
+[215]
+ID = 215
+Name = 'c9581b39-8e3b-46ea-b3d1-354cf0253d7e.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\c9581b39-8e3b-46ea-b3d1-354cf0253d7e.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8848716+08:00
+UpdatedAt = 2026-08-22T21:14:58.8848716+08:00
+
+[216]
+ID = 216
+Name = 'cf864d82-1bf2-4a9d-9530-686788ba511d.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\cf864d82-1bf2-4a9d-9530-686788ba511d.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8873742+08:00
+UpdatedAt = 2026-08-22T21:14:58.8873742+08:00
+
+[217]
+ID = 217
+Name = 'check_sign_test.log'
+ParentID = 71
+IsDir = false
+Size = 254
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\check_sign_test.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8908943+08:00
+UpdatedAt = 2026-08-22T21:14:58.8908943+08:00
+
+[218]
+ID = 218
+Name = 'cross_oss'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\cross_oss'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.893402+08:00
+UpdatedAt = 2026-08-22T21:14:58.893402+08:00
+
+[219]
+ID = 219
+Name = 'cv_debug.log'
+ParentID = 71
+IsDir = false
+Size = 1098
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\cv_debug.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8964022+08:00
+UpdatedAt = 2026-08-22T21:14:58.8964022+08:00
+
+[22]
+ID = 22
+Name = '迅雷云盘'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\迅雷云盘'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6874176+08:00
+UpdatedAt = 2026-08-22T20:50:03.6874176+08:00
+
+[220]
+ID = 220
+Name = 'd145a75e-d5ce-4741-b422-159591fa3261.png'
+ParentID = 71
+IsDir = false
+Size = 104778
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\d145a75e-d5ce-4741-b422-159591fa3261.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.8999105+08:00
+UpdatedAt = 2026-08-22T21:14:58.8999105+08:00
+
+[221]
+ID = 221
+Name = 'd466c221-05b7-4f99-ba58-d46e916f5066.png'
+ParentID = 71
+IsDir = false
+Size = 87895
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\d466c221-05b7-4f99-ba58-d46e916f5066.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9034224+08:00
+UpdatedAt = 2026-08-22T21:14:58.9034224+08:00
+
+[222]
+ID = 222
+Name = 'd4e613c3-48e1-4cb5-a42e-04f6cf708c94.png'
+ParentID = 71
+IsDir = false
+Size = 129348
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\d4e613c3-48e1-4cb5-a42e-04f6cf708c94.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.906425+08:00
+UpdatedAt = 2026-08-22T21:14:58.906425+08:00
+
+[223]
+ID = 223
+Name = 'dcf3ffbe-cdaf-4083-8f22-9fbd1d2f8f7c.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dcf3ffbe-cdaf-4083-8f22-9fbd1d2f8f7c.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.909113+08:00
+UpdatedAt = 2026-08-22T21:14:58.909113+08:00
+
+[224]
+ID = 224
+Name = 'dd960811-2aad-4dff-a8db-39cbd8ae64ff.png'
+ParentID = 71
+IsDir = false
+Size = 111859
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd960811-2aad-4dff-a8db-39cbd8ae64ff.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9135264+08:00
+UpdatedAt = 2026-08-22T21:14:58.9135264+08:00
+
+[225]
+ID = 225
+Name = 'dd_BackgroundDownload_20260819213540.log'
+ParentID = 71
+IsDir = false
+Size = 2132
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260819213540.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.917635+08:00
+UpdatedAt = 2026-08-22T21:14:58.917635+08:00
+
+[226]
+ID = 226
+Name = 'dd_BackgroundDownload_20260819213540_result_Error.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260819213540_result_Error.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9201394+08:00
+UpdatedAt = 2026-08-22T21:14:58.9201394+08:00
+
+[227]
+ID = 227
+Name = 'dd_BackgroundDownload_20260819234335.log'
+ParentID = 71
+IsDir = false
+Size = 2132
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260819234335.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9241519+08:00
+UpdatedAt = 2026-08-22T21:14:58.9241519+08:00
+
+[228]
+ID = 228
+Name = 'dd_BackgroundDownload_20260819234335_result_Error.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260819234335_result_Error.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9271545+08:00
+UpdatedAt = 2026-08-22T21:14:58.9271545+08:00
+
+[229]
+ID = 229
+Name = 'dd_BackgroundDownload_20260820204335.log'
+ParentID = 71
+IsDir = false
+Size = 8986
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260820204335.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9326668+08:00
+UpdatedAt = 2026-08-22T21:14:58.9326668+08:00
+
+[230]
+ID = 230
+Name = 'dd_BackgroundDownload_20260820204335_result_Error.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260820204335_result_Error.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9347635+08:00
+UpdatedAt = 2026-08-22T21:14:58.9347635+08:00
+
+[231]
+ID = 231
+Name = 'dd_BackgroundDownload_20260820234335.log'
+ParentID = 71
+IsDir = false
+Size = 2112
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260820234335.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9388287+08:00
+UpdatedAt = 2026-08-22T21:14:58.9388287+08:00
+
+[232]
+ID = 232
+Name = 'dd_BackgroundDownload_20260820234335_result_Error.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260820234335_result_Error.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.94184+08:00
+UpdatedAt = 2026-08-22T21:14:58.94184+08:00
+
+[233]
+ID = 233
+Name = 'dd_BackgroundDownload_20260821090558.log'
+ParentID = 71
+IsDir = false
+Size = 4107202
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821090558.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9463456+08:00
+UpdatedAt = 2026-08-22T21:14:58.9463456+08:00
+
+[234]
+ID = 234
+Name = 'dd_BackgroundDownload_20260821090558_00_setup.log'
+ParentID = 71
+IsDir = false
+Size = 2922551
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821090558_00_setup.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9489512+08:00
+UpdatedAt = 2026-08-22T21:14:58.9489512+08:00
+
+[235]
+ID = 235
+Name = 'dd_BackgroundDownload_20260821090558_00_setup_errors.log'
+ParentID = 71
+IsDir = false
+Size = 19685
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821090558_00_setup_errors.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9541991+08:00
+UpdatedAt = 2026-08-22T21:14:58.9541991+08:00
+
+[236]
+ID = 236
+Name = 'dd_BackgroundDownload_20260821090558_result_Success.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821090558_result_Success.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9567043+08:00
+UpdatedAt = 2026-08-22T21:14:58.9567043+08:00
+
+[237]
+ID = 237
+Name = 'dd_BackgroundDownload_20260821174335.log'
+ParentID = 71
+IsDir = false
+Size = 2112
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821174335.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.960209+08:00
+UpdatedAt = 2026-08-22T21:14:58.960209+08:00
+
+[238]
+ID = 238
+Name = 'dd_BackgroundDownload_20260821174335_result_Error.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260821174335_result_Error.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9647202+08:00
+UpdatedAt = 2026-08-22T21:14:58.9647202+08:00
+
+[239]
+ID = 239
+Name = 'dd_BackgroundDownload_20260822194005.log'
+ParentID = 71
+IsDir = false
+Size = 3876426
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822194005.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9672219+08:00
+UpdatedAt = 2026-08-22T21:14:58.9672219+08:00
+
+[24]
+ID = 24
+Name = 'Binary_Code'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Binary_Code'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0235475+08:00
+UpdatedAt = 2026-08-22T20:50:07.0235475+08:00
+
+[240]
+ID = 240
+Name = 'dd_BackgroundDownload_20260822194005_00_setup.log'
+ParentID = 71
+IsDir = false
+Size = 3858280
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822194005_00_setup.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9716064+08:00
+UpdatedAt = 2026-08-22T21:14:58.9716064+08:00
+
+[241]
+ID = 241
+Name = 'dd_BackgroundDownload_20260822194005_00_setup_errors.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822194005_00_setup_errors.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9756491+08:00
+UpdatedAt = 2026-08-22T21:14:58.9756491+08:00
+
+[242]
+ID = 242
+Name = 'dd_BackgroundDownload_20260822194005_result_Success.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822194005_result_Success.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9841791+08:00
+UpdatedAt = 2026-08-22T21:14:58.9841791+08:00
+
+[243]
+ID = 243
+Name = 'dd_BackgroundDownload_20260822204335.log'
+ParentID = 71
+IsDir = false
+Size = 5338
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204335.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9881689+08:00
+UpdatedAt = 2026-08-22T21:14:58.9881689+08:00
+
+[244]
+ID = 244
+Name = 'dd_BackgroundDownload_20260822204335_result_Success.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204335_result_Success.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9924946+08:00
+UpdatedAt = 2026-08-22T21:14:58.9924946+08:00
+
+[245]
+ID = 245
+Name = 'dd_BackgroundDownload_20260822204438.log'
+ParentID = 71
+IsDir = false
+Size = 3876424
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204438.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.9951174+08:00
+UpdatedAt = 2026-08-22T21:14:58.9951174+08:00
+
+[246]
+ID = 246
+Name = 'dd_BackgroundDownload_20260822204438_00_setup.log'
+ParentID = 71
+IsDir = false
+Size = 3858278
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204438_00_setup.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0003924+08:00
+UpdatedAt = 2026-08-22T21:14:59.0003924+08:00
+
+[247]
+ID = 247
+Name = 'dd_BackgroundDownload_20260822204438_00_setup_errors.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204438_00_setup_errors.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0028681+08:00
+UpdatedAt = 2026-08-22T21:14:59.0028681+08:00
+
+[248]
+ID = 248
+Name = 'dd_BackgroundDownload_20260822204438_result_Success.log'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_BackgroundDownload_20260822204438_result_Success.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0075753+08:00
+UpdatedAt = 2026-08-22T21:14:59.0075753+08:00
+
+[249]
+ID = 249
+Name = 'dd_vcredist_amd64_20260821171548.log'
+ParentID = 71
+IsDir = false
+Size = 12696
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_amd64_20260821171548.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0129977+08:00
+UpdatedAt = 2026-08-22T21:14:59.0129977+08:00
+
+[25]
+ID = 25
+Name = 'Code'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Code'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0240617+08:00
+UpdatedAt = 2026-08-22T20:50:07.0240617+08:00
+
+[250]
+ID = 250
+Name = 'dd_vcredist_amd64_20260821171548_000_vcRuntimeMinimum_x64.log'
+ParentID = 71
+IsDir = false
+Size = 315764
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_amd64_20260821171548_000_vcRuntimeMinimum_x64.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0162193+08:00
+UpdatedAt = 2026-08-22T21:14:59.0162193+08:00
+
+[251]
+ID = 251
+Name = 'dd_vcredist_amd64_20260821171548_001_vcRuntimeAdditional_x64.log'
+ParentID = 71
+IsDir = false
+Size = 252992
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_amd64_20260821171548_001_vcRuntimeAdditional_x64.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0194972+08:00
+UpdatedAt = 2026-08-22T21:14:59.0194972+08:00
+
+[252]
+ID = 252
+Name = 'dd_vcredist_amd64_20260821171650.log'
+ParentID = 71
+IsDir = false
+Size = 11174
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_amd64_20260821171650.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0251147+08:00
+UpdatedAt = 2026-08-22T21:14:59.0251147+08:00
+
+[253]
+ID = 253
+Name = 'dd_vcredist_x86_20260821171444.log'
+ParentID = 71
+IsDir = false
+Size = 11417
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_x86_20260821171444.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0301544+08:00
+UpdatedAt = 2026-08-22T21:14:59.0301544+08:00
+
+[254]
+ID = 254
+Name = 'dd_vcredist_x86_20260821171444_000_vcRuntimeMinimum_x86.log'
+ParentID = 71
+IsDir = false
+Size = 291260
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_x86_20260821171444_000_vcRuntimeMinimum_x86.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0351849+08:00
+UpdatedAt = 2026-08-22T21:14:59.0351849+08:00
+
+[255]
+ID = 255
+Name = 'dd_vcredist_x86_20260821171444_001_vcRuntimeAdditional_x86.log'
+ParentID = 71
+IsDir = false
+Size = 263088
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_x86_20260821171444_001_vcRuntimeAdditional_x86.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0376553+08:00
+UpdatedAt = 2026-08-22T21:14:59.0376553+08:00
+
+[256]
+ID = 256
+Name = 'dd_vcredist_x86_20260821171543.log'
+ParentID = 71
+IsDir = false
+Size = 9538
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vcredist_x86_20260821171543.log'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0422827+08:00
+UpdatedAt = 2026-08-22T21:14:59.0422827+08:00
+
+[257]
+ID = 257
+Name = 'dd_vs_setup_bootstrapper_decompression_log.txt'
+ParentID = 71
+IsDir = false
+Size = 709
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dd_vs_setup_bootstrapper_decompression_log.txt'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0478511+08:00
+UpdatedAt = 2026-08-22T21:14:59.0478511+08:00
+
+[258]
+ID = 258
+Name = 'ded718c6-e92b-4214-892b-390dfa262f50.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ded718c6-e92b-4214-892b-390dfa262f50.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0510247+08:00
+UpdatedAt = 2026-08-22T21:14:59.0510247+08:00
+
+[259]
+ID = 259
+Name = 'dln0teak.qmt'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dln0teak.qmt'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0560302+08:00
+UpdatedAt = 2026-08-22T21:14:59.0560302+08:00
+
+[260]
+ID = 260
+Name = 'dondqjvw.uxv'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dondqjvw.uxv'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0584376+08:00
+UpdatedAt = 2026-08-22T21:14:59.0584376+08:00
+
+[261]
+ID = 261
+Name = 'doubao_ext'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\doubao_ext'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.074783+08:00
+UpdatedAt = 2026-08-22T21:14:59.074783+08:00
+
+[262]
+ID = 262
+Name = 'dsh-acl-locks'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\dsh-acl-locks'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.078285+08:00
+UpdatedAt = 2026-08-22T21:14:59.078285+08:00
+
+[263]
+ID = 263
+Name = 'e1484d1a-ec35-4ee7-bd0a-ff764e4fd136.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\e1484d1a-ec35-4ee7-bd0a-ff764e4fd136.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0948053+08:00
+UpdatedAt = 2026-08-22T21:14:59.0948053+08:00
+
+[264]
+ID = 264
+Name = 'e29f4526-1dff-4e16-aa9f-1903f5f0560c.png'
+ParentID = 71
+IsDir = false
+Size = 87939
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\e29f4526-1dff-4e16-aa9f-1903f5f0560c.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.0978056+08:00
+UpdatedAt = 2026-08-22T21:14:59.0978056+08:00
+
+[265]
+ID = 265
+Name = 'e71fba88-6239-4eae-beaf-3cc6eecf077b.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\e71fba88-6239-4eae-beaf-3cc6eecf077b.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1029424+08:00
+UpdatedAt = 2026-08-22T21:14:59.1029424+08:00
+
+[266]
+ID = 266
+Name = 'ebbd97d0-07c6-4a01-80f1-40f1b034fec6.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ebbd97d0-07c6-4a01-80f1-40f1b034fec6.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1070335+08:00
+UpdatedAt = 2026-08-22T21:14:59.1070335+08:00
+
+[267]
+ID = 267
+Name = 'ebffbb17-7443-499b-8177-71341c77ebc3.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ebffbb17-7443-499b-8177-71341c77ebc3.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1110761+08:00
+UpdatedAt = 2026-08-22T21:14:59.1110761+08:00
+
+[268]
+ID = 268
+Name = 'ee8cca59-0a3b-4982-a3a0-9bede2597723.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ee8cca59-0a3b-4982-a3a0-9bede2597723.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1143989+08:00
+UpdatedAt = 2026-08-22T21:14:59.1143989+08:00
+
+[269]
+ID = 269
+Name = 'ef4d93ff-5f28-4727-a857-6c3199e00fad.png'
+ParentID = 71
+IsDir = false
+Size = 142087
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ef4d93ff-5f28-4727-a857-6c3199e00fad.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1175201+08:00
+UpdatedAt = 2026-08-22T21:14:59.1175201+08:00
+
+[270]
+ID = 270
+Name = 'exthost-84f53b.cpuprofile'
+ParentID = 71
+IsDir = false
+Size = 4694
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\exthost-84f53b.cpuprofile'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1202034+08:00
+UpdatedAt = 2026-08-22T21:14:59.1202034+08:00
+
+[271]
+ID = 271
+Name = 'exthost-d30435.tar.gz'
+ParentID = 71
+IsDir = false
+Size = 495
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\exthost-d30435.tar.gz'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1243263+08:00
+UpdatedAt = 2026-08-22T21:14:59.1243263+08:00
+
+[272]
+ID = 272
+Name = 'exthost-eb55a8.cpuprofile'
+ParentID = 71
+IsDir = false
+Size = 33142
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\exthost-eb55a8.cpuprofile'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1281651+08:00
+UpdatedAt = 2026-08-22T21:14:59.1281651+08:00
+
+[273]
+ID = 273
+Name = 'ey4i0iak.2cl'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ey4i0iak.2cl'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1318879+08:00
+UpdatedAt = 2026-08-22T21:14:59.1318879+08:00
+
+[274]
+ID = 274
+Name = 'f0778a04-b6c6-48f0-bde7-50caf41aa3e6.tmp.ico'
+ParentID = 71
+IsDir = false
+Size = 28322
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\f0778a04-b6c6-48f0-bde7-50caf41aa3e6.tmp.ico'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1366083+08:00
+UpdatedAt = 2026-08-22T21:14:59.1366083+08:00
+
+[275]
+ID = 275
+Name = 'f8e61d58-80ae-46db-a716-44bdc0b2508a.png'
+ParentID = 71
+IsDir = false
+Size = 276397
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\f8e61d58-80ae-46db-a716-44bdc0b2508a.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.140072+08:00
+UpdatedAt = 2026-08-22T21:14:59.140072+08:00
+
+[276]
+ID = 276
+Name = 'fb6ba660-11a7-4846-9d93-11f91370463f.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\fb6ba660-11a7-4846-9d93-11f91370463f.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1436981+08:00
+UpdatedAt = 2026-08-22T21:14:59.1436981+08:00
+
+[277]
+ID = 277
+Name = 'ff4537db-aec9-4961-9941-85d880d819f8.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\ff4537db-aec9-4961-9941-85d880d819f8.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.147717+08:00
+UpdatedAt = 2026-08-22T21:14:59.147717+08:00
+
+[278]
+ID = 278
+Name = 'fontconfig'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\fontconfig'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1527333+08:00
+UpdatedAt = 2026-08-22T21:14:59.1527333+08:00
+
+[279]
+ID = 279
+Name = 'go-build1061579196'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1061579196'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1562393+08:00
+UpdatedAt = 2026-08-22T21:14:59.1562393+08:00
+
+[28]
+ID = 28
+Name = 'Game'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Game'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0261321+08:00
+UpdatedAt = 2026-08-22T20:50:07.0261321+08:00
+
+[280]
+ID = 280
+Name = 'go-build1087233541'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1087233541'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1593143+08:00
+UpdatedAt = 2026-08-22T21:14:59.1593143+08:00
+
+[281]
+ID = 281
+Name = 'go-build1550121114'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1550121114'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1623465+08:00
+UpdatedAt = 2026-08-22T21:14:59.1623465+08:00
+
+[282]
+ID = 282
+Name = 'go-build1579642854'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1579642854'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1683617+08:00
+UpdatedAt = 2026-08-22T21:14:59.1683617+08:00
+
+[283]
+ID = 283
+Name = 'go-build1664639895'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1664639895'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1743731+08:00
+UpdatedAt = 2026-08-22T21:14:59.1743731+08:00
+
+[284]
+ID = 284
+Name = 'go-build1685658277'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1685658277'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1773734+08:00
+UpdatedAt = 2026-08-22T21:14:59.1773734+08:00
+
+[285]
+ID = 285
+Name = 'go-build1703392196'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1703392196'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1925223+08:00
+UpdatedAt = 2026-08-22T21:14:59.1925223+08:00
+
+[286]
+ID = 286
+Name = 'go-build1908870439'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1908870439'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.1947852+08:00
+UpdatedAt = 2026-08-22T21:14:59.1947852+08:00
+
+[287]
+ID = 287
+Name = 'go-build1992427018'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build1992427018'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2012957+08:00
+UpdatedAt = 2026-08-22T21:14:59.2012957+08:00
+
+[288]
+ID = 288
+Name = 'go-build2114646753'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2114646753'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2058415+08:00
+UpdatedAt = 2026-08-22T21:14:59.2058415+08:00
+
+[289]
+ID = 289
+Name = 'go-build2394994868'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2394994868'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2110738+08:00
+UpdatedAt = 2026-08-22T21:14:59.2110738+08:00
+
+[29]
+ID = 29
+Name = 'GameVideos'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\GameVideos'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0266493+08:00
+UpdatedAt = 2026-08-22T20:50:07.0266493+08:00
+
+[290]
+ID = 290
+Name = 'go-build2413002705'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2413002705'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2160784+08:00
+UpdatedAt = 2026-08-22T21:14:59.2160784+08:00
+
+[291]
+ID = 291
+Name = 'go-build2459361624'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2459361624'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2185875+08:00
+UpdatedAt = 2026-08-22T21:14:59.2185875+08:00
+
+[292]
+ID = 292
+Name = 'go-build2556284486'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2556284486'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2231867+08:00
+UpdatedAt = 2026-08-22T21:14:59.2231867+08:00
+
+[293]
+ID = 293
+Name = 'go-build2572164949'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2572164949'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2271084+08:00
+UpdatedAt = 2026-08-22T21:14:59.2271084+08:00
+
+[294]
+ID = 294
+Name = 'go-build2619898761'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2619898761'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2323352+08:00
+UpdatedAt = 2026-08-22T21:14:59.2323352+08:00
+
+[295]
+ID = 295
+Name = 'go-build2900236693'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build2900236693'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2355981+08:00
+UpdatedAt = 2026-08-22T21:14:59.2355981+08:00
+
+[296]
+ID = 296
+Name = 'go-build3111861798'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build3111861798'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2418842+08:00
+UpdatedAt = 2026-08-22T21:14:59.2418842+08:00
+
+[297]
+ID = 297
+Name = 'go-build3157542876'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build3157542876'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2463926+08:00
+UpdatedAt = 2026-08-22T21:14:59.2463926+08:00
+
+[298]
+ID = 298
+Name = 'go-build350567'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build350567'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.249618+08:00
+UpdatedAt = 2026-08-22T21:14:59.249618+08:00
+
+[299]
+ID = 299
+Name = 'go-build3682914300'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build3682914300'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2537975+08:00
+UpdatedAt = 2026-08-22T21:14:59.2537975+08:00
+
+[3]
+ID = 3
+Name = 'Y:'
+ParentID = 0
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T14:00:11.385203+08:00
+UpdatedAt = 2026-08-22T14:00:11.385203+08:00
+
+[30]
+ID = 30
+Name = 'LiuLiuDownloader'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\LiuLiuDownloader'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0271599+08:00
+UpdatedAt = 2026-08-22T20:50:07.0271599+08:00
+
+[300]
+ID = 300
+Name = 'go-build391420705'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build391420705'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2583001+08:00
+UpdatedAt = 2026-08-22T21:14:59.2583001+08:00
+
+[301]
+ID = 301
+Name = 'go-build3998525516'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build3998525516'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2636907+08:00
+UpdatedAt = 2026-08-22T21:14:59.2636907+08:00
+
+[302]
+ID = 302
+Name = 'go-build4010971736'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build4010971736'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2689039+08:00
+UpdatedAt = 2026-08-22T21:14:59.2689039+08:00
+
+[303]
+ID = 303
+Name = 'go-build4013307044'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build4013307044'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2720376+08:00
+UpdatedAt = 2026-08-22T21:14:59.2720376+08:00
+
+[304]
+ID = 304
+Name = 'go-build4082481753'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build4082481753'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2753966+08:00
+UpdatedAt = 2026-08-22T21:14:59.2753966+08:00
+
+[305]
+ID = 305
+Name = 'go-build4194433088'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build4194433088'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2794792+08:00
+UpdatedAt = 2026-08-22T21:14:59.2794792+08:00
+
+[306]
+ID = 306
+Name = 'go-build423253298'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build423253298'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2824303+08:00
+UpdatedAt = 2026-08-22T21:14:59.2824303+08:00
+
+[307]
+ID = 307
+Name = 'go-build434763626'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build434763626'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2853783+08:00
+UpdatedAt = 2026-08-22T21:14:59.2853783+08:00
+
+[308]
+ID = 308
+Name = 'go-build548428717'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build548428717'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2907794+08:00
+UpdatedAt = 2026-08-22T21:14:59.2907794+08:00
+
+[309]
+ID = 309
+Name = 'go-build714931131'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build714931131'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2952154+08:00
+UpdatedAt = 2026-08-22T21:14:59.2952154+08:00
+
+[31]
+ID = 31
+Name = 'Microsoft'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Microsoft'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0277005+08:00
+UpdatedAt = 2026-08-22T20:50:07.0277005+08:00
+
+[310]
+ID = 310
+Name = 'go-build722378399'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build722378399'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.2995212+08:00
+UpdatedAt = 2026-08-22T21:14:59.2995212+08:00
+
+[311]
+ID = 311
+Name = 'go-build753924277'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build753924277'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3031427+08:00
+UpdatedAt = 2026-08-22T21:14:59.3031427+08:00
+
+[312]
+ID = 312
+Name = 'go-build78517164'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build78517164'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3064804+08:00
+UpdatedAt = 2026-08-22T21:14:59.3064804+08:00
+
+[313]
+ID = 313
+Name = 'go-build943574486'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build943574486'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3111074+08:00
+UpdatedAt = 2026-08-22T21:14:59.3111074+08:00
+
+[314]
+ID = 314
+Name = 'go-build966842286'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build966842286'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3153105+08:00
+UpdatedAt = 2026-08-22T21:14:59.3153105+08:00
+
+[315]
+ID = 315
+Name = 'i2mcd410.rq3'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\i2mcd410.rq3'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3196081+08:00
+UpdatedAt = 2026-08-22T21:14:59.3196081+08:00
+
+[316]
+ID = 316
+Name = 'khjkzm4l.lhl'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\khjkzm4l.lhl'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3228348+08:00
+UpdatedAt = 2026-08-22T21:14:59.3228348+08:00
+
+[317]
+ID = 317
+Name = 'libCachedImageData'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\libCachedImageData'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3268436+08:00
+UpdatedAt = 2026-08-22T21:14:59.3268436+08:00
+
+[318]
+ID = 318
+Name = 'modlens-dsh-paste'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\modlens-dsh-paste'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3305346+08:00
+UpdatedAt = 2026-08-22T21:14:59.3305346+08:00
+
+[319]
+ID = 319
+Name = 'na4okzwt.ia4'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\na4okzwt.ia4'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3341599+08:00
+UpdatedAt = 2026-08-22T21:14:59.3341599+08:00
+
+[32]
+ID = 32
+Name = 'Mocreak'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Mocreak'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0282121+08:00
+UpdatedAt = 2026-08-22T20:50:07.0282121+08:00
+
+[320]
+ID = 320
+Name = 'node-compile-cache'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\node-compile-cache'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3378102+08:00
+UpdatedAt = 2026-08-22T21:14:59.3378102+08:00
+
+[321]
+ID = 321
+Name = 'nsa1A33.tmp'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\nsa1A33.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3419039+08:00
+UpdatedAt = 2026-08-22T21:14:59.3419039+08:00
+
+[322]
+ID = 322
+Name = 'nsk9D7D.tmp'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\nsk9D7D.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.345876+08:00
+UpdatedAt = 2026-08-22T21:14:59.345876+08:00
+
+[323]
+ID = 323
+Name = 'onominan.tmp'
+ParentID = 71
+IsDir = false
+Size = 22
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\onominan.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3513998+08:00
+UpdatedAt = 2026-08-22T21:14:59.3513998+08:00
+
+[324]
+ID = 324
+Name = 'perfectworldarena'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\perfectworldarena'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3549811+08:00
+UpdatedAt = 2026-08-22T21:14:59.3549811+08:00
+
+[325]
+ID = 325
+Name = 'render-29404-1787399874032.tar.gz'
+ParentID = 71
+IsDir = false
+Size = 51421
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\render-29404-1787399874032.tar.gz'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.358981+08:00
+UpdatedAt = 2026-08-22T21:14:59.358981+08:00
+
+[326]
+ID = 326
+Name = 'reporter.exe'
+ParentID = 71
+IsDir = false
+Size = 139592
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\reporter.exe'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3628013+08:00
+UpdatedAt = 2026-08-22T21:14:59.3628013+08:00
+
+[327]
+ID = 327
+Name = 's2caexts.lr1'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\s2caexts.lr1'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3676553+08:00
+UpdatedAt = 2026-08-22T21:14:59.3676553+08:00
+
+[328]
+ID = 328
+Name = 'steam'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\steam'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3726689+08:00
+UpdatedAt = 2026-08-22T21:14:59.3726689+08:00
+
+[329]
+ID = 329
+Name = 'system-commandline-sentinel-files'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\system-commandline-sentinel-files'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3766686+08:00
+UpdatedAt = 2026-08-22T21:14:59.3766686+08:00
+
+[33]
+ID = 33
+Name = 'Program Files'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Program Files'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0287207+08:00
+UpdatedAt = 2026-08-22T20:50:07.0287207+08:00
+
+[330]
+ID = 330
+Name = 't5mmxuky'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\t5mmxuky'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3816926+08:00
+UpdatedAt = 2026-08-22T21:14:59.3816926+08:00
+
+[331]
+ID = 331
+Name = 'tmpmbw9oe43'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\tmpmbw9oe43'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3851999+08:00
+UpdatedAt = 2026-08-22T21:14:59.3851999+08:00
+
+[332]
+ID = 332
+Name = 'tmpyh_5ofg1'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\tmpyh_5ofg1'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3897084+08:00
+UpdatedAt = 2026-08-22T21:14:59.3897084+08:00
+
+[333]
+ID = 333
+Name = 'toolhost-snapshots'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\toolhost-snapshots'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3927389+08:00
+UpdatedAt = 2026-08-22T21:14:59.3927389+08:00
+
+[334]
+ID = 334
+Name = 'trae'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\trae'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3947416+08:00
+UpdatedAt = 2026-08-22T21:14:59.3947416+08:00
+
+[335]
+ID = 335
+Name = 'trae-agent-toolhost'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\trae-agent-toolhost'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.3977427+08:00
+UpdatedAt = 2026-08-22T21:14:59.3977427+08:00
+
+[336]
+ID = 336
+Name = 'trae-cn-user-x64'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\trae-cn-user-x64'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.4002479+08:00
+UpdatedAt = 2026-08-22T21:14:59.4002479+08:00
+
+[337]
+ID = 337
+Name = 'vscode-typescript'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\vscode-typescript'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.4048343+08:00
+UpdatedAt = 2026-08-22T21:14:59.4048343+08:00
+
+[338]
+ID = 338
+Name = 'wmpf_files'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\wmpf_files'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.4088342+08:00
+UpdatedAt = 2026-08-22T21:14:59.4088342+08:00
+
+[339]
+ID = 339
+Name = 'yxqxydump'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\yxqxydump'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.4138493+08:00
+UpdatedAt = 2026-08-22T21:14:59.4138493+08:00
+
+[34]
+ID = 34
+Name = 'Software'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Software'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0297467+08:00
+UpdatedAt = 2026-08-22T20:50:07.0297467+08:00
+
+[340]
+ID = 340
+Name = 'yxqxylog'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\yxqxylog'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:59.4198594+08:00
+UpdatedAt = 2026-08-22T21:14:59.4198594+08:00
+
+[341]
+ID = 341
+Name = 'pom'
+ParentID = 83
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\OSS\pom'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:15:23.0565775+08:00
+UpdatedAt = 2026-08-22T21:15:23.0565775+08:00
+
+[342]
+ID = 342
+Name = 'pom.xml'
+ParentID = 341
+IsDir = false
+Size = 16514
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\OSS\pom\pom.xml'
+TrashOrigin = ''
+OwnerID = 1
+Shared = true
+ShareToken = '11dca3419ac5ab980e1795267fdf509d'
+ShareExpires = 2026-08-22T22:18:36.996958+08:00
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:15:24.241533+08:00
+UpdatedAt = 2026-08-22T21:18:36.996958+08:00
+
+[343]
+ID = 343
+Name = '0c33d587-0664-451e-9504-105945f4dbe2.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\0c33d587-0664-451e-9504-105945f4dbe2.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.167047+08:00
+UpdatedAt = 2026-08-22T22:37:36.167047+08:00
+
+[344]
+ID = 344
+Name = '21f28444-ab25-4622-b45a-71e0b293b8fc.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\21f28444-ab25-4622-b45a-71e0b293b8fc.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1700817+08:00
+UpdatedAt = 2026-08-22T22:37:36.1700817+08:00
+
+[345]
+ID = 345
+Name = '249ec800-e318-4e50-948f-9fc35226fce4.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\249ec800-e318-4e50-948f-9fc35226fce4.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1726369+08:00
+UpdatedAt = 2026-08-22T22:37:36.1726369+08:00
+
+[346]
+ID = 346
+Name = '2b2ec96b-16c1-4e5d-8241-10e28189553a.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\2b2ec96b-16c1-4e5d-8241-10e28189553a.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1746745+08:00
+UpdatedAt = 2026-08-22T22:37:36.1746745+08:00
+
+[347]
+ID = 347
+Name = '551dc306-eddf-4cbf-8520-9775dd5e586b.png'
+ParentID = 71
+IsDir = false
+Size = 60622
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\551dc306-eddf-4cbf-8520-9775dd5e586b.png'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1777595+08:00
+UpdatedAt = 2026-08-22T22:37:36.1777595+08:00
+
+[348]
+ID = 348
+Name = '6d581804-f634-45ab-ab59-25c2884874b8.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\6d581804-f634-45ab-ab59-25c2884874b8.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1809207+08:00
+UpdatedAt = 2026-08-22T22:37:36.1809207+08:00
+
+[349]
+ID = 349
+Name = '956fa6f4-50c2-4218-8648-8d7f2fb3efe1.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\956fa6f4-50c2-4218-8648-8d7f2fb3efe1.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1834672+08:00
+UpdatedAt = 2026-08-22T22:37:36.1834672+08:00
+
+[35]
+ID = 35
+Name = 'SteamLibrary'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\SteamLibrary'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0302561+08:00
+UpdatedAt = 2026-08-22T20:50:07.0302561+08:00
+
+[350]
+ID = 350
+Name = 'fad09905-58a5-41d9-8920-17e994178f8c.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\fad09905-58a5-41d9-8920-17e994178f8c.tmp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1875835+08:00
+UpdatedAt = 2026-08-22T22:37:36.1875835+08:00
+
+[351]
+ID = 351
+Name = 'go-build3469574312'
+ParentID = 71
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\go-build3469574312'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1906319+08:00
+UpdatedAt = 2026-08-22T22:37:36.1906319+08:00
+
+[352]
+ID = 352
+Name = 'nas-check2.js'
+ParentID = 71
+IsDir = false
+Size = 53884
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\nas-check2.js'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1931858+08:00
+UpdatedAt = 2026-08-22T22:37:36.1931858+08:00
+
+[353]
+ID = 353
+Name = 'nas3.js'
+ParentID = 71
+IsDir = false
+Size = 53931
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\nas3.js'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1960712+08:00
+UpdatedAt = 2026-08-22T22:37:36.1960712+08:00
+
+[354]
+ID = 354
+Name = 'prop.xml'
+ParentID = 71
+IsDir = false
+Size = 64
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\prop.xml'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.1986887+08:00
+UpdatedAt = 2026-08-22T22:37:36.1986887+08:00
+
+[355]
+ID = 355
+Name = 'prop2.xml'
+ParentID = 71
+IsDir = false
+Size = 524
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\prop2.xml'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2011938+08:00
+UpdatedAt = 2026-08-22T22:37:36.2011938+08:00
+
+[356]
+ID = 356
+Name = 'v10-run.log'
+ParentID = 71
+IsDir = false
+Size = 1632
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-run.log'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2037101+08:00
+UpdatedAt = 2026-08-22T22:37:36.2037101+08:00
+
+[357]
+ID = 357
+Name = 'v10-run2.log'
+ParentID = 71
+IsDir = false
+Size = 1935
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-run2.log'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2057177+08:00
+UpdatedAt = 2026-08-22T22:37:36.2057177+08:00
+
+[358]
+ID = 358
+Name = 'v10-run3.log'
+ParentID = 71
+IsDir = false
+Size = 3643
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-run3.log'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2082356+08:00
+UpdatedAt = 2026-08-22T22:37:36.2082356+08:00
+
+[359]
+ID = 359
+Name = 'v10-run4.log'
+ParentID = 71
+IsDir = false
+Size = 5650
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-run4.log'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2112406+08:00
+UpdatedAt = 2026-08-22T22:37:36.2112406+08:00
+
+[360]
+ID = 360
+Name = 'v10-run5.log'
+ParentID = 71
+IsDir = false
+Size = 1927
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-run5.log'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.214244+08:00
+UpdatedAt = 2026-08-22T22:37:36.214244+08:00
+
+[361]
+ID = 361
+Name = 'v10-token.txt'
+ParentID = 71
+IsDir = false
+Size = 186
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\v10-token.txt'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:37:36.2160653+08:00
+UpdatedAt = 2026-08-22T22:37:36.2160653+08:00
+
+[362]
+ID = 362
+Name = 'Note'
+ParentID = 53
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\Note'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:02.7154288+08:00
+UpdatedAt = 2026-08-22T22:38:02.7154288+08:00
+
+[363]
+ID = 363
+Name = '学习资料'
+ParentID = 53
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:02.717993+08:00
+UpdatedAt = 2026-08-22T22:38:02.717993+08:00
+
+[364]
+ID = 364
+Name = 'Linux'
+ParentID = 363
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\Linux'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:03.7946562+08:00
+UpdatedAt = 2026-08-22T22:38:03.7946562+08:00
+
+[365]
+ID = 365
+Name = 'Mysql'
+ParentID = 363
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\Mysql'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:03.7972778+08:00
+UpdatedAt = 2026-08-22T22:38:03.7972778+08:00
+
+[366]
+ID = 366
+Name = 'python'
+ParentID = 363
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\python'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:03.7998341+08:00
+UpdatedAt = 2026-08-22T22:38:03.7998341+08:00
+
+[367]
+ID = 367
+Name = '皮鑫达大礼包'
+ParentID = 363
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:03.8023849+08:00
+UpdatedAt = 2026-08-22T22:38:03.8023849+08:00
+
+[368]
+ID = 368
+Name = '第三方库'
+ParentID = 363
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\第三方库'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:03.8049892+08:00
+UpdatedAt = 2026-08-22T22:38:03.8049892+08:00
+
+[369]
+ID = 369
+Name = '2162030112_钟名扬_基于Android的轻量化移动端应用软件设计.pdf'
+ParentID = 367
+IsDir = false
+Size = 2517601
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\2162030112_钟名扬_基于Android的轻量化移动端应用软件设计.pdf'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1345538+08:00
+UpdatedAt = 2026-08-22T22:38:05.1345538+08:00
+
+[37]
+ID = 37
+Name = 'Temp'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Temp'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0312819+08:00
+UpdatedAt = 2026-08-22T20:50:07.0312819+08:00
+
+[370]
+ID = 370
+Name = 'Obsidian_note'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\Obsidian_note'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1376326+08:00
+UpdatedAt = 2026-08-22T22:38:05.1376326+08:00
+
+[371]
+ID = 371
+Name = 'Typora'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\Typora'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.139671+08:00
+UpdatedAt = 2026-08-22T22:38:05.139671+08:00
+
+[372]
+ID = 372
+Name = 'obsidian'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\obsidian'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1417666+08:00
+UpdatedAt = 2026-08-22T22:38:05.1417666+08:00
+
+[373]
+ID = 373
+Name = 'steam游戏假激活'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\steam游戏假激活'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1443354+08:00
+UpdatedAt = 2026-08-22T22:38:05.1443354+08:00
+
+[374]
+ID = 374
+Name = '大学作业'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\大学作业'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1463904+08:00
+UpdatedAt = 2026-08-22T22:38:05.1463904+08:00
+
+[375]
+ID = 375
+Name = '有用的软件'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\有用的软件'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1484454+08:00
+UpdatedAt = 2026-08-22T22:38:05.1484454+08:00
+
+[376]
+ID = 376
+Name = '毕业照'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1504869+08:00
+UpdatedAt = 2026-08-22T22:38:05.1504869+08:00
+
+[377]
+ID = 377
+Name = '毕业照.zip'
+ParentID = 367
+IsDir = false
+Size = 9239407
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照.zip'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1530306+08:00
+UpdatedAt = 2026-08-22T22:38:05.1530306+08:00
+
+[378]
+ID = 378
+Name = '毕设'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕设'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1551576+08:00
+UpdatedAt = 2026-08-22T22:38:05.1551576+08:00
+
+[379]
+ID = 379
+Name = '沙雕们'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\沙雕们'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1567157+08:00
+UpdatedAt = 2026-08-22T22:38:05.1567157+08:00
+
+[38]
+ID = 38
+Name = 'WindowsApps'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\WindowsApps'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0317962+08:00
+UpdatedAt = 2026-08-22T20:50:07.0317962+08:00
+
+[380]
+ID = 380
+Name = '王秦微 毕业论文（设计）任务书.pdf'
+ParentID = 367
+IsDir = false
+Size = 173788
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\王秦微 毕业论文（设计）任务书.pdf'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1676708+08:00
+UpdatedAt = 2026-08-22T22:38:05.1676708+08:00
+
+[381]
+ID = 381
+Name = '系统备份'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\系统备份'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1696935+08:00
+UpdatedAt = 2026-08-22T22:38:05.1696935+08:00
+
+[382]
+ID = 382
+Name = '网课'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\网课'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1723664+08:00
+UpdatedAt = 2026-08-22T22:38:05.1723664+08:00
+
+[383]
+ID = 383
+Name = '获奖证书'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\获奖证书'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1744718+08:00
+UpdatedAt = 2026-08-22T22:38:05.1744718+08:00
+
+[384]
+ID = 384
+Name = '论文'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\论文'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1764781+08:00
+UpdatedAt = 2026-08-22T22:38:05.1764781+08:00
+
+[385]
+ID = 385
+Name = '证件照'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\证件照'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1789848+08:00
+UpdatedAt = 2026-08-22T22:38:05.1789848+08:00
+
+[386]
+ID = 386
+Name = '软考'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\软考'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1814967+08:00
+UpdatedAt = 2026-08-22T22:38:05.1814967+08:00
+
+[387]
+ID = 387
+Name = '面试'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\面试'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1845051+08:00
+UpdatedAt = 2026-08-22T22:38:05.1845051+08:00
+
+[388]
+ID = 388
+Name = '项目'
+ParentID = 367
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\项目'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:05.1860089+08:00
+UpdatedAt = 2026-08-22T22:38:05.1860089+08:00
+
+[389]
+ID = 389
+Name = 'VID_20250615_025300.mp4'
+ParentID = 379
+IsDir = false
+Size = 21120197
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\沙雕们\VID_20250615_025300.mp4'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:07.6833854+08:00
+UpdatedAt = 2026-08-22T22:38:07.6833854+08:00
+
+[39]
+ID = 39
+Name = 'WpSystem'
+ParentID = 2
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\WpSystem'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0328363+08:00
+UpdatedAt = 2026-08-22T20:50:07.0328363+08:00
+
+[390]
+ID = 390
+Name = 'a0deec6b644e63e6bc239593b331a3bb.mp4'
+ParentID = 379
+IsDir = false
+Size = 57347684
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\沙雕们\a0deec6b644e63e6bc239593b331a3bb.mp4'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:07.6864947+08:00
+UpdatedAt = 2026-08-22T22:38:07.6864947+08:00
+
+[391]
+ID = 391
+Name = 'a5556f63df91350ef60261927bb60bb6.mp4'
+ParentID = 379
+IsDir = false
+Size = 30858456
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\沙雕们\a5556f63df91350ef60261927bb60bb6.mp4'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:07.6890682+08:00
+UpdatedAt = 2026-08-22T22:38:07.6890682+08:00
+
+[392]
+ID = 392
+Name = '1997cccba95d26f8e71ced531dc69eb.jpg'
+ParentID = 376
+IsDir = false
+Size = 223152
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\1997cccba95d26f8e71ced531dc69eb.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7166707+08:00
+UpdatedAt = 2026-08-22T22:38:12.7166707+08:00
+
+[393]
+ID = 393
+Name = '270dd185ac767b843e2e25e18d482ac.jpg'
+ParentID = 376
+IsDir = false
+Size = 436316
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\270dd185ac767b843e2e25e18d482ac.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7444386+08:00
+UpdatedAt = 2026-08-22T22:38:12.7444386+08:00
+
+[394]
+ID = 394
+Name = '365f5a84827eb18fc1856841aa5b0b2.jpg'
+ParentID = 376
+IsDir = false
+Size = 493454
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\365f5a84827eb18fc1856841aa5b0b2.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7480333+08:00
+UpdatedAt = 2026-08-22T22:38:12.7480333+08:00
+
+[395]
+ID = 395
+Name = '371bbff866ec1eb0da1957dc1e6139b.jpg'
+ParentID = 376
+IsDir = false
+Size = 175454
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\371bbff866ec1eb0da1957dc1e6139b.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7505919+08:00
+UpdatedAt = 2026-08-22T22:38:12.7505919+08:00
+
+[396]
+ID = 396
+Name = '53068f2600266584af7b9cb07e0ab6a.jpg'
+ParentID = 376
+IsDir = false
+Size = 1021909
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\53068f2600266584af7b9cb07e0ab6a.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7526947+08:00
+UpdatedAt = 2026-08-22T22:38:12.7526947+08:00
+
+[397]
+ID = 397
+Name = '61aecd6f3ac80318f9116362819d676.jpg'
+ParentID = 376
+IsDir = false
+Size = 514905
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\61aecd6f3ac80318f9116362819d676.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7552488+08:00
+UpdatedAt = 2026-08-22T22:38:12.7552488+08:00
+
+[398]
+ID = 398
+Name = '7888685b25cbf4c01ce17455a54ede3.jpg'
+ParentID = 376
+IsDir = false
+Size = 405704
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\7888685b25cbf4c01ce17455a54ede3.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7572886+08:00
+UpdatedAt = 2026-08-22T22:38:12.7572886+08:00
+
+[399]
+ID = 399
+Name = '7f059877d9340dbb3d42d345df85129.jpg'
+ParentID = 376
+IsDir = false
+Size = 472089
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\7f059877d9340dbb3d42d345df85129.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.760776+08:00
+UpdatedAt = 2026-08-22T22:38:12.760776+08:00
+
+[4]
+ID = 4
+Name = 'Z:'
+ParentID = 0
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T14:00:11.3857126+08:00
+UpdatedAt = 2026-08-22T14:00:11.3857126+08:00
+
+[40]
+ID = 40
+Name = 'av_quality_1703926684808'
+ParentID = 2
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\av_quality_1703926684808'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0333484+08:00
+UpdatedAt = 2026-08-22T20:50:07.0333484+08:00
+
+[400]
+ID = 400
+Name = '8390fb46613c6a0b5b93b966cfe763a.jpg'
+ParentID = 376
+IsDir = false
+Size = 217118
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\8390fb46613c6a0b5b93b966cfe763a.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7638708+08:00
+UpdatedAt = 2026-08-22T22:38:12.7638708+08:00
+
+[401]
+ID = 401
+Name = '88778cfb0cf70c1423fd68add0e9699.jpg'
+ParentID = 376
+IsDir = false
+Size = 448065
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\88778cfb0cf70c1423fd68add0e9699.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7664976+08:00
+UpdatedAt = 2026-08-22T22:38:12.7664976+08:00
+
+[402]
+ID = 402
+Name = '99df426cf6a52186cb3c427411b6251.jpg'
+ParentID = 376
+IsDir = false
+Size = 446102
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\99df426cf6a52186cb3c427411b6251.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7690544+08:00
+UpdatedAt = 2026-08-22T22:38:12.7690544+08:00
+
+[403]
+ID = 403
+Name = 'aba8a520d2ffe68952d5b96cd4462dc.jpg'
+ParentID = 376
+IsDir = false
+Size = 452240
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\aba8a520d2ffe68952d5b96cd4462dc.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7783003+08:00
+UpdatedAt = 2026-08-22T22:38:12.7783003+08:00
+
+[404]
+ID = 404
+Name = 'ad5b1efe57f0d9e408ee8923a5de3ca.jpg'
+ParentID = 376
+IsDir = false
+Size = 220347
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\ad5b1efe57f0d9e408ee8923a5de3ca.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7803275+08:00
+UpdatedAt = 2026-08-22T22:38:12.7803275+08:00
+
+[405]
+ID = 405
+Name = 'b178ec2d92a9f843d2e85c0502614c1.jpg'
+ParentID = 376
+IsDir = false
+Size = 337896
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\b178ec2d92a9f843d2e85c0502614c1.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7828676+08:00
+UpdatedAt = 2026-08-22T22:38:12.7828676+08:00
+
+[406]
+ID = 406
+Name = 'bd417351d8068569354c044ec58a27a.jpg'
+ParentID = 376
+IsDir = false
+Size = 579038
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\bd417351d8068569354c044ec58a27a.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7853707+08:00
+UpdatedAt = 2026-08-22T22:38:12.7853707+08:00
+
+[407]
+ID = 407
+Name = 'c1d168dd4f4183b1b5635523b8ac5dc.jpg'
+ParentID = 376
+IsDir = false
+Size = 534216
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\c1d168dd4f4183b1b5635523b8ac5dc.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7877593+08:00
+UpdatedAt = 2026-08-22T22:38:12.7877593+08:00
+
+[408]
+ID = 408
+Name = 'de6cc880fc9a727236be503fa8aa5de.jpg'
+ParentID = 376
+IsDir = false
+Size = 198216
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\de6cc880fc9a727236be503fa8aa5de.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7907705+08:00
+UpdatedAt = 2026-08-22T22:38:12.7907705+08:00
+
+[409]
+ID = 409
+Name = 'e46383cdc0adac643228d1abb5b58b3.jpg'
+ParentID = 376
+IsDir = false
+Size = 394533
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\e46383cdc0adac643228d1abb5b58b3.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7932774+08:00
+UpdatedAt = 2026-08-22T22:38:12.7932774+08:00
+
+[41]
+ID = 41
+Name = 'av_quality_1707995432942'
+ParentID = 2
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\av_quality_1707995432942'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0338626+08:00
+UpdatedAt = 2026-08-22T20:50:07.0338626+08:00
+
+[410]
+ID = 410
+Name = 'e5113f39dab0b10c048ff6d8550bd91.jpg'
+ParentID = 376
+IsDir = false
+Size = 465201
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\e5113f39dab0b10c048ff6d8550bd91.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7957798+08:00
+UpdatedAt = 2026-08-22T22:38:12.7957798+08:00
+
+[411]
+ID = 411
+Name = 'f56d2813a17b7064f98d0b6993b026e.jpg'
+ParentID = 376
+IsDir = false
+Size = 456890
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\f56d2813a17b7064f98d0b6993b026e.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.7993265+08:00
+UpdatedAt = 2026-08-22T22:38:12.7993265+08:00
+
+[412]
+ID = 412
+Name = 'f5cc8128b459bd8e44644632cdd5b7c.jpg'
+ParentID = 376
+IsDir = false
+Size = 531128
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\f5cc8128b459bd8e44644632cdd5b7c.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.8018347+08:00
+UpdatedAt = 2026-08-22T22:38:12.8018347+08:00
+
+[413]
+ID = 413
+Name = 'fcabddf914fa7bd7ccab7891f7925b1.jpg'
+ParentID = 376
+IsDir = false
+Size = 227636
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\fcabddf914fa7bd7ccab7891f7925b1.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.8037357+08:00
+UpdatedAt = 2026-08-22T22:38:12.8037357+08:00
+
+[414]
+ID = 414
+Name = '武汉工程大学邮电与信息工程学院2025届毕业生合影.jpg'
+ParentID = 376
+IsDir = false
+Size = 136791985
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials\学习资料\皮鑫达大礼包\毕业照\武汉工程大学邮电与信息工程学院2025届毕业生合影.jpg'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T22:38:12.8072519+08:00
+UpdatedAt = 2026-08-22T22:38:12.8072519+08:00
+
+[42]
+ID = 42
+Name = 'av_quality_1707995436451'
+ParentID = 2
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\av_quality_1707995436451'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0343709+08:00
+UpdatedAt = 2026-08-22T20:50:07.0343709+08:00
+
+[43]
+ID = 43
+Name = 'av_quality_1707997891755'
+ParentID = 2
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\av_quality_1707997891755'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0348901+08:00
+UpdatedAt = 2026-08-22T20:50:07.0348901+08:00
+
+[44]
+ID = 44
+Name = 'av_quality_1707997904746'
+ParentID = 2
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\av_quality_1707997904746'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:07.0354051+08:00
+UpdatedAt = 2026-08-22T20:50:07.0354051+08:00
+
+[45]
+ID = 45
+Name = 'Microsoft Office'
+ParentID = 33
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Program Files\Microsoft Office'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:14.0761221+08:00
+UpdatedAt = 2026-08-22T20:50:14.0761221+08:00
+
+[46]
+ID = 46
+Name = 'ModifiableWindowsApps'
+ParentID = 33
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'S:\Program Files\ModifiableWindowsApps'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:14.0776251+08:00
+UpdatedAt = 2026-08-22T20:50:14.0776251+08:00
+
+[48]
+ID = 48
+Name = 'DataBase_data'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\DataBase_data'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1483479+08:00
+UpdatedAt = 2026-08-22T20:50:19.1483479+08:00
+
+[49]
+ID = 49
+Name = 'Game'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\Game'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.149377+08:00
+UpdatedAt = 2026-08-22T20:50:19.149377+08:00
+
+[5]
+ID = 5
+Name = 'B:'
+ParentID = 0
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:45:28.0059484+08:00
+UpdatedAt = 2026-08-22T20:45:28.0059484+08:00
+
+[50]
+ID = 50
+Name = 'GameMC_backups'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\GameMC_backups'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1499056+08:00
+UpdatedAt = 2026-08-22T20:50:19.1499056+08:00
+
+[52]
+ID = 52
+Name = 'Share'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\Share'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1514491+08:00
+UpdatedAt = 2026-08-22T20:50:19.1514491+08:00
+
+[53]
+ID = 53
+Name = 'StudyMaterials'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\StudyMaterials'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1519651+08:00
+UpdatedAt = 2026-08-22T20:50:19.1519651+08:00
+
+[55]
+ID = 55
+Name = 'catalog'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\catalog'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1535065+08:00
+UpdatedAt = 2026-08-22T20:50:19.1535065+08:00
+
+[56]
+ID = 56
+Name = '备份'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\备份'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1540188+08:00
+UpdatedAt = 2026-08-22T20:50:19.1540188+08:00
+
+[57]
+ID = 57
+Name = '寝室登记表.xlsx'
+ParentID = 3
+IsDir = false
+Size = 14080
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\寝室登记表.xlsx'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1545271+08:00
+UpdatedAt = 2026-08-22T20:50:19.1545271+08:00
+
+[58]
+ID = 58
+Name = '电脑测试软件'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\电脑测试软件'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.1555594+08:00
+UpdatedAt = 2026-08-22T20:50:19.1555594+08:00
+
+[59]
+ID = 59
+Name = '解压文件中转'
+ParentID = 3
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Y:\解压文件中转'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:19.156072+08:00
+UpdatedAt = 2026-08-22T20:50:19.156072+08:00
+
+[64]
+ID = 64
+Name = 'Administrator'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\Administrator'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6395892+08:00
+UpdatedAt = 2026-08-22T21:01:44.6395892+08:00
+
+[65]
+ID = 65
+Name = 'BaiduNetdiskDownload'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\BaiduNetdiskDownload'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.640098+08:00
+UpdatedAt = 2026-08-22T21:01:44.640098+08:00
+
+[66]
+ID = 66
+Name = 'MapData'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\MapData'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6411694+08:00
+UpdatedAt = 2026-08-22T21:01:44.6411694+08:00
+
+[67]
+ID = 67
+Name = 'NULL'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\NULL'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6422025+08:00
+UpdatedAt = 2026-08-22T21:01:44.6422025+08:00
+
+[68]
+ID = 68
+Name = 'Program Files'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\Program Files'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6427218+08:00
+UpdatedAt = 2026-08-22T21:01:44.6427218+08:00
+
+[69]
+ID = 69
+Name = 'Share'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\Share'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6432335+08:00
+UpdatedAt = 2026-08-22T21:01:44.6432335+08:00
+
+[7]
+ID = 7
+Name = 'Backups'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\Backups'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6795147+08:00
+UpdatedAt = 2026-08-22T20:50:03.6795147+08:00
+
+[71]
+ID = 71
+Name = 'TEMP'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6447634+08:00
+UpdatedAt = 2026-08-22T21:01:44.6447634+08:00
+
+[72]
+ID = 72
+Name = 'WeGameApps'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\WeGameApps'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6452737+08:00
+UpdatedAt = 2026-08-22T21:01:44.6452737+08:00
+
+[73]
+ID = 73
+Name = 'WindowsApps'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\WindowsApps'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6467817+08:00
+UpdatedAt = 2026-08-22T21:01:44.6467817+08:00
+
+[74]
+ID = 74
+Name = 'ceche'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6478302+08:00
+UpdatedAt = 2026-08-22T21:01:44.6478302+08:00
+
+[75]
+ID = 75
+Name = 'download'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\download'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6483546+08:00
+UpdatedAt = 2026-08-22T21:01:44.6483546+08:00
+
+[76]
+ID = 76
+Name = 'suanleme'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\suanleme'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6493886+08:00
+UpdatedAt = 2026-08-22T21:01:44.6493886+08:00
+
+[77]
+ID = 77
+Name = 'wx_Share'
+ParentID = 4
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\wx_Share'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:01:44.6504078+08:00
+UpdatedAt = 2026-08-22T21:01:44.6504078+08:00
+
+[79]
+ID = 79
+Name = 'AppInevotor'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\AppInevotor'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0681539+08:00
+UpdatedAt = 2026-08-22T21:14:44.0681539+08:00
+
+[8]
+ID = 8
+Name = 'BaiduNetdiskDownload'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\BaiduNetdiskDownload'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6800351+08:00
+UpdatedAt = 2026-08-22T20:50:03.6800351+08:00
+
+[80]
+ID = 80
+Name = 'Doubao'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\Doubao'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0698099+08:00
+UpdatedAt = 2026-08-22T21:14:44.0698099+08:00
+
+[81]
+ID = 81
+Name = 'Mods'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\Mods'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0719074+08:00
+UpdatedAt = 2026-08-22T21:14:44.0719074+08:00
+
+[82]
+ID = 82
+Name = 'NasCab'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\NasCab'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0734632+08:00
+UpdatedAt = 2026-08-22T21:14:44.0734632+08:00
+
+[83]
+ID = 83
+Name = 'OSS'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\OSS'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0745391+08:00
+UpdatedAt = 2026-08-22T21:14:44.0745391+08:00
+
+[84]
+ID = 84
+Name = 'cxsd-2025'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\cxsd-2025'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0760797+08:00
+UpdatedAt = 2026-08-22T21:14:44.0760797+08:00
+
+[85]
+ID = 85
+Name = 'download'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\download'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0771123+08:00
+UpdatedAt = 2026-08-22T21:14:44.0771123+08:00
+
+[86]
+ID = 86
+Name = 'exe4j'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\exe4j'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0793791+08:00
+UpdatedAt = 2026-08-22T21:14:44.0793791+08:00
+
+[87]
+ID = 87
+Name = 'h56验证码26年6月'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\h56验证码26年6月'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0804047+08:00
+UpdatedAt = 2026-08-22T21:14:44.0804047+08:00
+
+[88]
+ID = 88
+Name = 'jar'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\jar'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0823351+08:00
+UpdatedAt = 2026-08-22T21:14:44.0823351+08:00
+
+[89]
+ID = 89
+Name = 'jetbra'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\jetbra'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0839546+08:00
+UpdatedAt = 2026-08-22T21:14:44.0839546+08:00
+
+[9]
+ID = 9
+Name = 'EaseUS_VideoDownloader'
+ParentID = 5
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'B:\EaseUS_VideoDownloader'
+TrashOrigin = ''
+OwnerID = 0
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T20:50:03.6805702+08:00
+UpdatedAt = 2026-08-22T20:50:03.6805702+08:00
+
+[90]
+ID = 90
+Name = 'openwrt-23.05.5-x86-64-generic-squashfs-combined.img'
+ParentID = 74
+IsDir = false
+Size = 126353408
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\openwrt-23.05.5-x86-64-generic-squashfs-combined.img'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0862349+08:00
+UpdatedAt = 2026-08-22T21:14:44.0862349+08:00
+
+[91]
+ID = 91
+Name = 'openwrt-23.05.5-x86-64-generic-squashfs-combined.vhdx'
+ParentID = 74
+IsDir = false
+Size = 37748736
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\openwrt-23.05.5-x86-64-generic-squashfs-combined.vhdx'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0877418+08:00
+UpdatedAt = 2026-08-22T21:14:44.0877418+08:00
+
+[92]
+ID = 92
+Name = 'project'
+ParentID = 74
+IsDir = true
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\project'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0889628+08:00
+UpdatedAt = 2026-08-22T21:14:44.0889628+08:00
+
+[93]
+ID = 93
+Name = 'zh.242.152.zip'
+ParentID = 74
+IsDir = false
+Size = 6722204
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\ceche\zh.242.152.zip'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:44.0902662+08:00
+UpdatedAt = 2026-08-22T21:14:44.0902662+08:00
+
+[94]
+ID = 94
+Name = '.ses'
+ParentID = 71
+IsDir = false
+Size = 53
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\.ses'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5116305+08:00
+UpdatedAt = 2026-08-22T21:14:58.5116305+08:00
+
+[95]
+ID = 95
+Name = '071269e0-52d9-401c-a206-3301e3090f64.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\071269e0-52d9-401c-a206-3301e3090f64.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5132889+08:00
+UpdatedAt = 2026-08-22T21:14:58.5132889+08:00
+
+[96]
+ID = 96
+Name = '0a01e595-0995-4c97-9858-f61a2e1d4f2f.png'
+ParentID = 71
+IsDir = false
+Size = 139101
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\0a01e595-0995-4c97-9858-f61a2e1d4f2f.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5154971+08:00
+UpdatedAt = 2026-08-22T21:14:58.5154971+08:00
+
+[97]
+ID = 97
+Name = '0ccfd917-0c20-4d7a-b732-e2ce39fe81da.png'
+ParentID = 71
+IsDir = false
+Size = 1386293
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\0ccfd917-0c20-4d7a-b732-e2ce39fe81da.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5169795+08:00
+UpdatedAt = 2026-08-22T21:14:58.5169795+08:00
+
+[98]
+ID = 98
+Name = '10cce848-3f7a-4e8f-b623-b1ee723fbb2e.tmp'
+ParentID = 71
+IsDir = false
+Size = 0
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\10cce848-3f7a-4e8f-b623-b1ee723fbb2e.tmp'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5185944+08:00
+UpdatedAt = 2026-08-22T21:14:58.5185944+08:00
+
+[99]
+ID = 99
+Name = '1255cac0-94a4-4458-ab3a-56622c5275ef.png'
+ParentID = 71
+IsDir = false
+Size = 147382
+MD5 = ''
+MimeType = ''
+StoragePath = 'Z:\TEMP\1255cac0-94a4-4458-ab3a-56622c5275ef.png'
+TrashOrigin = ''
+OwnerID = 1
+Shared = false
+ShareToken = ''
+ShareExpires = 0001-01-01T00:00:00Z
+SharePwdHash = ''
+DeletedAt = 0001-01-01T00:00:00Z
+CreatedAt = 2026-08-22T21:14:58.5198888+08:00
+UpdatedAt = 2026-08-22T21:14:58.5198888+08:00
