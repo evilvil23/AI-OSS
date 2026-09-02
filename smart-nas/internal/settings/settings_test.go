@@ -3,6 +3,7 @@ package settings
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -164,5 +165,103 @@ func TestUpdateBackupSettings(t *testing.T) {
 	// 失败后原设置不变
 	if g := s.Get(); g.BackupCompressLevel != 6 {
 		t.Fatalf("失败后设置被篡改: %+v", g)
+	}
+}
+
+// TestBackupExcludeRules：全局排除规则默认预设、可更新、持久化（v0.21）
+func TestBackupExcludeRules(t *testing.T) {
+	s := newTestService(t)
+	// 默认应预置常用规则（Windows/Linux/开发项目/NAS 通用）
+	d := s.Get()
+	if len(d.BackupExcludeRules) == 0 {
+		t.Fatal("默认排除规则不应为空")
+	}
+	found := map[string]bool{}
+	for _, r := range d.BackupExcludeRules {
+		found[r] = true
+	}
+	for _, want := range []string{"$RECYCLE.BIN", "node_modules", ".git", "Thumbs.db", "*.tmp", "proc/"} {
+		if !found[want] {
+			t.Fatalf("默认规则缺少 %q，got %v", want, d.BackupExcludeRules)
+		}
+	}
+	// 更新：JSON 数组（[]interface{}）形式 + 自动 trim/去空
+	st, err := s.Update(map[string]interface{}{
+		"backup_exclude_rules": []interface{}{"node_modules", "  *.log  ", "", ".git"},
+	})
+	if err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+	if len(st.BackupExcludeRules) != 3 || st.BackupExcludeRules[0] != "node_modules" || st.BackupExcludeRules[1] != "*.log" {
+		t.Fatalf("更新后规则不符: %+v", st.BackupExcludeRules)
+	}
+	// 持久化读回
+	if got := s.Get(); len(got.BackupExcludeRules) != 3 {
+		t.Fatalf("持久化读回不符: %+v", got.BackupExcludeRules)
+	}
+	// 显式清空（空数组）应被尊重，不会回填预设
+	if _, err := s.Update(map[string]interface{}{"backup_exclude_rules": []interface{}{}}); err != nil {
+		t.Fatalf("清空规则: %v", err)
+	}
+	if g := s.Get(); len(g.BackupExcludeRules) != 0 {
+		t.Fatalf("显式清空后应为空: %+v", g.BackupExcludeRules)
+	}
+	// 非字符串数组被拒绝
+	if _, err := s.Update(map[string]interface{}{"backup_exclude_rules": []interface{}{1, 2}}); err == nil {
+		t.Fatal("非字符串规则应报错")
+	}
+}
+
+// TestExcludeListFileStorage：排除规则独立文件 exclude-list.txt（v0.21.4）
+func TestExcludeListFileStorage(t *testing.T) {
+	dir := t.TempDir()
+	s, err := NewService(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// ① 默认预设应写入 exclude-list.txt，且 settings.toml 不再内联数组
+	data, err := os.ReadFile(filepath.Join(dir, "exclude-list.txt"))
+	if err != nil {
+		t.Fatalf("exclude-list.txt 应生成: %v", err)
+	}
+	if !strings.Contains(string(data), "node_modules") {
+		t.Fatalf("默认预设应写入文件: %s", data)
+	}
+	tomlData, _ := os.ReadFile(filepath.Join(dir, "settings.toml"))
+	if strings.Contains(string(tomlData), "backup_exclude_rules") {
+		t.Fatalf("settings.toml 不应再存储排除规则: %s", tomlData)
+	}
+
+	// ② 更新规则 → 重写文件；重新创建服务 → 从文件读回
+	if _, err := s.Update(map[string]interface{}{
+		"backup_exclude_rules": []interface{}{"node_modules", "# 注释行", "*.log"},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	s2, err := NewService(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := s2.Get().BackupExcludeRules
+	if len(got) != 3 || got[0] != "node_modules" || got[1] != "# 注释行" || got[2] != "*.log" {
+		t.Fatalf("重启后应从 exclude-list.txt 读回规则: %v", got)
+	}
+
+	// ③ 旧版 settings.toml 内联数组 → 首次启动迁移到 exclude-list.txt
+	dir2 := t.TempDir()
+	legacy := "cpu_refresh_seconds = 5\nbackup_exclude_rules = ['*.tmp', 'node_modules']\n"
+	if err := os.WriteFile(filepath.Join(dir2, "settings.toml"), []byte(legacy), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s3, err := NewService(dir2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mig := s3.Get().BackupExcludeRules
+	if len(mig) != 2 || mig[0] != "*.tmp" || mig[1] != "node_modules" {
+		t.Fatalf("旧内联数组应迁移到 exclude-list.txt: %v", mig)
+	}
+	if _, err := os.Stat(filepath.Join(dir2, "exclude-list.txt")); err != nil {
+		t.Fatalf("迁移后应生成 exclude-list.txt: %v", err)
 	}
 }

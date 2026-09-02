@@ -3,7 +3,9 @@ package backup
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -42,9 +44,22 @@ func readAll(t *testing.T, root string) map[string]string {
 	return out
 }
 
-// TestExcluded 排除规则：精确名 / 目录前缀 / 通配符
+// TestLayoutRel 产物内布局路径：从盘符开始、去除冒号（v0.21.6）
+func TestLayoutRel(t *testing.T) {
+	if got := layoutRel(`S:\Code\AI`); got != "S/Code/AI" {
+		t.Fatalf("layoutRel = %q, want S/Code/AI", got)
+	}
+	if got := layoutRel(`S:\`); got != "S" {
+		t.Fatalf("根盘符 layoutRel = %q, want S", got)
+	}
+	if got := layoutRel(`\\srv\share\dir`); got != "srv/share/dir" {
+		t.Fatalf("UNC layoutRel = %q, want srv/share/dir", got)
+	}
+}
+
+// TestExcluded 排除规则：精确名 / 目录前缀 / 通配符 / 注释行
 func TestExcluded(t *testing.T) {
-	patterns := []string{"*.tmp", "node_modules", "logs/", "secret.txt"}
+	patterns := []string{"*.tmp", "node_modules", "logs/", "secret.txt", "# 这是注释行", "#comment/"}
 	cases := []struct {
 		rel  string
 		want bool
@@ -58,6 +73,47 @@ func TestExcluded(t *testing.T) {
 		{"secret.txt", true},
 		{"keep.txt", false},
 		{"sub/keep.txt", false},
+		{"comment", false},        // 注释行不参与匹配
+		{"sub/comment/x", false},  // 注释行不参与匹配
+	}
+	for _, c := range cases {
+		if got := excluded(c.rel, patterns); got != c.want {
+			t.Errorf("excluded(%q) = %v, want %v", c.rel, got, c.want)
+		}
+	}
+}
+
+// TestExcludedInvalidPattern 非法通配符（如 "[a-"）：不 panic、不匹配任何路径，
+// 该规则自身失效但不影响其余合法规则；首次命中时记录告警（v0.21.6）
+func TestExcludedInvalidPattern(t *testing.T) {
+	badPatternLogged = sync.Map{} // 重置告警去重表
+	patterns := []string{"[a-", "*.log", "node_modules"}
+	if excluded("x.txt", patterns) {
+		t.Fatal("非法通配符不应匹配任何路径")
+	}
+	if !excluded("app.log", patterns) {
+		t.Fatal("非法通配符不应影响其余合法规则")
+	}
+	if !excluded("node_modules/pkg/index.js", patterns) {
+		t.Fatal("非法通配符不应影响其余合法规则")
+	}
+}
+
+// TestExcludedCaseFold Windows 下排除规则大小写不敏感（与 NTFS 语义一致）
+func TestExcludedCaseFold(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("仅 Windows 生效")
+	}
+	patterns := []string{"Temp", "$RECYCLE.BIN", "*.TMP"}
+	cases := []struct {
+		rel  string
+		want bool
+	}{
+		{"Users/foo/AppData/Local/Temp", true},
+		{"users/foo/temp", true},
+		{"$Recycle.Bin/file", true},
+		{"photo.Tmp", true},
+		{"tmpfile.txt", false},
 	}
 	for _, c := range cases {
 		if got := excluded(c.rel, patterns); got != c.want {
@@ -77,7 +133,7 @@ func TestFullCopyAndSkip(t *testing.T) {
 		"node_modules/x":  "skip",
 	})
 	skip := &skippedFiles{}
-	n, err := fullCopy(src, filepath.Join(dst, "out"), []string{"*.tmp", "node_modules"}, skip)
+	n, err := fullCopy(src, filepath.Join(dst, "out"), []string{"*.tmp", "node_modules"}, skip, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +169,7 @@ func TestIncrementalCopy(t *testing.T) {
 	writeTree(t, src, map[string]string{"c.txt": "new"})
 	skip := &skippedFiles{}
 	dstDir := filepath.Join(dst, "inc")
-	if _, err := incrementalCopy(src, dstDir, nil, snap, skip); err != nil {
+	if _, err := incrementalCopy(src, dstDir, nil, snap, skip, nil); err != nil {
 		t.Fatal(err)
 	}
 	got := readAll(t, dstDir)
@@ -137,7 +193,7 @@ func TestZipRoundtrip(t *testing.T) {
 	})
 	zipPath := filepath.Join(t.TempDir(), "out.zip")
 	skip := &skippedFiles{}
-	n, err := zipDir(src, zipPath, 6, nil, skip)
+	n, err := zipDir(src, zipPath, 6, nil, skip, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -190,7 +246,7 @@ func TestUnzipSlipGuard(t *testing.T) {
 	writeTree(t, src, map[string]string{"ok.txt": "fine"})
 	zipPath := filepath.Join(t.TempDir(), "a.zip")
 	skip := &skippedFiles{}
-	if _, err := zipDir(src, zipPath, 1, nil, skip); err != nil {
+	if _, err := zipDir(src, zipPath, 1, nil, skip, nil); err != nil {
 		t.Fatal(err)
 	}
 	// 解压到新目录不应有逃逸问题（正常条目全通过）
@@ -227,6 +283,42 @@ func TestParseSize(t *testing.T) {
 		if !c.err && (err != nil || got != c.want) {
 			t.Errorf("parseSize(%q) = %d, %v; want %d", c.in, got, err, c.want)
 		}
+	}
+}
+
+// TestNextMissedRun 启动补跑：计算服务离线期间错过的定时计划（v0.21）
+func TestNextMissedRun(t *testing.T) {
+	now := time.Date(2026, 9, 2, 12, 0, 0, 0, time.Local)
+	hourly := "0 * * * *"
+
+	// ref=10:30 → 11:00、12:00 两个计划点中 11:00 已错过（12:00 未到）
+	m, ok := nextMissedRun(hourly, time.Date(2026, 9, 2, 10, 30, 0, 0, time.Local), now)
+	if !ok || m.Hour() != 11 || m.Minute() != 0 {
+		t.Fatalf("应错过 11:00, got %v ok=%v", m, ok)
+	}
+
+	// ref=11:59 → 下一个计划 12:00 未到，无错过
+	if _, ok := nextMissedRun(hourly, now.Add(-time.Minute), now); ok {
+		t.Fatal("ref=11:59 不应有错过")
+	}
+
+	// ref 晚于 now → 无错过
+	if _, ok := nextMissedRun(hourly, now.Add(time.Hour), now); ok {
+		t.Fatal("ref 晚于 now 应返回 false")
+	}
+
+	// 空表达式 / 非法表达式 → 无错过
+	if _, ok := nextMissedRun("", now.Add(-time.Hour), now); ok {
+		t.Fatal("空表达式应返回 false")
+	}
+	if _, ok := nextMissedRun("not-a-cron", now.Add(-time.Hour), now); ok {
+		t.Fatal("非法表达式应返回 false")
+	}
+
+	// 每分钟表达式：迭代多步后取最近一次错过
+	m, ok = nextMissedRun("* * * * *", now.Add(-90*time.Second), now)
+	if !ok || m.Before(now.Add(-90*time.Second)) || !m.Before(now) {
+		t.Fatalf("每分钟表达式应命中最近一次计划, got %v ok=%v", m, ok)
 	}
 }
 
@@ -450,6 +542,26 @@ func TestServiceFullIncrementalLifecycle(t *testing.T) {
 		t.Fatalf("第二次应为增量且依赖父备份: %+v", h2)
 	}
 
+	// 产物应按任务名称归档：<output_dir>/e2e/backup_*
+	if filepath.Base(filepath.Dir(h1.StorePath)) != "e2e" {
+		t.Fatalf("产物应位于任务名称文件夹下: %s", h1.StorePath)
+	}
+
+	// 增量必须真正增量：第二次产物只含变化的 a.txt，不含未变化的 b.txt（v0.21.4）
+	ents, err := ListBackupContents(h2.StorePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chgFiles := map[string]bool{}
+	for _, e := range ents {
+		if !e.IsDir {
+			chgFiles[e.RelPath] = true
+		}
+	}
+	if len(chgFiles) != 1 || !chgFiles[layoutRel(src)+"/a.txt"] {
+		t.Fatalf("增量产物应仅含变化文件 a.txt, got %v", chgFiles)
+	}
+
 	// 还原增量（应应用整条链：a=v2, b=keep）
 	restoreDir := filepath.Join(base, "restored")
 	res, err := svc.Restore(RestoreRequest{BackupID: h2.ID, TargetDir: restoreDir, Conflict: ConflictOverwrite})
@@ -460,7 +572,7 @@ func TestServiceFullIncrementalLifecycle(t *testing.T) {
 		t.Fatalf("应还原 2 个文件: %+v", res)
 	}
 	got := readAll(t, restoreDir)
-	if got["a.txt"] != "v2" || got["sub/b.txt"] != "keep" {
+	if got[layoutRel(src)+"/a.txt"] != "v2" || got[layoutRel(src)+"/sub/b.txt"] != "keep" {
 		t.Fatalf("链式还原内容不符: %+v", got)
 	}
 
@@ -508,6 +620,136 @@ func TestServiceFullIncrementalLifecycle(t *testing.T) {
 	}
 }
 
+// TestZipIncrementalRealIncrement zip 模式增量：快照携带 zip 条目记录的源文件 mtime，
+// 未变化文件不重拷（v0.21.4 修复前 zip 快照无 mtime，每次增量都会全量重拷）
+func TestZipIncrementalRealIncrement(t *testing.T) {
+	base := t.TempDir()
+	src := filepath.Join(base, "src")
+	out := filepath.Join(base, "out")
+	writeTree(t, src, map[string]string{"a.txt": "v1", "sub/b.txt": "keep"})
+
+	svc, err := NewService(filepath.Join(base, "backup.db"), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer svc.Close()
+
+	task, err := svc.CreateTask(&Task{
+		Name: "zip增量", SourcePaths: []string{src}, OutputDir: out,
+		TriggerMode: TriggerManual, Enabled: true, EnableCompress: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	h1, err := svc.RunBackup(task.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h1.Type != TypeFull {
+		t.Fatalf("第一次应为完整备份: %+v", h1)
+	}
+
+	time.Sleep(20 * time.Millisecond)
+	if err := os.WriteFile(filepath.Join(src, "a.txt"), []byte("v2"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	h2, err := svc.RunBackup(task.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h2.Type != TypeIncremental {
+		t.Fatalf("第二次应为增量: %+v", h2)
+	}
+	ents, err := ListBackupContents(h2.StorePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chg := map[string]bool{}
+	for _, e := range ents {
+		if !e.IsDir {
+			chg[e.RelPath] = true
+		}
+	}
+	if len(chg) != 1 || !chg[layoutRel(src)+"/a.txt"] {
+		t.Fatalf("zip 增量产物应仅含变化文件 a.txt, got %v", chg)
+	}
+	// 任务名称文件夹
+	if filepath.Base(filepath.Dir(h1.StorePath)) != "zip增量" {
+		t.Fatalf("zip 产物应位于任务名称文件夹下: %s", h1.StorePath)
+	}
+}
+
+// TestMultiSourceZipIncremental 多源 zip 增量（v0.21.5）：sidecar 快照键为产物相对路径，
+// remap 后按源比对；增量产物仅含变化文件，链式还原内容完整
+func TestMultiSourceZipIncremental(t *testing.T) {
+	base := t.TempDir()
+	src1 := filepath.Join(base, "src1")
+	src2 := filepath.Join(base, "src2")
+	out := filepath.Join(base, "out")
+	writeTree(t, src1, map[string]string{"a.txt": "v1"})
+	writeTree(t, src2, map[string]string{"b.txt": "keep", "d/c.txt": "keep2"})
+
+	svc, err := NewService(filepath.Join(base, "backup.db"), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer svc.Close()
+	task, err := svc.CreateTask(&Task{
+		Name: "multi", SourcePaths: []string{src1, src2}, OutputDir: out,
+		TriggerMode: TriggerManual, Enabled: true, EnableCompress: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	h1, err := svc.RunBackup(task.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h1.Type != TypeFull {
+		t.Fatalf("第一次应为完整备份: %+v", h1)
+	}
+
+	time.Sleep(20 * time.Millisecond)
+	if err := os.WriteFile(filepath.Join(src1, "a.txt"), []byte("v2"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	h2, err := svc.RunBackup(task.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h2.Type != TypeIncremental {
+		t.Fatalf("第二次应为增量: %+v", h2)
+	}
+
+	// 增量产物应仅含变化的 a.txt（位于 S 盘符布局路径下），未变化的 b/c 不重拷
+	ents, err := ListBackupContents(h2.StorePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chg := map[string]bool{}
+	for _, e := range ents {
+		if !e.IsDir {
+			chg[e.RelPath] = true
+		}
+	}
+	if len(chg) != 1 || !chg[layoutRel(src1)+"/a.txt"] {
+		t.Fatalf("多源 zip 增量产物应仅含 %s, got %v", layoutRel(src1)+"/a.txt", chg)
+	}
+
+	// 链式还原：a=v2，未变化的 b/c 从父备份补齐
+	if _, err := svc.Restore(RestoreRequest{BackupID: h2.ID, TargetDir: filepath.Join(base, "restored"), Conflict: ConflictOverwrite}); err != nil {
+		t.Fatal(err)
+	}
+	got := readAll(t, filepath.Join(base, "restored"))
+	if got[layoutRel(src1)+"/a.txt"] != "v2" ||
+		got[layoutRel(src2)+"/b.txt"] != "keep" ||
+		got[layoutRel(src2)+"/d/c.txt"] != "keep2" {
+		t.Fatalf("链式还原内容不符: %v", got)
+	}
+}
+
 // TestServiceConflictStrategies 还原冲突策略：ask / skip / rename
 func TestServiceConflictStrategies(t *testing.T) {
 	base := t.TempDir()
@@ -529,19 +771,22 @@ func TestServiceConflictStrategies(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// 产物内布局路径（从盘符开始）
+	rel := layoutRel(src) + "/a.txt"
+
 	// 目标目录已有同名不同内容文件
 	dst := filepath.Join(base, "dst")
-	writeTree(t, dst, map[string]string{"a.txt": "local-v"})
+	writeTree(t, dst, map[string]string{rel: "local-v"})
 
 	// ask：返回冲突清单，不做修改
 	res, err := svc.Restore(RestoreRequest{BackupID: h.ID, TargetDir: dst, Conflict: ConflictAsk})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if res.Status != "conflict" || len(res.Conflicts) != 1 || res.Conflicts[0] != "a.txt" {
+	if res.Status != "conflict" || len(res.Conflicts) != 1 || res.Conflicts[0] != rel {
 		t.Fatalf("ask 应返回冲突: %+v", res)
 	}
-	if b, _ := os.ReadFile(filepath.Join(dst, "a.txt")); string(b) != "local-v" {
+	if b, _ := os.ReadFile(filepath.Join(dst, filepath.FromSlash(rel))); string(b) != "local-v" {
 		t.Fatal("ask 模式不应修改文件")
 	}
 	// skip
@@ -554,7 +799,7 @@ func TestServiceConflictStrategies(t *testing.T) {
 	if res3.Restored != 1 {
 		t.Fatalf("overwrite 应覆盖: %+v", res3)
 	}
-	if b, _ := os.ReadFile(filepath.Join(dst, "a.txt")); string(b) != "backup-v" {
+	if b, _ := os.ReadFile(filepath.Join(dst, filepath.FromSlash(rel))); string(b) != "backup-v" {
 		t.Fatal("overwrite 后内容应为备份版本")
 	}
 	// rename
@@ -565,7 +810,7 @@ func TestServiceConflictStrategies(t *testing.T) {
 	if res4.Restored != 1 {
 		t.Fatalf("rename 应还原: %+v", res4)
 	}
-	ents, _ := os.ReadDir(dst)
+	ents, _ := os.ReadDir(filepath.Dir(filepath.Join(dst, filepath.FromSlash(rel))))
 	if len(ents) != 2 {
 		t.Fatalf("rename 应保留旧文件副本: %d", len(ents))
 	}
@@ -612,7 +857,7 @@ func TestServicePartialStatus(t *testing.T) {
 	if h.Status == StatusPartial && !strings.Contains(h.Remark, "locked.txt") {
 		t.Fatalf("partial 备注应包含被跳过文件: %s", h.Remark)
 	}
-	if b, _ := os.ReadFile(filepath.Join(h.StorePath, "ok.txt")); string(b) != "fine" {
+	if b, _ := os.ReadFile(filepath.Join(h.StorePath, filepath.FromSlash(layoutRel(src)), "ok.txt")); string(b) != "fine" {
 		t.Fatal("未占用文件应正常备份")
 	}
 }
@@ -647,10 +892,10 @@ func TestPrecheck(t *testing.T) {
 	}
 	// 失败任务不应留下产物目录
 	if _, err := os.Stat(created.OutputDir); err == nil {
-		// 输出目录可能已创建（MkdirAll 在 precheck 之后），但不应有 backup_* 产物
+		// 输出目录可能已创建（MkdirAll 在 precheck 之后），但不应有产物
 		ents, _ := os.ReadDir(created.OutputDir)
 		for _, e := range ents {
-			if strings.HasPrefix(e.Name(), "backup_") {
+			if strings.HasPrefix(e.Name(), created.Name+"_") {
 				t.Fatal("预检查失败不应产生备份产物")
 			}
 		}

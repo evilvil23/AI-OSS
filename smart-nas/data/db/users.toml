@@ -1,13 +1,13 @@
 [0]
 ID = 0
 Username = 'admin'
-PasswordHash = 'dOHKPNTfICbwQKod88Z+LWtFli8qGzElgi/DzlA1878='
-PasswordSalt = 'QQdOM6CptRHduwc7AOwlNg=='
+PasswordHash = '+ntggGPhR4X5AOBpccuiRRBxcXYa8CBIUm+1CRDivN4='
+PasswordSalt = 'v4YDuYJ6jEu161du5AbAAQ=='
 Role = 'master'
 Permissions = []
 Avatar = ''
 CreatedAt = 2026-08-22T14:00:11.4085885+08:00
-UpdatedAt = 2026-09-02T10:41:05.6127961+08:00
+UpdatedAt = 2026-09-02T15:39:56.6989047+08:00
 
 [1]
 ID = 1

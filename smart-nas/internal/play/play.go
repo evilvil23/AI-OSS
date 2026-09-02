@@ -172,6 +172,36 @@ func (s *Service) Close() {
 // Enabled 播放功能是否启用
 func (s *Service) Enabled() bool { return s.cfg.Enabled }
 
+// ClearCache 清空转封装产物缓存目录与内存探测缓存（v0.21.3）。
+// 正在写入的缓存文件（Windows 下被占用）会跳过并计数，全部成功返回 nil。
+func (s *Service) ClearCache() error {
+	s.mu.Lock()
+	s.probeCache = make(map[string]probeEntry)
+	s.probeOrder = nil
+	s.mu.Unlock()
+	entries, err := os.ReadDir(s.cacheDir)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	failed := 0
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		if err := os.Remove(filepath.Join(s.cacheDir, e.Name())); err != nil {
+			failed++ // 多为正在播放被占用，尽力清理
+		}
+	}
+	if failed > 0 {
+		return fmt.Errorf("%d 个缓存文件被占用，未能清除（正在播放时请稍后再试）", failed)
+	}
+	logger.Info("视频转封装缓存已清空", "dir", s.cacheDir)
+	return nil
+}
+
 // ---- 指标 ----
 
 // ActiveRemux 当前转封装任务数

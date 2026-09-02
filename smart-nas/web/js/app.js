@@ -101,9 +101,12 @@ function b64utf8(s) {
 }
 
 /* ---------- 通用弹窗 ---------- */
-function openGen(title, bodyHtml) {
+function openGen(title, bodyHtml, opts) {
   $("gen-title").textContent = title;
   $("gen-body").innerHTML = bodyHtml;
+  // opts.wide：宽版弹窗（备份任务等表单较复杂的场景）
+  const box = document.querySelector("#gen-modal .modal");
+  if (box) box.classList.toggle("modal-wide", !!(opts && opts.wide));
   $("gen-modal").classList.add("open");
 }
 function closeGen() { $("gen-modal").classList.remove("open"); }
@@ -310,8 +313,8 @@ async function doChangePwd() {
 /* ==================== 设置 ==================== */
 // 设置仅主人可修改：管理员/普通用户为只读查看
 function setSettingsDisabled(disabled) {
-  ["set-cpu", "set-disk", "set-trash", "set-logpath", "set-logsize", "set-logage", "set-bkdir", "set-bklevel"].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
-  ["btn-pick-trash", "btn-pick-log", "btn-pick-bkdir", "btn-save-settings"].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
+  ["set-cpu", "set-disk", "set-trash", "set-logpath", "set-logsize", "set-logage", "set-bkdir", "set-bklevel", "set-bkexcludes"].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
+  ["btn-pick-trash", "btn-pick-log", "btn-pick-bkdir", "btn-save-settings", "btn-clear-cache", "btn-reset-settings"].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
   const tip = $("settings-lock-tip"); if (tip) tip.style.display = disabled ? "" : "none";
 }
 async function loadSettings() {
@@ -329,6 +332,7 @@ async function loadSettings() {
     $("set-logage").value = s.log_max_age || 30;
     $("set-bkdir").value = s.backup_output_dir || "";
     $("set-bklevel").value = String(s.backup_compress_level || 9);
+    $("set-bkexcludes").value = (s.backup_exclude_rules || []).join("\n");
   } catch (e) { /* 忽略 */ } finally { setSettingsDisabled(locked); }
 }
 async function saveSettings() {
@@ -354,19 +358,45 @@ async function saveSettings() {
     if (!isValidWinPath(bkdir)) { toast("备份存放目录不合法：应为盘符开头的绝对路径", "err"); return; }
   }
   const bklevel = parseInt($("set-bklevel").value, 10) || 9;
+  // 全局排除规则：每行一条（可直接复制用作 exclude-list.txt）
+  const bkexcludes = String($("set-bkexcludes").value || "").split("\n")
+    .map(l => l.trim()).filter(l => l !== "");
   try {
     await api("/api/admin/settings", {
       method: "PUT", headers: AUTH(),
       body: JSON.stringify({
         cpu_refresh_seconds: cpu, disk_refresh_seconds: disk, trash_path: trash,
         log_path: logpath, log_max_size: logsize, log_max_age: logage,
-        backup_output_dir: bkdir, backup_compress_level: bklevel
+        backup_output_dir: bkdir, backup_compress_level: bklevel,
+        backup_exclude_rules: bkexcludes
       })
     });
     SYS_REFRESH.cpu = cpu * 1000;
     SYS_REFRESH.disk = disk * 1000;
     if (startSysTimers) startSysTimers();
     toast("设置已保存并生效", "ok");
+  } catch (e) { toast(e.message, "err"); }
+}
+
+// 清除缓存：清空视频转封装产物缓存目录（仅主人）
+async function clearSystemCache() {
+  if (!IS_MASTER()) { toast("只有主人可以清除缓存", "err"); return; }
+  if (!confirm("确定清除视频转封装缓存？\n正在播放的视频不受影响；下次播放 mkv 等格式将重新转封装。")) return;
+  try {
+    const r = await api("/api/admin/cache/clear", { method: "POST", headers: AUTH() });
+    if (r && r.cleared) toast("缓存已清除", "ok");
+    else toast((r && r.message) || "无需清除", "err");
+  } catch (e) { toast(e.message, "err"); }
+}
+
+// 重置设置：全部恢复默认值（仅主人）
+async function resetSystemSettings() {
+  if (!IS_MASTER()) { toast("只有主人可以重置系统设置", "err"); return; }
+  if (!confirm("确定将所有系统设置重置为默认值？\n备份全局排除规则也会恢复为默认预设（含注释分组）。")) return;
+  try {
+    await api("/api/admin/settings/reset", { method: "POST", headers: AUTH() });
+    await loadSettings();
+    toast("设置已重置为默认值", "ok");
   } catch (e) { toast(e.message, "err"); }
 }
 
@@ -1277,11 +1307,112 @@ function renderBackupTasks() {
   el.innerHTML = `<table><thead><tr><th>任务名</th><th>备份源</th><th>存放目录</th><th>状态</th><th>触发</th><th>压缩</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 async function runBackupTask(id) {
+  openBackupProgress(); // 触发备份后自动展开进度面板
   try {
     const h = await api(`/api/backup/tasks/${id}/run`, { method: "POST", headers: AUTH() });
     toast(`备份完成：${STATUS_LABEL[h.status] || h.status}${h.remark ? "（" + h.remark + "）" : ""}`, h.status === "success" ? "ok" : "err");
     if (BACKUP_HISTORY_TASK === id) showBackupHistory(id, $("backup-history-title").textContent.replace("备份历史：", ""));
   } catch (e) { toast(e.message, "err"); }
+}
+
+/* ---------- 任务进度（v0.21）：百分比进度条 + 实时执行日志 ---------- */
+const PROG_PHASE_LABEL = { prescan: "扫描中", copying: "备份中", zipping: "压缩中", hashing: "校验中", finished: "已结束" };
+const PROG_STATUS_LABEL = { running: "运行中", success: "成功", partial: "部分成功", failed: "失败" };
+let BK_PROG_TIMER = null;
+let BK_PROG_OPEN = {};   // taskID -> 详情是否展开
+let BK_PROG_LAST = {};   // taskID -> 上次轮询到的状态（检测运行结束，自动刷新列表/历史）
+
+function openBackupProgress() {
+  const panel = $("backup-progress-panel");
+  if (!panel) return;
+  if (panel.style.display === "none") toggleBackupProgress();
+}
+function toggleBackupProgress() {
+  const panel = $("backup-progress-panel");
+  if (!panel) return;
+  const show = panel.style.display === "none";
+  panel.style.display = show ? "" : "none";
+  const btn = $("btn-bk-progress");
+  if (btn) btn.classList.toggle("primary", show);
+  if (show) {
+    pollBackupProgress();
+    if (!BK_PROG_TIMER) BK_PROG_TIMER = setInterval(pollBackupProgress, 1500);
+  } else if (BK_PROG_TIMER) {
+    clearInterval(BK_PROG_TIMER);
+    BK_PROG_TIMER = null;
+  }
+}
+async function pollBackupProgress() {
+  const panel = $("backup-progress-panel");
+  if (!panel || panel.style.display === "none") return;
+  let list = [];
+  try { list = (await api("/api/backup/progress", { headers: AUTH() })) || []; } catch (e) { return; }
+  // 检测运行状态变化：任务从 running → 结束时，刷新任务列表与已打开的历史
+  let finished = false;
+  list.forEach(p => {
+    const prev = BK_PROG_LAST[p.task_id];
+    if (prev === "running" && p.status !== "running") finished = true;
+    BK_PROG_LAST[p.task_id] = p.status;
+  });
+  if (finished) {
+    loadBackupTasks();
+    if (BACKUP_HISTORY_TASK) showBackupHistory(BACKUP_HISTORY_TASK, $("backup-history-title").textContent.replace("备份历史：", ""));
+  }
+  renderBackupProgress(list);
+}
+function toggleProgDetail(taskID) {
+  BK_PROG_OPEN[taskID] = !BK_PROG_OPEN[taskID];
+  pollBackupProgress();
+}
+function renderBackupProgress(list) {
+  const panel = $("backup-progress-panel");
+  if (!panel) return;
+  if (!list.length) {
+    panel.innerHTML = '<div class="empty" style="margin-bottom:10px">暂无执行记录。点击任务行的「立即备份」或等待定时触发后，这里会实时显示进度与日志</div>';
+    return;
+  }
+  panel.innerHTML = list.map(p => {
+    const running = p.status === "running";
+    const statusTag = running ? `<span class="tag run">● ${PROG_STATUS_LABEL[p.status]}</span>`
+      : `<span class="tag ${p.status === "success" ? "on" : p.status === "failed" ? "off" : ""}">${PROG_STATUS_LABEL[p.status] || esc(p.status)}</span>`;
+    const pctText = p.percent >= 0 ? Math.min(100, p.percent).toFixed(1) + "%" : "…";
+    const barFill = p.percent >= 0
+      ? `<i style="width:${Math.min(100, p.percent)}%"></i>`
+      : `<i></i>`;
+    const bar = running && p.percent < 0 ? `<div class="bk-prog-bar indet">${barFill}</div>` : `<div class="bk-prog-bar">${barFill}</div>`;
+    const phase = PROG_PHASE_LABEL[p.phase] || esc(p.phase);
+    const sizeText = p.total_bytes > 0 ? `${fmtBytes(p.copied_bytes)} / ${fmtBytes(p.total_bytes)}` : fmtBytes(p.copied_bytes);
+    const fileText = p.files_total > 0 ? `${p.files_done} / ${p.files_total} 个文件` : `${p.files_done} 个文件`;
+    const cur = running && p.current_file ? `<div class="bk-prog-meta">当前：${esc(p.current_file)}</div>` : "";
+    const elapsed = fmtDuration(p.started_at, p.ended_at);
+    const skipped = p.skipped > 0 ? `，跳过 ${p.skipped}` : "";
+    const remark = !running && p.remark ? `<div class="bk-prog-meta" title="${esc(p.remark)}">${esc(p.remark.length > 120 ? p.remark.slice(0, 120) + "…" : p.remark)}</div>` : "";
+    const open = !!BK_PROG_OPEN[p.task_id];
+    const detail = open ? `<pre class="bk-prog-log">${esc((p.log || []).join("\n")) || "（暂无日志）"}</pre>` : "";
+    return `
+    <div class="bk-prog-card">
+      <div class="bk-prog-head">
+        <span class="name">${esc(p.task_name)}</span>
+        ${statusTag}
+        <span class="muted">${phase}</span>
+        ${bar}
+        <span class="pct">${running ? pctText : (p.status === "failed" ? "—" : pctText)}</span>
+        <button class="btn" onclick="toggleProgDetail(${p.task_id})">${open ? "收起详情" : "展开详情"}</button>
+      </div>
+      <div class="bk-prog-meta">${sizeText}（${fileText}${skipped}）· 耗时 ${elapsed}</div>
+      ${cur}${remark}${detail}
+    </div>`;
+  }).join("");
+  // 展开的日志自动滚动到底部
+  panel.querySelectorAll(".bk-prog-log").forEach(el => { el.scrollTop = el.scrollHeight; });
+}
+function fmtDuration(start, end) {
+  const ms = Math.max(0, new Date(end || Date.now()).getTime() - new Date(start).getTime());
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return s + " 秒";
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} 分 ${s % 60} 秒`;
+  return `${Math.floor(m / 60)} 时 ${m % 60} 分`;
 }
 async function deleteBackupTask(id, name) {
   if (!confirm(`确定删除任务「${name}」？历史备份记录与产物将保留。`)) return;
@@ -1348,11 +1479,36 @@ async function deleteBackup(backupID) {
     showBackupHistory(BACKUP_HISTORY_TASK, $("backup-history-title").textContent.replace("备份历史：", ""));
   } catch (e) { toast(e.message, "err"); }
 }
-async function restoreBackup(backupID) {
-  const target = prompt("还原到指定目录（留空 = 还原到原位置）：", "");
-  if (target === null) return;
-  const conflict = prompt("同名文件处理方式：ask=逐个询问 / overwrite=覆盖 / skip=跳过 / rename=重命名旧文件", "ask");
-  if (conflict === null) return;
+// 还原弹窗：目录选择器 + 冲突策略（替代原生 prompt）
+function restoreBackup(backupID) {
+  const folderSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+  openGen(`还原备份 #${backupID}`, `
+    <div class="form-row"><label>还原到指定目录（留空 = 还原到原位置）</label>
+      <input type="text" id="rst-target" placeholder="如 B:\\Restore">
+      <button class="btn icon-btn" onclick="pickRestoreDir()" style="flex:none" title="选择目录" aria-label="选择目录">${folderSvg}</button>
+    </div>
+    <div class="form-row"><label>同名文件处理</label>
+      <select id="rst-conflict">
+        <option value="ask" selected>逐个询问</option>
+        <option value="overwrite">覆盖</option>
+        <option value="skip">跳过</option>
+        <option value="rename">重命名旧文件</option>
+      </select>
+    </div>
+    <div class="form-row"><label></label>
+      <button class="btn" onclick="doRestore(${backupID})">确定</button>
+      <button class="btn" onclick="closeGen()">取消</button>
+    </div>`);
+}
+// 还原目标目录选择（内置目录浏览器）
+async function pickRestoreDir() {
+  const p = await pickNasFolder("选择还原目标目录");
+  if (p) $("rst-target").value = p;
+}
+async function doRestore(backupID) {
+  const target = String($("rst-target").value || "").trim();
+  const conflict = $("rst-conflict").value;
+  closeGen();
   try {
     const res = await api(`/api/backup/backups/${backupID}/restore`, {
       method: "POST", headers: AUTH(),
@@ -1385,9 +1541,9 @@ async function showBackupTaskModal(taskID) {
   const triggerOptions = ["manual", "timer", "interval", "realtime"].map(m =>
     `<option value="${m}" ${t && t.trigger_mode === m ? "selected" : ""}>${TRIGGER_LABEL[m]}</option>`).join("");
   openGen(t ? "编辑备份任务" : "创建备份任务", `
-    <div class="form-row"><label>任务名称</label><input id="bk-name" value="${t ? esc(t.task_name) : ""}" placeholder="如：照片每日备份"></div>
+    <div class="form-row"><label>任务名称</label><input type="text" id="bk-name" value="${t ? esc(t.task_name) : ""}"></div>
     <div class="form-row"><label>备份类型</label>
-      <select id="bk-btype" style="max-width:240px!important">
+      <select id="bk-btype">
         <option value="auto" ${!t || t.backup_type !== "full" ? "selected" : ""}>增量（首次完整，后续仅备份变化）</option>
         <option value="full" ${t && t.backup_type === "full" ? "selected" : ""}>完全（每次全量备份）</option>
       </select>
@@ -1397,7 +1553,7 @@ async function showBackupTaskModal(taskID) {
         <div id="bk-src-list" class="bk-list"></div>
         <div class="bk-add-row">
           <button class="btn" onclick="bkPickSource()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>添加目录</button>
-          <input id="bk-src-input" placeholder="或输入完整路径，如 S:\\photo" onkeydown="if(event.key==='Enter'){bkAddSource();return false;}">
+          <input type="text" id="bk-src-input" placeholder="或输入完整路径，如 S:\\photo" onkeydown="if(event.key==='Enter'){bkAddSource();return false;}">
           <button class="btn" onclick="bkAddSource()">添加</button>
         </div>
       </div>
@@ -1406,36 +1562,37 @@ async function showBackupTaskModal(taskID) {
       <div style="flex:1;min-width:0">
         <div id="bk-exc-list" class="bk-list"></div>
         <div class="bk-add-row">
-          <input id="bk-exc-input" placeholder="文件名 / 目录名 / 通配符，如 *.tmp">
+          <input type="text" id="bk-exc-input" placeholder="文件名 / 目录名 / 通配符，如 *.tmp">
           <button class="btn" onclick="bkAddExclude()">添加规则</button>
+          <button class="btn" onclick="bkClearExcludes()" title="移除全部排除规则（含预填的全局规则）；保存后该任务将不使用任何排除规则">清空</button>
         </div>
       </div>
     </div>
-    <div class="form-row"><label>存放目录</label><input id="bk-outdir" value="${t ? esc(t.output_dir) : ""}" placeholder="新建任务默认使用全局设置">
+    <div class="form-row"><label>存放目录</label><input type="text" id="bk-outdir" value="${t ? esc(t.output_dir) : ""}" placeholder="新建任务默认使用全局设置">
       <button class="btn icon-btn" onclick="bkPickOutput()" style="flex:none" title="选择存放目录" aria-label="选择存放目录"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
     </div>
     <div class="form-row"><label>压缩</label>
       <label class="chk"><input type="checkbox" id="bk-zip" ${!t || t.enable_compress ? "checked" : ""}> 压缩为 zip（无损）</label>
-      <select id="bk-level" style="width:150px!important;flex:none!important" title="压缩级别"></select>
+      <select id="bk-level" class="bk-w-sm" title="压缩级别"></select>
     </div>
     <div class="form-row"><label>触发方式</label><select id="bk-trigger" onchange="bkTriggerChanged()">${triggerOptions}</select></div>
-    <div class="form-row" id="bk-cron-row" style="display:none"><label>cron 表达式</label><input id="bk-cron" value="${t ? esc(t.cron_expr) : ""}" placeholder="分 时 日 月 周，如 0 4 * * *"></div>
+    <div class="form-row" id="bk-cron-row" style="display:none"><label>cron 表达式</label><input type="text" id="bk-cron" value="${t ? esc(t.cron_expr) : ""}" placeholder="分 时 日 月 周，如 0 4 * * *"></div>
     <div class="form-row" id="bk-simple-row" style="display:none"><label>简单周期</label>
       <select id="bk-unit"><option value="day">每日</option><option value="week">每周</option><option value="month">每月</option></select>
       <select id="bk-weekday" style="display:none"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="7">周日</option></select>
-      <input type="number" id="bk-every" min="1" value="1" style="width:60px!important;flex:none!important" title="间隔数 / 几号">
-      <input type="number" id="bk-hour" min="0" max="23" value="4" style="width:60px!important;flex:none!important" title="时">
-      <input type="number" id="bk-minute" min="0" max="59" value="0" style="width:60px!important;flex:none!important" title="分">
+      <input type="number" id="bk-every" min="1" value="1" class="bk-w-num" title="间隔数 / 几号">
+      <input type="number" id="bk-hour" min="0" max="23" value="4" class="bk-w-num" title="时">
+      <input type="number" id="bk-minute" min="0" max="59" value="0" class="bk-w-num" title="分">
     </div>
     <div class="form-row" id="bk-interval-row" style="display:none"><label>间隔（小时）</label><input type="number" id="bk-interval" min="1" value="${t && t.trigger_mode === "interval" ? esc(t.cron_expr) : 6}"></div>
     <div class="form-row" id="bk-usb-row" style="display:none"><label>绑定 USB 设备</label>
       <select id="bk-usb"><option value="">（加载中…）</option></select>
       <span class="set-desc">仅绑定的设备插入才触发备份；陌生 U 盘不会触发</span>
     </div>
-    <div class="form-row"><label>数量配额</label><input type="number" id="bk-maxcount" min="0" value="${t ? t.max_backup_count : 0}" style="width:90px!important;flex:none!important" placeholder="0"><span class="set-desc">最多保留几份备份（0 = 不限制；冻结备份不计数）</span></div>
+    <div class="form-row"><label>数量配额</label><input type="number" id="bk-maxcount" min="0" value="${t ? t.max_backup_count : 0}" class="bk-w-unit" placeholder="0"><span class="set-desc">最多保留几份备份（0 = 不限制；冻结备份不计数）</span></div>
     <div class="form-row"><label>大小配额</label>
-      <input type="number" id="bk-maxsize-num" min="0" step="any" value="${t && t.max_backup_size ? esc(parseSizeNum(t.max_backup_size)) : ""}" style="width:110px!important;flex:none!important" placeholder="0">
-      <select id="bk-maxsize-unit" style="width:90px!important;flex:none!important">
+      <input type="number" id="bk-maxsize-num" min="0" step="any" value="${t && t.max_backup_size ? esc(parseSizeNum(t.max_backup_size)) : ""}" class="bk-w-unit" placeholder="0">
+      <select id="bk-maxsize-unit" class="bk-w-unit">
         ${BK_SIZE_UNITS.map(u => `<option value="${u}">${u}</option>`).join("")}
       </select>
       <span class="set-desc">备份总大小上限（0/留空 = 不限制；冻结备份不占配额）</span>
@@ -1443,11 +1600,16 @@ async function showBackupTaskModal(taskID) {
     <div class="form-row"><label>邮件通知</label>
       <label class="chk"><input type="checkbox" id="bk-email" onchange="bkTriggerChanged()" ${t && t.enable_email ? "checked" : ""}> 任务结束后发送结果邮件</label>
     </div>
-    <div class="form-row" id="bk-smtp-row" style="display:none"><label>SMTP 配置</label><input id="bk-smtp" value="${t ? esc(t.smtp_config) : ""}" placeholder='{"host":"smtp.qq.com","port":587,"username":"u","password":"p","from":"u@qq.com","to":["me@qq.com"]}'></div>
+    <div class="form-row" id="bk-smtp-row" style="display:none"><label>SMTP 配置</label><input type="text" id="bk-smtp" value="${t ? esc(t.smtp_config) : ""}" placeholder='{"host":"smtp.qq.com","port":587,"username":"u","password":"p","from":"u@qq.com","to":["me@qq.com"]}'></div>
     <div class="m-actions">
       <button class="primary save-btn" onclick="saveBackupTask(${taskID || 0})">保存任务</button>
     </div>
-  `);
+  `, { wide: true });
+  // 编辑时恢复多源/多规则（须在下方异步预填之前执行，避免覆盖新建任务的全局规则预填）
+  BK_SOURCES = t ? (t.source_paths || []).slice() : [];
+  BK_EXCLUDES = t ? (t.exclude_patterns || []).slice() : [];
+  renderBkSources();
+  renderBkExcludes();
   // 压缩级别下拉（默认取全局设置）
   try {
     const dfl = await api("/api/backup/defaults", { headers: AUTH() });
@@ -1455,6 +1617,11 @@ async function showBackupTaskModal(taskID) {
     $("bk-level").innerHTML = [9,8,7,6,5,4,3,2,1].map(n =>
       `<option value="${n}" ${n === lv ? "selected" : ""}>级别 ${n}${n === 9 ? "（最高）" : ""}</option>`).join("");
     if (!t && !$("bk-outdir").value && dfl.output_dir) $("bk-outdir").value = dfl.output_dir;
+    // 新建任务：排除规则默认预填全局规则（设置页可配，任务内可增删/清空）
+    if (!t && !BK_EXCLUDES.length && Array.isArray(dfl.exclude_rules) && dfl.exclude_rules.length) {
+      BK_EXCLUDES = dfl.exclude_rules.slice();
+      renderBkExcludes();
+    }
   } catch (e) {
     $("bk-level").innerHTML = [9,8,7,6,5,4,3,2,1].map(n => `<option value="${n}">级别 ${n}</option>`).join("");
   }
@@ -1463,11 +1630,6 @@ async function showBackupTaskModal(taskID) {
     const m = String(t.max_backup_size).toUpperCase().match(/^([0-9.]+)\s*(MB|GB|TB|KB|B)?$/);
     if (m && m[2]) $("bk-maxsize-unit").value = m[2];
   }
-  // 编辑时恢复多源/多规则
-  BK_SOURCES = t ? (t.source_paths || []).slice() : [];
-  BK_EXCLUDES = t ? (t.exclude_patterns || []).slice() : [];
-  renderBkSources();
-  renderBkExcludes();
   bkTriggerChanged();
   loadUSBDevices(t ? t.usb_device_id : "");
 }
@@ -1492,17 +1654,39 @@ function renderBkExcludes() {
 }
 async function bkPickSource() {
   const p = await pickNasFolder("选择备份源目录");
-  if (p) { BK_SOURCES.push(p); renderBkSources(); }
+  if (p) addBkSourcePath(normalizeWinPath(p));
 }
 function bkAddSource() {
   const raw = String($("bk-src-input").value || "").trim();
   if (!raw) return;
   const norm = normalizeWinPath(raw);
   if (!isValidWinPath(norm)) { toast("路径不合法（应为盘符开头的绝对路径）：" + raw, "err"); return; }
-  if (BK_SOURCES.includes(norm)) { toast("该备份源已添加", "err"); return; }
+  if (addBkSourcePath(norm)) $("bk-src-input").value = "";
+}
+// addBkSourcePath 添加备份源并处理嵌套包含：
+//   与现有源相同 / 被现有源包含 → 拒绝添加；
+//   包含现有源（如添加 S:\Code 而已有 S:\Code\C#）→ 自动移除被包含的子目录源
+function addBkSourcePath(norm) {
+  const key = s => s.toLowerCase().replace(/[\\/]+$/, "");
+  const n = key(norm);
+  for (const p of BK_SOURCES) {
+    const q = key(p);
+    if (n === q) { toast("该备份源已添加", "err"); return false; }
+    if (n.startsWith(q + "\\") || n.startsWith(q + "/")) {
+      toast(`已包含在现有备份源 ${p} 中，无需重复添加`, "err");
+      return false;
+    }
+  }
+  const removed = [];
+  BK_SOURCES = BK_SOURCES.filter(p => {
+    const q = key(p);
+    if (q.startsWith(n + "\\") || q.startsWith(n + "/")) { removed.push(p); return false; }
+    return true;
+  });
   BK_SOURCES.push(norm);
-  $("bk-src-input").value = "";
   renderBkSources();
+  if (removed.length) toast(`已移除被包含的备份源：${removed.join("、")}`, "ok");
+  return true;
 }
 function bkRemoveSource(i) { BK_SOURCES.splice(i, 1); renderBkSources(); }
 function bkAddExclude() {
@@ -1514,6 +1698,13 @@ function bkAddExclude() {
   renderBkExcludes();
 }
 function bkRemoveExclude(i) { BK_EXCLUDES.splice(i, 1); renderBkExcludes(); }
+// bkClearExcludes 清空全部排除规则（含新建任务预填的全局规则）；保存后该任务不使用任何排除规则
+function bkClearExcludes() {
+  if (!BK_EXCLUDES.length) return;
+  BK_EXCLUDES = [];
+  renderBkExcludes();
+  toast("排除规则已清空：该任务将不再排除任何文件", "ok");
+}
 async function bkPickOutput() {
   const p = await pickNasFolder("选择备份包存放目录");
   if (p) $("bk-outdir").value = p;

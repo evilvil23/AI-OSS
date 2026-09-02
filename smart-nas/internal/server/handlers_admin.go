@@ -22,6 +22,8 @@ func (s *Server) registerAdminRoutes(admin *gin.RouterGroup) {
 	admin.DELETE("/users/:id", s.adminDeleteUser)
 	admin.GET("/settings", s.adminGetSettings)
 	admin.PUT("/settings", s.adminSaveSettings)
+	admin.POST("/settings/reset", s.adminResetSettings)
+	admin.POST("/cache/clear", s.adminClearCache)
 	admin.GET("/system/status", s.adminSystemStatus)
 	admin.GET("/metrics", s.adminMetrics)
 }
@@ -243,6 +245,43 @@ func (s *Server) adminSaveSettings(c *gin.Context) {
 		s.applyLogSettings(st)
 	}
 	c.JSON(http.StatusOK, types.OK(st))
+}
+
+// adminResetSettings POST /api/admin/settings/reset 重置为默认设置（仅主人）
+func (s *Server) adminResetSettings(c *gin.Context) {
+	operator := s.currentUser(c)
+	if operator.Role != user.RoleMaster {
+		c.JSON(http.StatusForbidden, types.Fail(types.CodeForbidden, "只有主人可以重置系统设置"))
+		return
+	}
+	st, err := s.deps.Settings.Reset()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, types.Fail(types.CodeServerError, err.Error()))
+		return
+	}
+	// 重置后同步生效项：回收站位置、日志器
+	s.deps.Storage.SetTrashPath(st.TrashPath)
+	s.applyLogSettings(st)
+	logger.Info("系统设置已重置为默认值", "user", operator.Username)
+	c.JSON(http.StatusOK, types.OK(st))
+}
+
+// adminClearCache POST /api/admin/cache/clear 清空视频转封装产物缓存（仅主人）
+func (s *Server) adminClearCache(c *gin.Context) {
+	operator := s.currentUser(c)
+	if operator.Role != user.RoleMaster {
+		c.JSON(http.StatusForbidden, types.Fail(types.CodeForbidden, "只有主人可以清除缓存"))
+		return
+	}
+	if s.deps.Play == nil {
+		c.JSON(http.StatusOK, types.OK(map[string]interface{}{"cleared": false, "message": "播放功能未启用，无需清除"}))
+		return
+	}
+	if err := s.deps.Play.ClearCache(); err != nil {
+		c.JSON(http.StatusBadRequest, types.Fail(types.CodeBadRequest, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, types.OK(map[string]interface{}{"cleared": true}))
 }
 
 // applyLogSettings 按当前系统设置重配日志器（日志级别沿用 config.toml）

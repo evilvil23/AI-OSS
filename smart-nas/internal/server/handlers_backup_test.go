@@ -140,9 +140,18 @@ func TestBackupTaskLifecycle(t *testing.T) {
 	if restRes.Data.Restored != 1 {
 		t.Fatalf("应还原 1 个文件: %+v", restRes.Data)
 	}
-	b, err := os.ReadFile(filepath.Join(target, "a.txt"))
-	if err != nil || string(b) != "hello-backup" {
-		t.Fatalf("还原内容不符: %s %v", string(b), err)
+	// 还原内容位于源路径布局下（从盘符开始，如 Z/TEMP/.../src/a.txt），递归查找 a.txt
+	var gotB []byte
+	if werr := filepath.WalkDir(target, func(p string, d os.DirEntry, err error) error {
+		if err == nil && !d.IsDir() && d.Name() == "a.txt" {
+			gotB, _ = os.ReadFile(p)
+		}
+		return nil
+	}); werr != nil {
+		t.Fatal(werr)
+	}
+	if string(gotB) != "hello-backup" {
+		t.Fatalf("还原内容不符: %s", string(gotB))
 	}
 
 	// 6. 冻结 / 解冻
@@ -200,6 +209,65 @@ func TestBackupUSBDevices(t *testing.T) {
 	}
 }
 
+// TestBackupProgressAfterRun 运行任务后进度接口返回完成态（百分比 100 + 执行日志）；
+// 未运行任何任务时返回 [] 而非 null
+func TestBackupProgressAfterRun(t *testing.T) {
+	s, src, dst := newBackupServer(t)
+	master := login(t, s, "admin", "admin123")
+
+	// 空进度（未运行任何任务）：data 必须是 []
+	wEmpty := doJSON(t, s, http.MethodGet, "/api/backup/progress", master, "")
+	if wEmpty.Code != http.StatusOK {
+		t.Fatalf("空进度应 200, got %d", wEmpty.Code)
+	}
+	if got := wEmpty.Body.String(); !strings.Contains(got, `"data":[]`) || strings.Contains(got, `"data":null`) {
+		t.Fatalf("空进度应编码为 []，got: %s", got)
+	}
+
+	// 创建并触发一次备份
+	body := `{"task_name":"prog","source_paths":[` + jsonPath(src) + `],"output_dir":` + jsonPath(dst) + `,"enable_compress":true,"compress_level":6,"trigger_mode":"manual"}`
+	w := doJSON(t, s, http.MethodPost, "/api/backup/tasks", master, body)
+	if w.Code != http.StatusOK {
+		t.Fatalf("创建任务失败: %d %s", w.Code, w.Body.String())
+	}
+	var created struct {
+		Data backup.Task `json:"data"`
+	}
+	_ = json.Unmarshal(w.Body.Bytes(), &created)
+	wRun := doJSON(t, s, http.MethodPost, `/api/backup/tasks/`+uitoa(uint(created.Data.ID))+`/run`, master, "")
+	if wRun.Code != http.StatusOK {
+		t.Fatalf("触发备份失败: %d %s", wRun.Code, wRun.Body.String())
+	}
+
+	// 进度：完成态 + 百分比 100 + 保留日志 + 预扫描总量
+	wProg := doJSON(t, s, http.MethodGet, "/api/backup/progress", master, "")
+	if wProg.Code != http.StatusOK {
+		t.Fatalf("进度接口失败: %d", wProg.Code)
+	}
+	var progRes struct {
+		Data []backup.Progress `json:"data"`
+	}
+	if err := json.Unmarshal(wProg.Body.Bytes(), &progRes); err != nil {
+		t.Fatal(err)
+	}
+	if len(progRes.Data) != 1 {
+		t.Fatalf("应有 1 条进度记录, got %d", len(progRes.Data))
+	}
+	p := progRes.Data[0]
+	if p.TaskID != created.Data.ID || p.Status != backup.StatusSuccess {
+		t.Fatalf("进度状态不符: %+v", p)
+	}
+	if p.Percent != 100 || p.Phase != backup.PhaseFinished {
+		t.Fatalf("完成态进度应为 100/finished: %+v", p)
+	}
+	if p.TotalBytes <= 0 || p.FilesTotal <= 0 {
+		t.Fatalf("预扫描总量应 > 0: %+v", p)
+	}
+	if len(p.Log) == 0 {
+		t.Fatal("完成态应保留执行日志")
+	}
+}
+
 // TestBackupCreateAppliesGlobalDefaults 新建任务：目录/压缩级别留空时套用全局默认；
 // backup_type=full 被保存；触发后为完全备份
 func TestBackupCreateAppliesGlobalDefaults(t *testing.T) {
@@ -209,7 +277,7 @@ func TestBackupCreateAppliesGlobalDefaults(t *testing.T) {
 	// 全局默认目录使用临时盘符路径（如 Z:\TEMP\...），避免真实盘副作用
 	globalDir := t.TempDir()
 
-	// 配置全局默认：存放目录 + 压缩级别 9（默认）
+	// 配置全局默认：存放目录 + 压缩级别 9（显式指定，验证可套用）
 	wSet := doJSON(t, s, http.MethodPut, "/api/admin/settings", master,
 		`{"backup_output_dir":`+jsonPath(globalDir)+`,"backup_compress_level":9}`)
 	if wSet.Code != http.StatusOK {
@@ -255,6 +323,19 @@ func TestBackupCreateAppliesGlobalDefaults(t *testing.T) {
 	}
 	if created.Data.BackupType != "full" {
 		t.Fatalf("backup_type 应为 full: %+v", created.Data)
+	}
+	// 请求未携带 exclude_patterns → 套用全局排除规则（settings 默认预设）
+	if len(created.Data.ExcludePatterns) == 0 {
+		t.Fatalf("未携带排除规则时应套用全局默认: %+v", created.Data)
+	}
+	hasGit := false
+	for _, p := range created.Data.ExcludePatterns {
+		if p == ".git" {
+			hasGit = true
+		}
+	}
+	if !hasGit {
+		t.Fatalf("全局排除规则应包含 .git: %v", created.Data.ExcludePatterns)
 	}
 
 	// 触发一次备份（应为 full 类型：任务显式选择完全备份）

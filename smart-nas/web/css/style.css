@@ -71,7 +71,7 @@ tr:hover td { background: var(--hover); }
 
 .form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .form-row label { width: 150px; color: var(--muted); font-size: 13px; flex: none; }
-.form-row input[type=text], .form-row input[type=password], .form-row input[type=number], .form-row select { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 13px; }
+.form-row input[type=text], .form-row input[type=password], .form-row input[type=number], .form-row input:not([type]), .form-row select { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 13px; }
 .set-desc { font-size: 12px; color: var(--muted); }
 /* 隐藏原生数字输入增减按钮，贴合整体 UI */
 input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -98,25 +98,29 @@ td.chk input, th.chk input { cursor: pointer; accent-color: var(--accent); }
 .fpk-item { padding: 9px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .fpk-item:hover { background: var(--hover); }
 
-/* 弹窗。通用弹窗（含目录选择器）z-index 更高：在权限等业务弹窗之上打开时可正常操作 */
+/* 弹窗。通用弹窗 z-index 更高：在权限等业务弹窗之上打开时可正常操作；
+ * 目录选择器 fpk-modal 再高一级：可在任务弹窗之上叠加而不关闭底下的表单 */
 .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 50; }
 #gen-modal.modal-mask { z-index: 70; }
+#fpk-modal.modal-mask { z-index: 85; }
 /* 顶栏用户名：可点击查看个人信息 */
 .link-btn { background: none; border: none; color: var(--text); cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 6px; }
 .link-btn:hover { color: var(--accent); background: var(--hover); }
 .modal-mask.open { display: flex; }
 .modal { background: var(--card); border: 1px solid var(--line); border-radius: 12px; width: 560px; max-width: 92vw; max-height: 80vh; display: flex; flex-direction: column; }
+/* 宽版弹窗：备份任务等表单较复杂的场景 */
+.modal.modal-wide { width: 820px; }
 .modal .m-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 15px; font-weight: 600; }
 .modal .m-head button { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
 .modal .m-body { padding: 12px 18px 18px; overflow-y: auto; }
 /* 弹窗内输入框统一项目风格（与 .form-row 一致：深色底、圆角、细边框） */
-.modal .m-body input[type=text], .modal .m-body input[type=password], .modal .m-body input[type=number], .modal .m-body select {
+.modal .m-body input[type=text], .modal .m-body input[type=password], .modal .m-body input[type=number], .modal .m-body input:not([type]), .modal .m-body select {
   flex: 1; min-width: 0; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
   background: var(--bg); color: var(--text); font-size: 13px; outline: none;
 }
 .modal .m-body input:focus, .modal .m-body select:focus { border-color: var(--accent); }
 .modal .m-body input::placeholder { color: var(--muted); opacity: .7; }
-.modal .m-body .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); cursor: pointer; }
+.modal .m-body .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); cursor: pointer; white-space: nowrap; }
 .modal .m-body .chk input { accent-color: var(--accent); }
 /* 备份任务弹窗：多源/规则 chip 列表与添加行 */
 .bk-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -126,9 +130,42 @@ td.chk input, th.chk input { cursor: pointer; accent-color: var(--accent); }
 .bk-chip a { color: var(--muted); cursor: pointer; flex: none; font-size: 12px; }
 .bk-chip a:hover { color: var(--err); }
 .bk-add-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.bk-add-row input[type=text] { flex: 1; min-width: 140px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 12px; outline: none; }
-.bk-add-row input[type=text]:focus { border-color: var(--accent); }
+.bk-add-row input[type=text], .bk-add-row input:not([type]) { flex: 1; min-width: 160px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 13px; outline: none; }
+.bk-add-row input[type=text]:focus, .bk-add-row input:not([type]):focus { border-color: var(--accent); }
+.bk-add-row input[type=text]::placeholder, .bk-add-row input:not([type])::placeholder { color: var(--muted); opacity: .7; }
 .bk-add-row .btn { flex: none; }
+/* 备份任务进度面板（v0.21）：百分比进度条 + 实时日志 */
+.bk-prog-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--bg); }
+.bk-prog-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bk-prog-head .name { font-weight: 600; font-size: 14px; }
+.bk-prog-head .pct { font-size: 13px; color: var(--text); min-width: 52px; text-align: right; }
+.bk-prog-head button { margin-left: auto; }
+.bk-prog-bar { position: relative; flex: 1; min-width: 140px; height: 10px; border-radius: 6px; background: var(--card); border: 1px solid var(--line); overflow: hidden; }
+.bk-prog-bar i { position: absolute; top: 0; bottom: 0; left: 0; width: 0; background: var(--accent); border-radius: 6px; transition: width .6s ease; }
+.bk-prog-bar.indet i { width: 40%; animation: bkprog 1.2s ease-in-out infinite; }
+@keyframes bkprog { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.bk-prog-meta { font-size: 12px; color: var(--muted); margin-top: 6px; word-break: break-all; }
+.bk-prog-log { margin-top: 8px; max-height: 240px; overflow-y: auto; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.55; white-space: pre-wrap; word-break: break-all; color: var(--muted); }
+.tag.run { color: var(--accent); border-color: var(--accent); }
+/* 设置页多行文本域（备份全局排除规则）：独占一行，说明文字换行显示 */
+.form-row-top { flex-wrap: wrap; }
+.form-row-top > label { padding-top: 8px; }
+.form-row-top .set-textarea, .form-row-top .set-desc { flex: 1 1 100%; }
+.set-textarea { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.6; font-family: Consolas, "Courier New", monospace; outline: none; resize: vertical; min-height: 150px; }
+.set-textarea:focus { border-color: var(--accent); }
+.set-textarea::placeholder { color: var(--muted); opacity: .7; }
+.set-textarea:disabled { opacity: .55; cursor: not-allowed; }
+/* 全局滚动条：深色细条，与整体 UI 一致（webkit / Firefox） */
+* { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 6px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--muted); }
+::-webkit-scrollbar-corner { background: transparent; }
+/* 备份任务弹窗：固定宽度的小控件（级别下拉、数量/单位、时间数字） */
+.bk-w-sm { flex: none !important; width: 140px; }
+.bk-w-num { flex: none !important; width: 70px; }
+.bk-w-unit { flex: none !important; width: 90px; }
 
 /* Toast */
 #toast-box { position: fixed; top: 18px; right: 18px; z-index: 99; display: flex; flex-direction: column; gap: 8px; }

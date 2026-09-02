@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>智能家庭 NAS</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0.21.6">
 <link rel="stylesheet" href="js/video-js-8.24.0/video-js.min.css">
 </head>
 <body>
@@ -94,8 +94,10 @@
         <div class="toolbar">
           <button class="btn" onclick="loadBackupTasks()">刷新</button>
           <button class="btn primary" id="btn-new-task" style="display:none" onclick="showBackupTaskModal()">创建备份任务</button>
+          <button class="btn" id="btn-bk-progress" onclick="toggleBackupProgress()">任务进度</button>
         </div>
         <div class="file-hint">增量备份依赖父备份链：还原前会校验整条链完整性，链损坏将拒绝还原；冻结的备份不参与配额统计，且自动清理绝不删除冻结备份</div>
+        <div id="backup-progress-panel" style="display:none"></div>
         <div id="backup-tasks-table"></div>
       </div>
       <div class="panel" id="backup-history-panel" style="display:none">
@@ -205,11 +207,19 @@
             </select>
             <span class="set-desc">zip 为无损压缩，级别越高体积越小但耗时越长；新建任务默认使用该级别（任务内可单独调整）</span>
           </div>
+          <div class="form-row form-row-top">
+            <label>备份全局排除规则</label>
+            <textarea id="set-bkexcludes" class="set-textarea" rows="10" spellcheck="false"
+              placeholder="每行一条规则，支持文件名 / 目录名 / 通配符；「#」开头为注释行"></textarea>
+            <span class="set-desc">新建任务时默认套用（任务内可增删/清空）。规则按文件（目录）名匹配、任意层级生效；带「/」后缀的仅匹配源根目录顶层。独立保存于数据目录 exclude-list.txt（每行一条，支持 # 注释），可直接复制用作 exclude-list.txt</span>
+          </div>
           <div class="m-actions">
             <button class="primary save-btn" id="btn-save-settings" onclick="saveSettings()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               保存设置
             </button>
+            <button class="btn" id="btn-clear-cache" onclick="clearSystemCache()" title="清空视频转封装产物缓存目录（data/cache/video）">清除缓存</button>
+            <button class="btn" id="btn-reset-settings" onclick="resetSystemSettings()" title="所有设置恢复默认值，包括备份全局排除规则">重置设置</button>
           </div>
         </div>
       </div>
@@ -299,6 +309,6 @@
 </div>
 
 <script src="js/video-js-8.24.0/video.min.js"></script>
-<script src="js/app.js"></script>
+<script src="js/app.js?v=0.21.6"></script>
 </body>
 </html>

@@ -81,8 +81,9 @@ func (s *Service) cleanupAfterBackup(taskID int64) ([]int64, error) {
 		if !needByCount && !needBySize {
 			break
 		}
-		// 物理删除产物 + 记录
+		// 物理删除产物（含快照 sidecar）+ 记录
 		_ = os.RemoveAll(h.StorePath)
+		_ = os.Remove(h.StorePath + snapshotSuffix)
 		if err := s.repo.DeleteHistory(h.ID); err != nil {
 			continue
 		}

@@ -25,8 +25,114 @@ type Settings struct {
 	LogPath            string `toml:"log_path" json:"log_path"`                         // 日志文件路径（空=使用 config.toml）
 	LogMaxSize         int    `toml:"log_max_size" json:"log_max_size"`                 // 单个日志文件最大大小（MB）
 	LogMaxAge          int    `toml:"log_max_age" json:"log_max_age"`                   // 日志保留天数
-	BackupOutputDir    string `toml:"backup_output_dir" json:"backup_output_dir"`       // 备份全局默认存放目录（新建任务默认值）
+	BackupOutputDir    string `toml:"backup_output_dir" json:"backup_output_dir"`         // 备份全局默认存放目录（新建任务默认值）
 	BackupCompressLevel int   `toml:"backup_compress_level" json:"backup_compress_level"` // 备份全局默认压缩级别（1-9，默认 6）
+	// 备份全局默认排除规则：独立存储于数据目录下 exclude-list.txt（每行一条，支持 # 注释），
+	// 不再写入 settings.toml；内存中保留供 API 与备份预填使用
+	BackupExcludeRules []string `toml:"-" json:"backup_exclude_rules"`
+}
+
+// DefaultBackupExcludes 备份全局排除规则默认预设（v0.21.2）。
+// 覆盖 Windows / Linux 系统目录、开发项目产物、NAS / 跨平台临时文件；
+// 可直接用作 exclude-list.txt，支持修改。
+// 规则语义与任务级排除一致（Windows 下大小写不敏感）：
+//   - 精确名称 / 通配符（*.tmp）：按文件（目录）名匹配，任意层级生效
+//   - 带斜杠的目录前缀（proc/）：仅匹配备份源根目录下的顶层路径
+//   - 「#」开头为注释行，引擎自动忽略，仅作分组说明
+func DefaultBackupExcludes() []string {
+	return []string{
+	"# 虚拟内存、休眠文件",
+		"pagefile.sys",
+		"hiberfil.sys",
+		"swapfile.sys",
+		"",
+		"# 回收站、系统还原点",
+		"$RECYCLE.BIN",
+		"System Volume Information",
+		"",
+		"# 系统临时目录、缓存（按目录名匹配，任意层级生效）",
+		"Temp",
+		"tmp",
+		"cache",
+		"Cache",
+		"Prefetch",
+		"Minidump",
+		"PerfLogs",
+		"LocalLow",
+		"",
+		"# Linux 伪文件系统 / 挂载点（仅源根目录顶层，避免误伤同名数据目录）",
+		"proc/",
+		"sys/",
+		"dev/",
+		"run/",
+		"mnt/",
+		"media/",
+		"lost+found/",
+		"",
+		"# Windows 更新旧系统",
+		"Windows.old",
+		"",
+		"# 缩略图、系统生成文件",
+		"Thumbs.db",
+		"desktop.ini",
+		"~$*",
+		"",
+		"# 虚拟机镜像、快照",
+		"*.vmdk",
+		"*.vhd",
+		"*.vhdx",
+		"*.ova",
+		"",
+		"# Outlook 缓存",
+		"*.ost",
+		"",
+		"# NAS 内部元数据、回收站快照",
+		"@Recycle",
+		"@Recently-Snapshot",
+		"@eadir",
+		"*.snapshots",
+		"",
+		"# 全部 . 点开头文件/目录",
+		".*",
+		"",
+		"# 包依赖与构建产物",
+		"node_modules",
+		".git",
+		"vendor",
+		"venv",
+		"__pycache__",
+		"dist",
+		"build",
+		"out",
+		"",
+		"# IDE / 工具缓存",
+		".pytest_cache",
+		"",
+		"# 日志、临时、编译产物",
+		"*.log",
+		"*.tmp",
+		"*.swp",
+		"*.swo",
+		"*.bak",
+		"*.cache",
+		"",
+		"# 各类程序崩溃转储",
+		"*.dmp",
+		"",
+		"# 压缩软件临时文件",
+		"*.part",
+		"",
+		"# rsync 锁文件",
+		".rsync-lock",
+		"",
+		"# npm/yarn 本地缓存",
+		".npm",
+		".yarn-cache",
+		"",
+		"# python linter 缓存",
+		".ruff_cache",
+		".mypy_cache",
+	}
 }
 
 // Default 返回默认设置
@@ -37,20 +143,26 @@ func Default() *Settings {
 		LogMaxSize:          100,
 		LogMaxAge:           30,
 		BackupCompressLevel: 6,
+		BackupExcludeRules:  DefaultBackupExcludes(),
 	}
 }
 
-// Service 设置存取服务（基于 TOML 文件持久化）
+// Service 设置存取服务（基于 TOML 文件持久化；排除规则独立存 exclude-list.txt）
 type Service struct {
-	path string
-	mu   sync.RWMutex
-	cfg  *Settings
+	path        string
+	excludePath string
+	mu          sync.RWMutex
+	cfg         *Settings
 }
 
 // NewService 创建设置服务
 func NewService(dataDir string) (*Service, error) {
 	path := filepath.Join(dataDir, "settings.toml")
-	s := &Service{path: path, cfg: Default()}
+	s := &Service{
+		path:        path,
+		excludePath: filepath.Join(dataDir, "exclude-list.txt"),
+		cfg:         Default(),
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, err
 	}
@@ -66,7 +178,62 @@ func NewService(dataDir string) (*Service, error) {
 	} else if err := s.save(); err != nil {
 		return nil, err
 	}
+	// 排除规则独立文件：不存在时优先从旧版 settings.toml 内联数组迁移，否则写入默认预设
+	if err := s.loadOrCreateExcludes(); err != nil {
+		return nil, err
+	}
 	return s, nil
+}
+
+// loadOrCreateExcludes 从 exclude-list.txt 加载排除规则；文件不存在时
+// 迁移旧版 settings.toml 的 backup_exclude_rules 内联数组（或采用默认预设）并创建文件。
+func (s *Service) loadOrCreateExcludes() error {
+	if data, err := os.ReadFile(s.excludePath); err == nil {
+		s.cfg.BackupExcludeRules = parseExcludeLines(string(data))
+		s.cfg.ensureValid()
+		return nil
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	rules := s.migrateLegacyExcludes()
+	if rules == nil {
+		rules = DefaultBackupExcludes()
+	}
+	s.cfg.BackupExcludeRules = rules
+	return s.saveExcludeFile(rules)
+}
+
+// migrateLegacyExcludes v0.21.3 及以前：排除规则内联在 settings.toml 中。
+// 读取成功返回规则数组（可能含 # 注释行）；无旧数据返回 nil。
+func (s *Service) migrateLegacyExcludes() []string {
+	data, err := os.ReadFile(s.path)
+	if err != nil {
+		return nil
+	}
+	var legacy struct {
+		Rules []string `toml:"backup_exclude_rules"`
+	}
+	if toml.Unmarshal(data, &legacy) != nil || len(legacy.Rules) == 0 {
+		return nil
+	}
+	return legacy.Rules
+}
+
+// saveExcludeFile 排除规则写入 exclude-list.txt（每行一条，UTF-8）
+func (s *Service) saveExcludeFile(rules []string) error {
+	return os.WriteFile(s.excludePath, []byte(strings.Join(rules, "\n")+"\n"), 0o644)
+}
+
+// parseExcludeLines 按行解析排除规则：保留 # 注释行与规则行，去空行与行尾 \r
+func parseExcludeLines(content string) []string {
+	var out []string
+	for _, line := range strings.Split(content, "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			out = append(out, line)
+		}
+	}
+	return out
 }
 
 // migrateLegacy 迁移旧版 settings.json（v0.06 及以前）：读取成功后转存
@@ -99,6 +266,21 @@ func (s *Service) Get() *Settings {
 	cp := *s.cfg
 	cp.ensureValid()
 	return &cp
+}
+
+// Reset 重置为默认设置并持久化（v0.21.3；v0.21.4 起排除规则恢复默认预设文件）
+func (s *Service) Reset() (*Settings, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.cfg = Default()
+	if err := s.saveExcludeFile(s.cfg.BackupExcludeRules); err != nil {
+		return nil, err
+	}
+	if err := s.save(); err != nil {
+		return nil, err
+	}
+	cp := *s.cfg
+	return &cp, nil
 }
 
 // Update 部分更新设置，返回更新后的完整设置
@@ -172,11 +354,26 @@ func (s *Service) Update(patch map[string]interface{}) (*Settings, error) {
 				return nil, errors.New("压缩级别应为 1-9")
 			}
 			cur.BackupCompressLevel = n
+		case "backup_exclude_rules":
+			rules, err := toStringSlice(v)
+			if err != nil {
+				return nil, errors.New("排除规则应为字符串数组")
+			}
+			if len(rules) > 200 {
+				return nil, errors.New("排除规则最多 200 条")
+			}
+			cur.BackupExcludeRules = rules
 		default:
 			return nil, errors.New("未知设置项: " + k)
 		}
 	}
 	cur.ensureValid()
+	// 排除规则持久化到独立文件 exclude-list.txt（仅当本次更新包含该字段时重写）
+	if _, touched := patch["backup_exclude_rules"]; touched {
+		if err := s.saveExcludeFile(cur.BackupExcludeRules); err != nil {
+			return nil, errors.New("写入 exclude-list.txt 失败: " + err.Error())
+		}
+	}
 	if err := s.saveWith(&cur); err != nil {
 		return nil, err
 	}
@@ -212,6 +409,21 @@ func (c *Settings) ensureValid() {
 	if c.BackupCompressLevel < 1 || c.BackupCompressLevel > 9 {
 		c.BackupCompressLevel = 6
 	}
+	// 排除规则：从未设置（nil，如旧配置迁移）时套用默认预设；显式清空（空数组）则尊重用户
+	if c.BackupExcludeRules == nil {
+		c.BackupExcludeRules = DefaultBackupExcludes()
+	}
+	if len(c.BackupExcludeRules) > 200 {
+		c.BackupExcludeRules = c.BackupExcludeRules[:200]
+	}
+	cleaned := make([]string, 0, len(c.BackupExcludeRules))
+	for _, r := range c.BackupExcludeRules {
+		r = strings.TrimSpace(r)
+		if r != "" {
+			cleaned = append(cleaned, r)
+		}
+	}
+	c.BackupExcludeRules = cleaned
 }
 
 func toInt(v interface{}) (int, error) {
@@ -224,5 +436,35 @@ func toInt(v interface{}) (int, error) {
 		return strconv.Atoi(t)
 	default:
 		return 0, errors.New("无效数值")
+	}
+}
+
+// toStringSlice JSON 反序列化出的 []interface{} / TOML 的 []string 统一转 []string（逐条 trim、去空）
+func toStringSlice(v interface{}) ([]string, error) {
+	switch t := v.(type) {
+	case []interface{}:
+		out := make([]string, 0, len(t))
+		for _, item := range t {
+			s, ok := item.(string)
+			if !ok {
+				return nil, errors.New("排除规则应为字符串数组")
+			}
+			if s = strings.TrimSpace(s); s != "" {
+				out = append(out, s)
+			}
+		}
+		return out, nil
+	case []string:
+		out := make([]string, 0, len(t))
+		for _, s := range t {
+			if s = strings.TrimSpace(s); s != "" {
+				out = append(out, s)
+			}
+		}
+		return out, nil
+	case nil:
+		return []string{}, nil
+	default:
+		return nil, errors.New("排除规则应为字符串数组")
 	}
 }

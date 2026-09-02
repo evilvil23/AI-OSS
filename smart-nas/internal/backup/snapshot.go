@@ -28,7 +28,7 @@ func mergeDirSnapshot(root string, snap map[string]fileStamp) {
 	})
 }
 
-// mergeZipSnapshot 将 zip 内容并入快照
+// mergeZipSnapshot 将 zip 内容并入快照（时间戳取 zip 条目记录的源文件 mtime）
 func mergeZipSnapshot(zipPath string, snap map[string]fileStamp) {
 	r, err := zip.OpenReader(zipPath)
 	if err != nil {
@@ -39,7 +39,11 @@ func mergeZipSnapshot(zipPath string, snap map[string]fileStamp) {
 		if zf.FileInfo().IsDir() {
 			continue
 		}
-		snap[filepath.ToSlash(zf.Name)] = fileStamp{Size: int64(zf.UncompressedSize64)}
+		var modNano int64
+		if !zf.Modified.IsZero() {
+			modNano = zf.Modified.UnixNano()
+		}
+		snap[filepath.ToSlash(zf.Name)] = fileStamp{Size: int64(zf.UncompressedSize64), ModNano: modNano}
 	}
 }
 

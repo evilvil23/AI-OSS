@@ -6,6 +6,7 @@ package server
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -14,11 +15,24 @@ import (
 	"smart-nas/pkg/logger"
 )
 
+// visibleExcludeRules 过滤「#」注释行与空行，仅返回实际生效的规则。
+// 注释行仅用于设置页分组展示，不应进入任务预填与任务存储。
+func visibleExcludeRules(rules []string) []string {
+	out := make([]string, 0, len(rules))
+	for _, r := range rules {
+		if r = strings.TrimSpace(r); r != "" && !strings.HasPrefix(r, "#") {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
 // registerBackupRoutes 注册备份路由
 func (s *Server) registerBackupRoutes(authed *gin.RouterGroup) {
 	r := authed.Group("/backup")
 	r.GET("/tasks", s.backupListTasks)
 	r.GET("/defaults", s.backupDefaults)
+	r.GET("/progress", s.backupProgress)
 	r.GET("/tasks/:id/history", s.backupListHistory)
 	r.GET("/backups/:id/contents", s.backupContents)
 	r.GET("/usb-devices", s.backupUSBDevices)
@@ -35,17 +49,29 @@ func (s *Server) registerBackupRoutes(authed *gin.RouterGroup) {
 	admin.DELETE("/backups/:id", s.backupDelete)
 }
 
-// backupDefaults GET /api/backup/defaults （全局默认：存放目录/压缩级别，新建任务表单预填）
+// backupDefaults GET /api/backup/defaults （全局默认：存放目录/压缩级别/排除规则，新建任务表单预填）
 func (s *Server) backupDefaults(c *gin.Context) {
-	out := map[string]interface{}{"output_dir": "", "compress_level": 6}
+	out := map[string]interface{}{"output_dir": "", "compress_level": 6, "exclude_rules": []string{}}
 	if s.deps.Settings != nil {
 		st := s.deps.Settings.Get()
 		if st.BackupOutputDir != "" {
 			out["output_dir"] = st.BackupOutputDir
 		}
 		out["compress_level"] = st.BackupCompressLevel
+		if st.BackupExcludeRules != nil {
+			out["exclude_rules"] = visibleExcludeRules(st.BackupExcludeRules)
+		}
 	}
 	c.JSON(http.StatusOK, types.OK(out))
+}
+
+// backupProgress GET /api/backup/progress （各任务最近一次执行的实时进度 + 执行日志）
+func (s *Server) backupProgress(c *gin.Context) {
+	list := s.deps.Backup.ProgressList()
+	if list == nil {
+		list = []backup.Progress{} // 空列表编码为 []（而非 null）
+	}
+	c.JSON(http.StatusOK, types.OK(list))
 }
 
 // backupListTasks GET /api/backup/tasks
@@ -107,13 +133,18 @@ func (s *Server) buildTask(req *backupTaskRequest, existing *backup.Task, applyD
 	} else if existing != nil && req.Enabled == nil {
 		t.Enabled = existing.Enabled
 	}
-	// 新建任务：存放目录/压缩级别留空时套用全局默认（设置页可配，压缩默认 9 无损最高）
-	if applyDefaults {
-		if t.OutputDir == "" && s.deps.Settings != nil {
-			t.OutputDir = s.deps.Settings.Get().BackupOutputDir
+	// 新建任务：存放目录/压缩级别/排除规则留空时套用全局默认（设置页可配，压缩默认 6）
+	if applyDefaults && s.deps.Settings != nil {
+		st := s.deps.Settings.Get()
+		if t.OutputDir == "" {
+			t.OutputDir = st.BackupOutputDir
 		}
-		if t.EnableCompress && t.CompressLevel <= 0 && s.deps.Settings != nil {
-			t.CompressLevel = s.deps.Settings.Get().BackupCompressLevel
+		if t.EnableCompress && t.CompressLevel <= 0 {
+			t.CompressLevel = st.BackupCompressLevel
+		}
+		// 请求未携带排除规则（字段缺省）时套用全局规则；空数组表示用户显式清空，不覆盖
+		if t.ExcludePatterns == nil {
+			t.ExcludePatterns = visibleExcludeRules(st.BackupExcludeRules)
 		}
 	}
 	// 简单周期转 cron（cron_expr 为空时生效）

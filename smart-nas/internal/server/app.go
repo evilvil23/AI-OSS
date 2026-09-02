@@ -209,6 +209,8 @@ func staticFallback(webDir string) gin.HandlerFunc {
 			c.JSON(http.StatusNotFound, types.Fail(types.CodeServerError, "接口不存在"))
 			return
 		}
+		// index.html 使用协商缓存（每次回源校验），保证其引用的 ?v= 版本参数变更能及时生效
+		c.Header("Cache-Control", "no-cache")
 		if p == "/" {
 			c.File(filepath.Join(webDir, "index.html"))
 			return
