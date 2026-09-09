@@ -149,60 +149,25 @@ func ListUSBDevices() []USBDevice {
 	return out
 }
 
-// ---- Windows API（LazyDLL，与 util/system.go 同风格）----
+// ---- Windows API（purego，见 winapi_windows.go）----
 
 func isRemovableDrive(root string) bool {
 	k := strings.ToLower(root)
 	if len(k) < 2 || k[1] != ':' {
 		return false
 	}
-	return driveType(root) == 2 // DRIVE_REMOVABLE
+	return driveTypeOf(root) == 2 // DRIVE_REMOVABLE
 }
 
 func driveType(root string) int {
-	kernel32 := syscallNewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetDriveTypeW")
-	rp, err := utf16PtrFromString(root)
-	if err != nil {
-		return 0
-	}
-	r, _, _ := proc.Call(unsafePointerOf(rp))
-	return int(r)
+	return driveTypeOf(root)
 }
 
 func volumeInfo(root string) (label, serial string) {
-	kernel32 := syscallNewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetVolumeInformationW")
-	rp, err := utf16PtrFromString(root)
-	if err != nil {
+	l, s, ok := volumeInfoOf(root)
+	if !ok {
 		return "", ""
 	}
-	var nameBuf [261]uint16
-	var serialNum, maxLen, flags uint32
-	ok, _, _ := proc.Call(
-		unsafePointerOf(rp),
-		unsafePointerOf(&nameBuf[0]),
-		uintptr(len(nameBuf)),
-		unsafePointerOf(&serialNum),
-		unsafePointerOf(&maxLen),
-		unsafePointerOf(&flags),
-		0, 0,
-	)
-	if ok == 0 {
-		return "", ""
-	}
-	label = utf16ToString(nameBuf[:])
-	serial = strings.ToUpper(strings.TrimPrefix(strings.TrimSpace(fmtSerial(serialNum)), ""))
-	return label, serial
-}
-
-func fmtSerial(n uint32) string {
-	// 输出形如 "1A2B3C4D"
-	const hexDigits = "0123456789ABCDEF"
-	out := make([]byte, 8)
-	for i := 7; i >= 0; i-- {
-		out[i] = hexDigits[n&0xF]
-		n >>= 4
-	}
-	return string(out)
+	serial = strings.ToUpper(strings.TrimSpace(s))
+	return l, serial
 }

@@ -43,7 +43,7 @@
 - **定时任务**：`github.com/robfig/cron/v3`
 - **日志**：标准库 `log/slog`（结构化 JSON 日志 + 按大小滚动）
 - **视频播放**：ffprobe 探测分辨率 + ffmpeg 转封装/转码（外部二进制）
-- **AI / IoT / 插件**：扩展接口（Ollama、MQTT、插件系统），当前保留骨架
+- **AI / IoT / 插件**：AI 管家（v0.21 实装：Ollama 生命周期 + 硬件自适应 + Eino 框架 + RAG + HomeAssistant 工具）、IoT（MQTT/米家）、插件系统
 
 > 注意：设计文档里写的是 GORM、viper、zap、tusd 等库，但**实际代码**因为离线环境限制，用等价实现替代了（如手写 JWT、手写 tus、用 slog 替代 zap）。**以实际代码为准**，文档中凡是"说明：文档选用 XXX，但当前离线环境不可用"的注释，都是在讲这个替代关系。
 
@@ -73,8 +73,8 @@ smart-nas/
 │   ├── store/                # 通用 TOML 键值存储（用户/上传任务用）
 │   ├── server/               # HTTP 路由、中间件、API 处理器
 │   ├── util/                 # 工具：系统状态/哈希/ID/路径/受保护文件
-│   ├── ai/                   # AI 扩展接口（Ollama/RAG，骨架）
-│   ├── iot/                  # IoT 扩展接口（MQTT/米家，骨架）
+│   ├── ai/                   # AI 管家（v0.21）：Ollama 生命周期/硬件自适应/Eino/RAG/HA 工具
+│   ├── iot/                  # IoT 接口（MQTT/米家/自动化）
 │   └── plugin/               # 插件系统（骨架）
 ├── pkg/logger/               # 日志（slog 封装 + 滚动清理）
 ├── web/                      # 前端（原生 HTML/JS，无需构建）
@@ -146,6 +146,8 @@ authSvc := auth.NewService(userSvc, cfg.Auth)       // 认证依赖用户服务
 | `internal/config` | 配置加载、环境变量覆盖、热重载 | `Manager`、`Config` |
 | `internal/store` | 通用 TOML 键值存储（泛型） | `Store[K, V]` |
 | `internal/server` | 路由注册、中间件、所有 HTTP 处理器 | `Server`、`Deps` |
+| `internal/ai` | AI 管家（v0.21）：对话/工具循环/RAG 注入、部署模式、Ollama 客户端与进程生命周期、硬件调优预设、Eino 适配、HA 工具 | `Service`、`ollama.Lifecycle`、`hardware.Preset`、`eino.ChatModel` |
+| `internal/iot` | IoT 设备注册表、MQTT、自动化引擎、米家客户端 | `Service` |
 | `internal/util` | 系统状态采集、哈希、ID、路径校验、受保护文件规则 | 各种函数 |
 | `pkg/logger` | 结构化日志 + 滚动清理 | `rollingFile` |
 
@@ -503,6 +505,107 @@ func (w *Worker) run() {
     }
 }
 ```
+
+### 3.8 AI 模块代码导览（v0.21：管家 / 知识库 / Ollama 生命周期）
+
+AI 模块是理解「**接口分层 + 外部进程管理 + 框架集成**」的绝佳样本，涉及 6 个子包：
+
+```
+internal/ai/
+├── service.go        # Service 总装配：对话入口、工具循环、RAG 注入（这是大脑）
+├── deploy.go         # 部署模式：single/dual 主备切换与降级（M6）
+├── ollama/
+│   ├── client.go     # Ollama REST 客户端（chat/embeddings/tags/ps）
+│   ├── admin.go      # 管理扩展：预热/卸载/拉取/删除模型
+│   └── lifecycle.go  # 进程生命周期：检测→拉起→就绪→预热→卸载→停止（M1）
+├── hardware/         # 硬件检测与模型调优预设（M2）
+├── eino/             # 字节 Eino 框架适配：ChatModel + 工具桥接（M3）
+├── ha/               # HomeAssistant 客户端 + AI 工具（M7）
+├── rag/              # 知识库：索引器/检索器/向量存储
+├── tools/            # 工具注册表与文件/系统工具
+└── conversation/     # 会话管理（内存 + 截断）
+```
+
+**① 启动主线（`cmd/server/main.go` 第 7 步）**——按依赖顺序装配：
+
+```go
+// 1) 硬件检测 → 生成调优预设（config.toml [ai.tune] 显式值优先）
+info := hardware.Detect(ctx)                            // nvidia-smi 查 GPU/内存/CPU
+preset := info.Resolve(cfg.AI.Tune, cfg.AI.DefaultModel) // GPU≥8GB→deepseek-r1:7b，否则 qwen3.5:9b
+
+// 2) Ollama 生命周期：没运行就拉起，就绪后预热加载模型
+lifecycle = ollama.NewLifecycle(ollamaClient, runCfg, dataDir)
+lifecycle.EnsureRunning(ctx, preset.Model, preset.KeepAlive)
+
+// 3) AI 服务（Eino 组件在 NewService 内部构建）
+aiSvc, _ := ai.NewService(ai.Options{Config: cfg.AI, Preset: preset, ...})
+aiSvc.StartDeployWatch(ctx)   // dual+auxiliary：远端探测 + 自动切换巡检
+```
+
+**② 进程生命周期管理（`ollama/lifecycle.go`）**——学习「如何安全管理外部进程」：
+
+```go
+// EnsureRunning 三种情况：
+// a) Ping 通 → 凭 data/ollama.pid 判断：pid 存活 = 上一任实例，接管管理；否则 = 用户自启，不碰
+// b) Ping 不通 + managed=true → exec 后台拉起 ollama serve（注入 OLLAMA_HOST 等环境变量）
+// c) 拉起后轮询 Ping 直到就绪（超时 start_timeout），再空对话预热触发模型加载
+//
+// Shutdown（优雅关闭）：先 UnloadModel（keep_alive=0 释放显存）再停进程
+// 关键安全约束：managed=false 时 Shutdown 直接 return——绝不杀用户自启的 Ollama
+```
+
+**③ Eino 框架适配（`eino/chatmodel.go`）**——学习「如何把自研客户端接到标准框架」：
+
+```go
+// ChatModel 实现 Eino 的 ToolCallingChatModel 接口：
+//   Generate：拼 ChatRequest → ollamaClient.Chat → 响应转 schema.Message
+//   Stream：ollamaClient.ChatStream 的 chunk 通道 → schema.Pipe 桥接为 Eino 流
+//   WithTools：绑定工具定义（不可变副本），模型据此返回 tool_calls
+// 工具执行交给 Eino ToolsNode：现有 tools.Registry 的工具经 AdaptTools 转为 Eino BaseTool
+```
+
+**④ 对话主循环（`ai/service.go`）**——工具调用与 RAG 注入：
+
+```go
+// Chat(ctx, userID, convID, content)：
+//   1. 取/建会话，追加用户消息
+//   2. RAG 检索（本机向量库或 dual 辅助机走主服务 HTTP）→ 拼进 system 提示词
+//   3. boundChatModel()：按部署状态选模型（remoteActive 时用远端 client+模型）
+//   4. 循环：模型生成 → 若返回 tool_calls → ToolsNode 并行执行 → 结果回传 → 继续生成
+//   5. 追加助手回复并返回
+```
+
+**⑤ 主备双机（`ai/deploy.go`）**——学习「状态机 + 巡检降级」：
+
+```go
+// deployState 记录 mode/role/remoteActive；StartDeployWatch 仅 auxiliary 生效：
+//   启动立即探测一次 → 之后每 check_interval 秒探测：
+//   可达 → remoteActive=true（切换远端模型，卸载本机模型释放资源）
+//   不可达 → remoteActive=false（降级回本机高级模型，记录告警）
+// 辅助机 RAG：NewRemoteRetriever 登录主服务拿 JWT → POST /api/ai/rag/search（不建独立向量库）
+```
+
+**⑥ HA 工具（`ai/ha/`）**——学习「HTTP 客户端 + 工具注册 + 优雅降级」：
+
+```go
+// client.go：CheckConnection(GET /api/ + token) / ListStates(domain 过滤) / CallService
+// tools.go：ha_list_devices / ha_get_state / ha_call_service 三个工具
+// 降级：未启用 / 自检失败 → 不注册工具 → AI 对话自然提示"暂不支持设备控制"
+// 验证：ha_test.go 用 httptest Mock HA 服务器跑通整条工具链（无需真实设备）
+```
+
+**HTTP API 一览**（`internal/server/handlers_ai.go`，全部走 JWT；管理接口再过 RequireAdmin）：
+
+| 接口 | 说明 |
+|------|------|
+| `POST /api/ai/chat`、`POST /api/ai/chat/stream`（SSE） | 对话 / 流式对话 |
+| `GET/POST/DELETE /api/ai/conversations` | 会话管理 |
+| `POST /api/ai/rag/search`、`GET /api/ai/rag/status` | 知识库检索 / 状态（dual 辅助机经此查主服务） |
+| `GET /api/ai/status` | 进程 / 已加载模型 / 硬件预设 / 部署模式总览 |
+| `POST /api/ai/v1/chat/completions` | OpenAI 兼容代理（局域网第三方应用调用入口） |
+| `GET/POST/DELETE /api/ai/models*`、`GET/PUT /api/ai/settings` | 模型管理（仅主人/管理员） |
+
+**动手实验建议**：①`go run ./cmd/server` 后看日志中「硬件检测完成 / 硬件调优预设生效」两行，核对预设来源是 auto 还是 config；②注释 `[ai.ollama].managed=true` 再启动，观察「用户自启实例不做进程管理」日志；③`curl -H $AUTH http://localhost:8080/api/ai/status` 对照预设与部署状态；④改 `[ai.tune].model` 热重载，验证配置优先于自动检测。
 
 ---
 

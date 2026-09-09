@@ -1,4 +1,4 @@
-// disk.go 备份前磁盘剩余空间校验（Windows 实现）。
+// disk.go 备份前磁盘剩余空间校验（Windows 实现，经 purego 调用 kernel32）。
 package backup
 
 import (
@@ -21,21 +21,9 @@ func freeSpaceOf(path string) (int64, bool) {
 	if root == "" || !isWindows() {
 		return 0, false
 	}
-	kernel32 := syscallNewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetDiskFreeSpaceExW")
-	rp, err := utf16PtrFromString(root)
-	if err != nil {
-		return 0, false
-	}
-	var freeAvail, totalBytes, totalFree uint64
-	ok, _, _ := proc.Call(
-		unsafePointerOf(rp),
-		unsafePointerOf(&freeAvail),
-		unsafePointerOf(&totalBytes),
-		unsafePointerOf(&totalFree),
-	)
+	freeAvail, totalBytes, _, ok := diskSpaceOf(root)
 	// totalBytes==0 视为查询无效（虚拟盘/沙箱可能返回 0），跳过空间校验
-	if ok == 0 || totalBytes == 0 {
+	if !ok || totalBytes == 0 {
 		return 0, false
 	}
 	return int64(freeAvail), true

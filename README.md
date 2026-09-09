@@ -1,4 +1,4 @@
-<!-- 本文件为仓库主页介绍，内容与 smart-nas/README.md 保持同步；更新时请同时修改两处 -->
+
 # 智能家庭 NAS（smart-nas）Windows 本地运行指南
 
 基于《基于 Ollama + Go 的智能家庭 NAS 系统开发文档v0.1》实现。
@@ -33,6 +33,13 @@ go build ./...        # 离线即可构建成功
 > 若日后需要更新依赖（vendor 目录由 `go mod vendor` 重新生成），
 > 请在有网络的机器上操作后再拷贝回本机。
 
+> **Windows 系统调用依赖**：系统状态采集（CPU/内存/磁盘）、隐藏文件检测、
+> 备份磁盘空间预检与 USB 设备枚举统一使用 **`github.com/ebitengine/purego`**
+> （免 cgo 动态调用 kernel32，已 vendor），替代原生 `syscall.NewLazyDLL`；
+> DLL 句柄经 `golang.org/x/sys/windows.LoadLibrary` 获取，函数经
+> `purego.RegisterLibFunc` 绑定为类型化函数指针调用。
+> 详见开发文档 §1.3「Windows 系统调用实现」。
+
 ---
 
 ## 2. 项目结构
@@ -53,7 +60,7 @@ smart-nas/
 │   ├── webdav/            # WebDAV（x/net/webdav + Basic Auth）
 │   ├── ws/                # WebSocket Hub
 │   ├── task/              # 定时任务（robfig/cron）+ 异步 Worker
-│   ├── ai/                # AI（Ollama 客户端 / 对话 / 工具 / RAG，扩展接口）
+│   ├── ai/                # AI 管家（v0.21：Ollama 生命周期 / 硬件自适应 / Eino 框架 / RAG 知识库 / HomeAssistant 工具 / 部署模式）
 │   ├── iot/               # IoT（设备注册表 / MQTT / 自动化，扩展接口）
 │   ├── plugin/            # 插件系统（Hook / goplugin / script）
 │   ├── server/            # HTTP 路由、中间件、metrics
@@ -61,7 +68,9 @@ smart-nas/
 │   ├── config/            # 配置管理（TOML + 环境变量 + 热重载）
 │   └── util/              # 系统状态 / 哈希 / ID / 网络工具
 ├── pkg/logger/            # slog 结构化日志（文件滚动）
-├── web/                   # 前端 Web 界面（index.html + css/style.css + js/app.js + js/video-js-8.24.0/）
+├── web/                   # 前端 Web 界面（v0.22 重组：html/template 模板 + static 静态资源）
+│   ├── templates/         # 页面模板（index.html，经 {{.WebVersion}} 注入资源缓存版本号）
+│   └── static/            # 静态资源（css/style.css + js/app.js + js/ai.js + js/smarthome.js + js/video-js-8.24.0/，经 /static/* 服务）
 ├── vendor/                # 离线依赖（已就绪）
 ├── config.toml            # 主配置
 └── go.mod / go.sum
@@ -123,8 +132,38 @@ admin_password = "admin123"              # 主人密码，仅可通过配置文�
 enabled = true
 path_prefix = "/files/upload/"
 
-[ai]
-ollama_host = "http://localhost:11434"   # 未安装 Ollama 时 AI 功能自动降级
+[ai]                         # AI 管家（v0.21）
+ollama_host = "http://localhost:11434"   # Ollama 服务地址
+default_model = "qwen2:7b"               # 显式默认模型（配置了就生效）
+embedding_model = "nomic-embed-text"     # RAG 向量模型
+
+[ai.ollama]                  # Ollama 进程生命周期（v0.21）
+managed = true               # 由本服务拉起/停止 Ollama；false = 用户自行管理
+binary = ''                  # 可执行文件路径，留空自动探测 PATH 与常见安装位置
+bind_host = '127.0.0.1:11434'  # 拉起时注入 OLLAMA_HOST；局域网调用改为 '0.0.0.0:11434'
+start_timeout = 60           # 拉起后等待就绪的最长秒数
+auto_warmup = true           # 就绪后空对话预热，触发默认模型加载
+
+[ai.tune]                    # 硬件自适应调优预设（v0.21）：零值 = 按硬件自动选择
+model = ''                   # 覆盖自动模型（GPU 显存≥8GB → deepseek-r1:7b；否则 qwen3.5:9b）
+num_ctx = 0                  # 上下文窗口（自动：GPU 8192 / CPU 4096）
+keep_alive = ''              # 模型驻留时长（自动：GPU -1 常驻 / CPU 5m）
+num_parallel = 0             # 并行推理数
+
+[ai.deploy]                  # 部署模式（v0.21）：auto（v0.23）| single | dual
+mode = 'auto'                # v0.23：auto = 启动时自动判定（配置了 remote_host 且可达 → 辅机；否则 → 服务端）
+role = 'primary'             # dual 生效：primary（常驻主服务，通常 N100）| auxiliary（辅助机，通常大主机）
+remote_host = ''             # auxiliary：远端（主服务）Ollama 地址
+remote_api = ''              # auxiliary：主服务 API 根地址（RAG 统一走主服务）
+remote_username = ''         # auxiliary：主服务账号（自动获取 JWT 调 RAG）
+remote_password = ''
+auto_switch = true           # 远端可达自动切换、断线自动降级回本机模型
+check_interval = 30          # 远端可达性探测间隔（秒）
+
+[ai.homeassistant]           # HomeAssistant 智能家居接入（v0.21）
+enabled = false
+base_url = 'http://homeassistant.local:8123'
+token = ''                   # HA 长期访问令牌（个人资料 → 安全）
 
 [iot.mqtt]
 enabled = true
@@ -204,7 +243,9 @@ go run ./cmd/server -config config.toml -data ./data
 
 ### 5.3 关闭
 
-`Ctrl + C` 会触发优雅退出（保存元数据、关闭日志、停止调度器）。
+`Ctrl + C` 会触发优雅退出（保存元数据、关闭日志、停止调度器；v0.21 起还会先卸载
+AI 模型释放显存，再停止本服务拉起的 Ollama 进程——用户自启的 Ollama 不受影响，
+详见 §6.15）。
 
 ---
 
@@ -214,9 +255,12 @@ go run ./cmd/server -config config.toml -data ./data
 
 ### 6.1 前端 Web 界面（入口）
 
-项目内置轻量单页前端（`web/index.html`，原生 HTML/JS，无需构建；
-样式与脚本分离：`web/css/style.css`、`web/js/app.js`，第三方库 Video.js 本地化于
-`web/js/video-js-8.24.0/`，离线可用）。启动服务后浏览器直接打开：
+项目内置轻量单页前端（v0.22 起按 Go 惯例重组为**模板 + 静态资源**结构：
+页面模板 `web/templates/index.html` 由 Go `html/template` 渲染并注入 `WebVersion`
+资源缓存版本号（`?v=`），无需构建；样式与脚本分离于 `web/static/css/style.css`、
+`web/static/js/app.js`、`web/static/js/ai.js`（AI 页签，v0.23）、
+`web/static/js/smarthome.js`（智能家居页签，v0.23），第三方库 Video.js 本地化于
+`web/static/js/video-js-8.24.0/`，统一经 `/static/*` 路由服务，离线可用）。启动服务后浏览器直接打开：
 
 ```
 http://localhost:8080/
@@ -232,6 +276,8 @@ http://localhost:8080/
 **tus 单块上传**、下载、重命名、分享链接、**回收站**（多选单个/批量还原与
 物理删除、一键还原、一键清空，默认位置 `./data/files/trash`）、**文件备份还原**
 （任务化管理：完整/增量、定时/间隔/USB 实时/手动、配额与冻结、还原与邮件通知，见 §6.13）、
+**AI 对话页签**（v0.23：会话列表 / 流式对话 / 模型管理 / AI 设置，见 §6.14）、
+**智能家居页签**（v0.23：HomeAssistant 设备网格管理与开关控制，见 §6.14）、
 目录权限配置（读/写 +
 自动去重，目录通过**内置目录浏览器**选择并自动校验路径格式）、系统设置（刷新频率 /
 回收站位置 / **日志位置、最大大小与保留天数**，**仅主人可修改**，管理员/普通用户为只读查看）、
@@ -244,8 +290,10 @@ http://localhost:8080/
 > 归一为反斜杠）。管理员只能授予自身权限范围内的目录，且读写级别不可超过自身。
 
 > 后端 404 回退逻辑见 `internal/server/app.go` 的 `staticFallback`：
-> 存在 `web/` 目录时，未命中 API 的路径会渲染 `index.html`（单页入口），
-> 若后续替换为 Vue/React 等 SPA，把构建产物放到 `web/` 即可，无需改后端。
+> 页面模板加载成功时，未命中 API 的路径会渲染 `web/templates/index.html`（单页入口），
+> `/static/*` 由 `gin Static` 直接服务静态资源；
+> 若后续替换为 Vue/React 等 SPA，把模板替换为 `web/templates/index.html`、
+> 构建产物放到 `web/static/` 即可，无需改后端路由。
 
 ### 6.2 健康检查
 
@@ -391,6 +439,10 @@ curl.exe -s -X PUT http://localhost:8080/api/admin/settings `
 # 日志设置保存后立即生效（滚动归档 + 过期清理，无需重启）
 # 注：非主人账号调用 PUT /api/admin/settings 返回 403（只有主人可以修改系统设置）
 
+# 进程级重启服务（v0.23，仅主人/管理员；AI 设置中需重启项保存后前端会自动调用）
+curl.exe -s -X POST http://localhost:8080/api/admin/restart -H $AUTH
+# 重启为优雅退出 + 自动拉起新进程（Windows 使用父进程接力）；页面轮询 /healthz 恢复后提示刷新
+
 # 注：目录选择器为前端内置浏览器（v0.13 起不再提供服务端系统对话框接口）；
 # 管理员只能为普通用户授予自身权限范围内的目录（读写不超自身级别）
 ```
@@ -439,11 +491,12 @@ curl.exe -s -X DELETE http://localhost:8080/api/play/ticket/<token> -H $AUTH
 ```
 
 > 前端在「文件」列表对视频文件异步探测分辨率后按结果展示按钮；播放器为右侧抽屉式
-> **Video.js** 播放器（本地引入 `web/js/video-js-8.24.0/`，无需外网 CDN；自带控制条：
+> **Video.js** 播放器（本地引入 `web/static/js/video-js-8.24.0/`，无需外网 CDN；自带控制条：
 > 播放/暂停、进度拖拽、音量、全屏、网络中断重试），UI 与后台深色主题一致。
 > v0.19 起支持：键盘 ←/→ 快退/快进 5 秒、↑/↓ 音量、空格播放/暂停、F 全屏（抽屉打开时
 > 全局生效）；手机水平滑动快进/快退；控制条倍速菜单（0.5~2 倍）。
-> 前端资源已拆分：`web/index.html`（结构）+ `web/css/style.css`（样式）+ `web/js/app.js`（逻辑）。
+> 前端资源已拆分（v0.22 起重组）：`web/templates/index.html`（结构模板）+
+> `web/static/css/style.css`（样式）+ `web/static/js/app.js`（逻辑）。
 > 点击视频文件名同样会打开播放器（v0.18 起，不再弹出“预览”弹窗）；无法内联预览的
 > 文件点击文件名显示“详细信息”。「详情」按钮弹出的“详细信息”窗口对视频文件提供
 > 「播放」按钮、对文件提供「下载」按钮（不再放重复的“关闭”按钮），并显示文件真实路径
@@ -534,22 +587,144 @@ curl.exe -s http://localhost:8080/api/backup/progress -H $AUTH
 > 备份前预检查源可读性与备份磁盘剩余空间，中途失败丢弃不完整产物并记录错误日志；
 > 自动清理逻辑**严禁删除冻结备份**；无完整备份（链）时禁止创建/还原增量备份。
 
+### 6.14 AI 管家 / 知识库 / Ollama 管理（v0.21）
+
+> 前置：安装 Ollama（见 §7.1）。服务启动时**自动完成一切**——检测 Ollama →
+> 未运行则后台拉起（`[ai.ollama].managed=true` 默认开启）→ 等就绪 → 按硬件
+> 自适应加载默认模型 → 记录生效预设日志。所有 AI 接口走 JWT 鉴权。
+
+**硬件自适应**：启动日志可见「硬件检测完成 / 硬件调优预设生效」：
+
+| 硬件 | 自动选择模型 | 预设 |
+|------|------------|------|
+| NVIDIA GPU 显存 ≥ 8GB（如 RTX 4070 12GB） | `deepseek-r1:7b`（Q4_K_M 全量进显存） | num_ctx=8192、常驻、并行 2 |
+| 无 GPU / 显存 < 8GB（如 N100） | `qwen3.5:9b`（Q4_K_M CPU 推理） | num_ctx=4096、驻留 5m、并行 1 |
+
+`config.toml [ai.tune]` 显式配置永远优先于自动检测（模拟无 GPU 环境验证 N100 分支：
+直接配置 `model = "qwen3.5:9b"` 即可）。
+
+```powershell
+# 对话（非流式）
+curl.exe -s -X POST http://localhost:8080/api/ai/chat `
+  -H $AUTH -H "Content-Type: application/json" `
+  -d '{"content":"帮我总结一下这个月的照片"}'
+
+# 流式对话（SSE）
+curl.exe -s -N -X POST http://localhost:8080/api/ai/chat/stream `
+  -H $AUTH -H "Content-Type: application/json" -d '{"content":"你好"}'
+
+# 状态总览：Ollama 进程（托管/自启）、已加载模型、硬件预设、部署模式
+curl.exe -s http://localhost:8080/api/ai/status -H $AUTH
+
+# 模型管理（仅主人/管理员）
+curl.exe -s http://localhost:8080/api/ai/models -H $AUTH                        # 模型列表
+curl.exe -s -X POST http://localhost:8080/api/ai/models/pull `
+  -H $AUTH -H "Content-Type: application/json" -d '{"model":"qwen2:7b"}'        # 拉取
+curl.exe -s http://localhost:8080/api/ai/models/pull/status -H $AUTH            # 拉取进度
+curl.exe -s -X DELETE "http://localhost:8080/api/ai/models/qwen2:7b" -H $AUTH   # 删除
+
+# 推理参数查看 / 调整（仅主人/管理员，热更新）
+curl.exe -s http://localhost:8080/api/ai/settings -H $AUTH
+curl.exe -s -X PUT http://localhost:8080/api/ai/settings `
+  -H $AUTH -H "Content-Type: application/json" `
+  -d '{"num_ctx":8192,"temperature":0.7,"keep_alive":"-1"}'
+
+# v0.23 设置页新增字段（同一接口）：
+#   default_model  主动选择启动模型（热更新）
+#   deploy_mode    机器模式 auto | server | auxiliary（auto 需重启判定）
+#   server_addr    服务端地址（host:port 或 URL，写入 ai.deploy.remote_host）
+curl.exe -s -X PUT http://localhost:8080/api/ai/settings `
+  -H $AUTH -H "Content-Type: application/json" `
+  -d '{"default_model":"qwen2:7b","deploy_mode":"auto","server_addr":"192.168.1.10:11434"}'
+# 响应含 need_restart 数组：列出需重启服务才能生效的字段（如 ai.deploy.mode）。
+# 网页「AI → 设置」保存时若该项非空，会提示确认并自动重启服务（POST /api/admin/restart），
+# 重启完成（/healthz 恢复）后提示刷新页面。
+
+# HomeAssistant 设备管理（v0.23，需启用 [ai.homeassistant]）
+curl.exe -s http://localhost:8080/api/ai/ha/status -H $AUTH            # 连接状态
+curl.exe -s "http://localhost:8080/api/ai/ha/devices?domain=light" -H $AUTH  # 设备列表
+curl.exe -s -X POST http://localhost:8080/api/ai/ha/service `
+  -H $AUTH -H "Content-Type: application/json" `
+  -d '{"domain":"light","service":"turn_on","entity_id":"light.living_room"}' # 控制设备
+```
+
+**局域网调用（OpenAI 兼容端点）**——两种方式：
+
+1. **经 smart-nas 代理（推荐，统一 JWT 鉴权）**：
+
+```powershell
+# 局域网另一台设备上（模型缺省时自动补当前生效模型）
+curl.exe -s -X POST http://<NAS主机IP>:8080/api/ai/v1/chat/completions `
+  -H "Authorization: Bearer <smart-nas JWT>" -H "Content-Type: application/json" `
+  -d '{"model":"","messages":[{"role":"user","content":"你好"}],"stream":false}'
+```
+
+2. **直连 Ollama**：`[ai.ollama].bind_host` 改为 `'0.0.0.0:11434'` 并重启服务后，
+   局域网设备可直接访问 `http://<NAS主机IP>:11434/v1/chat/completions`
+   （Ollama 原生 OpenAI 兼容端点）。**防火墙需放行**对应端口（11434 或 8080）：
+   `netsh advfirewall firewall add rule name="Ollama LAN" dir=in action=allow protocol=TCP localport=11434`。
+   公网暴露务必置于反向代理 + HTTPS 之后。
+
+**部署模式（`[ai.deploy]`，v0.23 起支持 auto 自动判定）**——切换只改配置或网页设置，不改代码：
+
+| 形态 | 配置 | 效果 |
+|------|------|------|
+| **自动判定（v0.23，推荐）** | `mode='auto'` + 可选 `remote_host` | 启动时探测：配置了服务端地址且**可达 → 以辅机启动**；未配置地址或**不可达 → 以服务端启动**。判定结果仅作用于本次运行（持久化保留 auto），运行中不因断连切换身份 |
+| 单机·大主机 | `mode='single'` | 自动选高级模型（deepseek-r1:7b，GPU 常驻），RAG 本机索引 |
+| 单机·N100 | `mode='single'` | 自动选低配模型（qwen3.5:9b，低资源常驻），RAG 本机索引 |
+| 双机·主服务 | `mode='dual' role='primary'`（N100） | 低配模型 + RAG 开启，作为知识库与模型服务端 |
+| 双机·辅助机 | `mode='dual' role='auxiliary'`（大主机）+ `remote_host`/`remote_api` 等 | 探测远端：可达 → 自动切换远端模型（卸载本机模型）+ RAG 走主服务（不建独立向量库）；断线 → 优雅降级回本机高级模型；周期探测自动双向切换 |
+
+> 机器模式既可通过 `config.toml` 配置，也可在网页「AI → 设置」中调整（主人/管理员）。
+> `deploy_mode` / `server_addr` / Ollama 地址 / 向量模型等**启动期装配**项保存后会返回
+> `need_restart` 提示，确认后自动重启服务生效；模型选择与推理参数为**热更新**即时生效。
+
+**前端 AI 页签（v0.23）**：左侧会话列表（新建 / 切换 / 删除），右侧流式对话窗口
+（SSE 逐字输出、可停止）；工具栏支持模型切换、模型管理（拉取进度 / 删除）与
+「设置」面板（启动模型 / 机器模式 / 服务端地址 / 推理参数）。
+
+**智能家居页签（v0.23）**：HomeAssistant 设备网格——按域名（灯 / 开关 / 传感器等）
+展示设备名称与实时状态，开关类设备可直接点击控制；未启用或连接失败时页面提示
+配置方法（需 `[ai.homeassistant]`）。
+
+**HomeAssistant 接入（可选）**：`[ai.homeassistant]` 填 `base_url` 与长期访问令牌
+（HA → 个人资料 → 安全）并 `enabled=true`，重启后自动连通性自检并注册 3 个 AI 工具
+（`ha_list_devices` / `ha_get_state` / `ha_call_service`），之后直接对话即可控制设备
+（如「把客厅灯调到 50%」）。未启用 / 自检失败时降级不注册，对话中提示暂不支持设备控制。
+
+**知识库（RAG）**：`[ai.rag] enabled=true` 时对文档建立向量索引（chromem 嵌入式，
+`data/vectors/store.json`），对话自动注入检索上下文；`POST /api/ai/rag/search` 可直接语义检索。
+
+### 6.15 优雅关闭与 Ollama 进程安全（v0.21）
+
+`Ctrl + C` 优雅退出时：先卸载 AI 模型（`keep_alive=0` 释放显存/内存），再停止
+**本服务拉起的** Ollama 进程。用户自己启动的 Ollama **永远不会被停止**；
+服务重启时凭 `data/ollama.pid` 自动接管上一任服务拉起的实例。
+
 ---
 
 ## 7. 可选组件（可选启用）
 
 ### 7.1 Ollama（本地大模型，AI 对话 / RAG）
 
-1. 安装：[ollama.com](https://ollama.com/) 下载 Windows 版并运行；
-2. 拉取模型（约需几分钟，首次较大）：
+1. 安装：[ollama.com](https://ollama.com/) 下载 Windows 版并安装即可
+   （**无需手动启动**：v0.21 起服务端检测到未运行会自动后台拉起 `ollama serve`，
+   优雅关闭时自动停止本服务拉起的实例；`[ai.ollama].managed=false` 可改为自行管理）；
+2. 拉取模型（三种方式任选，也可只做第 3 步让服务端在管理页拉取）：
 
 ```powershell
-ollama pull qwen2:7b          # 对话模型（config 默认）
+ollama pull deepseek-r1:7b    # GPU 机器（显存≥8GB）硬件自适应默认模型
+ollama pull qwen3.5:9b        # 无 GPU 机器（N100）硬件自适应默认模型
+ollama pull qwen2:7b          # config 默认对话模型（兼容旧配置）
 ollama pull nomic-embed-text  # 向量模型（RAG 用）
 ```
 
+   或经 smart-nas 管理接口拉取（进度可查，见 §6.14）：
+   `POST /api/ai/models/pull`。
 3. `config.toml` 中 `[ai] ollama_host` 默认 `http://localhost:11434` 即可；
-4. 重启服务，`GET /api/ai/models` 接口即可用（AI 路由为扩展接口，按需接入前端）。
+   局域网调用改 `[ai.ollama].bind_host = '0.0.0.0:11434'`（见 §6.14）；
+4. 重启服务：启动日志确认「硬件检测完成 → 硬件调优预设生效 → Ollama 已就绪 →
+   默认模型预热完成」，即可对话（见 §6.14 验证命令）。
 
 ### 7.2 MQTT Broker（IoT 设备接入，可选）
 
@@ -609,6 +784,15 @@ ffprobe.exe -version  # 验证
 | 还原报"备份链损坏" | 链上某备份产物丢失/被改动 | 属保护机制（拒绝还原损坏链）；删除损坏链后重新完整备份 |
 | 升级后第一次增量备份仍是全量 | 旧版备份无 sidecar 快照（或快照键格式为旧版） | 属自愈机制：本次生成新格式快照，之后即为真增量 |
 | 备份进度日志出现 Z:\TEMP\ 等临时目录路径 | 旧版本压缩模式日志显示 staging 临时路径 | v0.21.5 起已换算回源路径显示，更新程序即可 |
+| AI 对话报「AI 模块未启用」 | 未配置 `[ai].ollama_host` 或 Ollama 不可用 | 确认 Ollama 已安装且 `[ai.ollama].managed=true`（默认自动拉起） |
+| AI 接口返回 401 | 未登录 / Token 过期 | 所有 AI 接口均需 JWT（先 `POST /api/auth/login`） |
+| 模型管理接口返回 403 | 非主人/管理员 | 模型拉取/删除/参数调整为管理员专属 |
+| 关闭服务后 Ollama 仍在运行 | Ollama 为用户自行启动（非服务拉起） | 属安全设计（绝不停止用户自启实例）；`managed=false` 时同理 |
+| 局域网设备无法直连 Ollama | bind_host 为 127.0.0.1 或防火墙拦截 | `[ai.ollama].bind_host = '0.0.0.0:11434'` 并放行端口（见 §6.14） |
+| 智能家居工具不可用 | HA 未启用 / 地址或令牌错误 | 检查 `[ai.homeassistant]` 配置与 HA 长期访问令牌；自检失败会降级不注册 |
+| AI 设置保存后提示需重启 | 修改了启动期装配项（机器模式 / 服务端地址 / Ollama 地址 / 向量模型） | 确认后自动重启服务，`/healthz` 恢复后按提示刷新页面；模型选择与推理参数无需重启 |
+| 网页重启后页面无响应 | 服务正在重启 | 属正常现象：轮询 `/healthz` 恢复后页面会提示刷新，稍候即可 |
+| auto 模式启动成了服务端 | 未配置服务端地址或地址不可达 | 属预期判定逻辑；确认对端 Ollama 运行且 `server_addr` 配置正确后重启 |
 
 ---
 

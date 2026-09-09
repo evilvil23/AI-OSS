@@ -59,6 +59,7 @@ updated: 2026-08-20|00020T18:52
 | 日志       | zap / lumberjack                                      | 高性能结构化日志 + 自动切割 |
 | 认证       | JWT + Argon2id                                        | PHC 字符串格式 |
 | 前端       | Vue3 + Element Plus                                   | 响应式、组件丰富、构建产物可嵌入 Go 二进制 |
+| Windows API | **ebitengine/purego**                                | 免 cgo 动态调用 kernel32（替代原生 syscall.NewLazyDLL），类型化函数指针 + 寄存器/栈参数编排 |
 
 ### 1.3 系统分层架构
 
@@ -98,6 +99,28 @@ updated: 2026-08-20|00020T18:52
 - **插件层**：提供三级扩展机制（go-plugin 进程外插件、Hook 事件钩子、Goja 脚本引擎），支持动态扩展。
 - **数据访问层**：元数据存入 SQLite，文件 blob 直接存文件系统，AI 语义向量存入嵌入式向量库。
 - **基础设施层**：Ollama 运行时、MQTT 消息代理、日志、配置等底层服务。
+
+#### Windows 系统调用实现（purego，v0.24 重构）
+
+系统状态采集（CPU/内存/磁盘/运行时长）、隐藏/系统文件属性检测、备份磁盘空间预检与
+USB 可移动设备枚举（卷标/序列号）均需调用 `kernel32.dll`。v0.24 起统一改用
+**`github.com/ebitengine/purego`**（已 vendor，免 cgo）替代原生 `syscall.NewLazyDLL`：
+
+- DLL 句柄经 `golang.org/x/sys/windows.LoadLibrary` 获取（purego 在 Windows
+  不提供 `Dlopen`，Windows 系统 DLL 官方推荐用 x/sys/windows 加载）；
+- 函数地址经 `purego.RegisterLibFunc` 绑定为 **Go 类型化函数指针**，
+  由 purego 完成寄存器/栈参数编排，不再使用
+  `proc.Call(uintptr(unsafe.Pointer(...)))` 的裸指针方式；
+- 覆盖三处调用点：
+  - `internal/util/system_windows.go`：`GlobalMemoryStatusEx` / `GetTickCount64` /
+    `GetSystemTimes` / `GetDriveTypeW` / `GetDiskFreeSpaceExW` / `GetFileAttributesW` /
+    `GetVolumeInformationW`；
+  - `internal/backup/winapi_windows.go`：`GetDriveTypeW` / `GetDiskFreeSpaceExW` /
+    `GetVolumeInformationW`（USB 设备枚举与备份空间预检）；
+  - `internal/ai/hardware/hardware_windows.go`：`GlobalMemoryStatusEx`（硬件自适应检测）。
+- 函数符号缺失时（panic 由 `RegisterLibFunc` 抛出）捕获后保持函数指针为 nil，
+  调用方按「该能力不可用」返回安全零值，不影响服务启动；UTF-16 编解码
+  （`utf16FromString` / `utf16ToString`）以 `unicode/utf16` 实现，不再依赖 `syscall` 包。
 
 ### 1.4 部署拓扑
 
@@ -879,6 +902,14 @@ func (c *Client) GenerateEmbedding(ctx context.Context, model, text string) ([]f
 func (c *Client) ListModels(ctx context.Context) ([]ModelInfo, error)
 ```
 
+> **keep_alive 参数规范（v0.24.1）**：`keep_alive` 接受整数秒（`-1` 常驻 / `0` 卸载）
+> 与 duration 字符串（`"5m"`）两种形态。若以字符串发送裸数字（如 `"-1"`），Ollama
+> 会按 duration 解析并报 `time: missing unit`。统一通过自定义类型 `ollama.KeepAlive`
+> （`MarshalJSON` 将纯数字量化为 JSON number、duration 保留字符串）输出——
+> 对话（`ChatRequest`）、预热（`GenerateRequest` / `Warmup`）、卸载
+> （`GenerateRequest` / `UnloadModel`）三处请求全部复用该类型，保证预热与
+> 优雅关闭卸载不再报错。
+
 **系统提示词（System Prompt）**：
 ```
 你是一个智能家庭管家，运行在家庭 NAS 上。你的职责包括：
@@ -1025,6 +1056,146 @@ type QdrantStore struct { client *qdrant.Client }
 
 > **配置说明**：向量库切换配置已整合到主配置文件 `config.toml` 的 `[ai.rag]` 和 `[ai.rag.qdrant]` 段，通过 `store_type` 字段选择 `chromem` 或 `qdrant`。切换时需提供数据迁移脚本（从 chromem 导出并导入 Qdrant），迁移期间系统仍提供基础文件搜索（基于文件名），RAG 功能短暂不可用。
 
+#### 2.5.7 Ollama 全生命周期管理（v0.21）
+
+**模块**：`internal/ai/ollama/lifecycle.go`（v0.21 新增）。
+
+服务端对 Ollama 进程实施「检测 → 拉起 → 就绪 → 预热 → 卸载 → 停止」全生命周期管理：
+
+```go
+// internal/ai/ollama/lifecycle.go
+type Lifecycle struct {
+    mu      sync.Mutex
+    client  *Client
+    cfg     OllamaRunConfig
+    pidPath string          // data/ollama.pid
+    managed bool            // 当前实例是否由本服务拉起 / 接管
+    cmd     *exec.Cmd
+}
+
+// 启动时：已运行 → 凭 pid 文件接管（上一任服务实例）或仅检测（用户自启）；
+//         未运行且 managed=true → 后台拉起 ollama serve + 等就绪（超时可配）+ 空对话预热
+func (l *Lifecycle) EnsureRunning(ctx context.Context, defaultModel, keepAlive string) (bool, error)
+
+// 优雅关闭：先 keep_alive=0 卸载模型释放显存/内存，再停止本服务拉起的实例
+// （用户自启实例绝不触碰；pid 文件一并清理）
+func (l *Lifecycle) Shutdown(ctx context.Context, model string)
+```
+
+**进程管理策略（跨平台）**：
+- Windows / Linux 统一 `os/exec` 后台进程 + PID 文件（`data/ollama.pid`）记录；
+- 服务重启时凭 PID 文件识别上一任实例并**接管管理**（进程存活则接管，死亡则重新拉起）；
+- 用户自启的 Ollama 仅检测不管理，关闭时**绝不停止**；
+- 拉起时注入环境变量：`OLLAMA_HOST`（绑定地址）、`OLLAMA_NUM_PARALLEL`（并行数）、
+  **`OLLAMA_MODELS`（v0.24.2）**。
+
+> **OLLAMA_MODELS 注入（v0.24.2）**：`os/exec` 子进程继承的是 smart-nas **当前进程**
+> 的环境变量，User/Machine 级环境变量（如模型目录迁移后设置 `OLLAMA_MODELS=
+> S:\...\models`）不会传播到已运行进程的子进程——若 smart-nas 由终端 / 服务 /
+> 计划任务启动，拉起的 `ollama serve` 会退回默认模型目录导致模型 404。
+> 现于 `internal/ai/ollama/env_windows.go` 的 `ollamaModelsEnv()` 按
+> 「进程环境 → 用户级注册表 `HKCU\Environment` → 系统级注册表」读取
+> `OLLAMA_MODELS` 并注入子进程，保证无论从何处启动均能定位模型目录。
+
+**配套客户端扩展**（`internal/ai/ollama/admin.go`）：
+
+```go
+func (c *Client) RunningModels(ctx) ([]RunningModel, error)  // GET /api/ps（等价 ollama ps）
+func (c *Client) Warmup(ctx, model, keepAlive string) error  // 空提示 /api/generate 触发加载
+func (c *Client) UnloadModel(ctx, model string) error        // keep_alive=0 卸载
+func (c *Client) PullModel(ctx, model string, progress chan<- PullProgress) error  // 流式进度
+func (c *Client) DeleteModel(ctx, model string) error        // DELETE /api/delete
+```
+
+#### 2.5.8 硬件自适应与模型调优（v0.21）
+
+**模块**：`internal/ai/hardware/`（v0.21 新增）。
+
+启动时检测 NVIDIA GPU（`nvidia-smi --query-gpu=name,memory.total`）、总内存、CPU 型号，按可配置规则生成「硬件配置预设」：
+
+| 条件 | 默认模型 | num_ctx | keep_alive | num_parallel |
+|------|---------|---------|------------|--------------|
+| NVIDIA GPU 显存 ≥ 8GB（如 RTX 4070 12GB） | `deepseek-r1:7b`（Q4_K_M 约 4.7GB 全量进显存） | 8192 | `-1`（常驻显存） | 2 |
+| 无 GPU 或显存 < 8GB（如 N100） | `qwen3.5:9b`（Q4_K_M） | 4096 | `5m` | 1 |
+
+> 模型 tag 说明：需求原指定 `qwen3.5-7b-instruct:q4_K_M` 在 Ollama 官方库不存在该精确 tag，
+> 取最接近的 7B~9B 级 Q4_K_M 量化模型 `qwen3.5:9b`；低内存设备（总内存 < 12GB）兜底
+> 回落 `config.ai.default_model`，避免 9B 模型挤占内存。
+
+```go
+// internal/ai/hardware/hardware.go
+type Preset struct {
+    Model       string `json:"model"`        // 默认模型
+    NumCtx      int    `json:"num_ctx"`      // 上下文窗口
+    KeepAlive   string `json:"keep_alive"`   // 驻留时长（"-1" 常驻）
+    NumParallel int    `json:"num_parallel"` // 并行推理数
+    Source      string `json:"source"`       // "config"（显式配置）| "auto"（硬件自适应）
+}
+
+func Detect(ctx context.Context) Info
+func (i Info) Resolve(tune config.TuneConfig, fallbackModel string) Preset  // config.toml [ai.tune] 显式值优先
+```
+
+**配置优先原则**：`[ai.tune]` 中 `model / num_ctx / keep_alive / num_parallel` 任一显式配置即覆盖自动值（`Source=config`），自动检测仅作默认值，禁止写死。
+
+#### 2.5.9 Eino 框架集成（v0.21）
+
+引入字节 **Eino** 框架（`github.com/cloudwego/eino` v0.9.x），将 Ollama 直连调用重构为 Eino 组件（内部实现替换，对外 API 行为不变，前端无感）：
+
+```go
+// internal/ai/eino/chatmodel.go —— 实现 Eino ToolCallingChatModel 接口
+type ChatModel struct { /* 封装 *ollama.Client + 生成参数 + 工具定义 */ }
+func (c *ChatModel) Generate(ctx, input []*schema.Message, opts ...model.Option) (*schema.Message, error)
+func (c *ChatModel) Stream(ctx, input []*schema.Message, opts ...model.Option) (*schema.StreamReader[*schema.Message], error)
+func (c *ChatModel) WithTools(tools []*schema.ToolInfo) (model.ToolCallingChatModel, error)
+
+// internal/ai/eino/adapter.go —— 现有工具注册表适配 Eino Tool 协议
+func AdaptTools(reg *tools.Registry) []tool.BaseTool
+func NewToolsNode(ctx context.Context, tools []tool.BaseTool) (*compose.ToolsNode, error)
+```
+
+- 工具调用循环改为「ChatModel（绑定工具）→ Eino ToolsNode 并行执行 → 结果回传」；
+- 流式输出经 `schema.Pipe` 桥接 Ollama chunk 流与 Eino StreamReader；
+- AI 服务（`internal/ai/service.go`）的 Chat / StreamChat / 会话 / RAG 注入签名与行为保持不变。
+
+#### 2.5.10 模型管理与局域网调用（v0.21）
+
+**模型管理 API**（仅主人 / 管理员，见 §4 API）：
+
+| 接口 | 功能 |
+|------|------|
+| `GET /api/ai/models` | 模型列表（含大小 / 量化信息） |
+| `POST /api/ai/models/pull` | 拉取模型（进度经 `GET /api/ai/models/pull/status` 查询） |
+| `DELETE /api/ai/models/{name}` | 删除模型 |
+| `GET / PUT /api/ai/settings` | 查看 / 调整推理参数（num_ctx、temperature、keep_alive 等） |
+| `GET /api/ai/status` | 状态总览（Ollama 进程 / 已加载模型 / 硬件预设 / 部署模式） |
+
+**局域网调用（OpenAI 兼容端点）**：
+- 拉起 Ollama 时注入 `OLLAMA_HOST=0.0.0.0:11434`（`[ai.ollama].bind_host`），局域网设备可直连 Ollama 原生 `/v1`；
+- smart-nas 同时提供 **OpenAI 兼容代理** `POST /api/ai/v1/chat/completions`：走 smart-nas JWT 鉴权（家庭内网收敛入口）、model 缺省自动补当前生效模型、流式 SSE 透传；
+- 防火墙需放行 11434（直连 Ollama）或 8080（走 smart-nas 代理）端口；公网暴露务必置于反代 + HTTPS 之后。
+
+#### 2.5.11 部署模式与主备双机（v0.21，可选开启）
+
+**模块**：`internal/ai/deploy.go`（v0.21 新增）。
+
+三种形态互不依赖，切换只改 `config.toml [ai.deploy]`，重启或热重载生效，**不涉及代码改动**：
+
+| 形态 | 配置 | 行为 |
+|------|------|------|
+| 单机·大主机 | `mode="single"` | 按硬件自适应选高级模型（deepseek-r1:7b，GPU 常驻），RAG 本机索引 |
+| 单机·N100 | `mode="single"` | 按硬件自适应选低配模型（qwen3.5:9b，低资源常驻），RAG 本机索引 |
+| 双机·主服务 | `mode="dual" role="primary"`（通常 N100） | 低配模型常驻 + RAG 默认开启，作为知识库与模型服务端 |
+| 双机·辅助机 | `mode="dual" role="auxiliary"`（通常大主机） | 探测远端 Ollama：可达 → 自动切换远端模型（卸载本地模型）+ RAG 走主服务；不可达 → 降级回本机高级模型并告警；运行中按 `check_interval` 周期探测双向自动切换 |
+
+```go
+// internal/ai/deploy.go
+type deployState struct { /* mode/role/remoteHost/remoteClient/remoteActive/autoSwitch */ }
+func (s *Service) StartDeployWatch(ctx context.Context)  // auxiliary：启动探测 + 周期巡检
+```
+
+**辅助机远程 RAG**：`NewRemoteRetriever` 登录主服务（`[ai.deploy].remote_api` + 账号密码）获取 JWT，经 `POST /api/ai/rag/search` 查询主服务向量库——辅助机**不建立独立向量库**，RAG 统一走主服务。
+
 ---
 ### 2.6 智能家居接入模块（核心新增）
 
@@ -1144,6 +1315,42 @@ func (m *Manager) onDeviceStatusChanged(d device.Device, status map[string]inter
     })))
 }
 ```
+
+#### 2.6.6 HomeAssistant 接入（v0.21 新增）
+
+**模块**：`internal/ai/ha/`（REST 客户端 + AI 工具，v0.21 新增）。
+
+在米家（§2.6.2）与 MQTT 通用接入（§2.6.3）之外，新增 HomeAssistant REST API 直连：
+
+```go
+// internal/ai/ha/client.go
+type Client struct { /* baseURL + token + http.Client */ }
+
+func (c *Client) CheckConnection(ctx context.Context) error            // GET /api/ + token 校验（自检）
+func (c *Client) ListStates(ctx context.Context, domain string) ([]State, error)  // 实体列表，domain 前缀过滤
+func (c *Client) GetState(ctx context.Context, entityID string) (*State, error)
+func (c *Client) CallService(ctx context.Context, domain, service, entityID string, data map[string]interface{}) error
+```
+
+**注册为 AI 工具**（并入现有工具注册表，AI 对话即可控制设备）：
+
+| 工具名 | 功能 | 参数 |
+|--------|------|------|
+| `ha_list_devices` | 查询 HA 设备列表 | `domain?: string`（light/switch/climate/sensor…） |
+| `ha_get_state` | 查询设备状态与属性 | `entity_id: string` |
+| `ha_call_service` | 调用服务控制设备 | `domain: string`, `service: string`, `entity_id: string`, `data?: object`（brightness/temperature 等） |
+
+**降级策略**：`[ai.homeassistant].enabled=false` 或配置不完整时不注册；连通性自检失败（地址不可达 / token 无效）同样不注册并记录告警——AI 对话中自然降级为「暂不支持设备控制」。接入逻辑以单元测试 + Mock 响应验证（`internal/ai/ha/ha_test.go`：自检 / 列表过滤 / 状态查询 / 服务调用 / domain 自动纠正 / 工具链）。
+
+```toml
+# config.toml
+[ai.homeassistant]
+enabled = false
+base_url = 'http://homeassistant.local:8123'
+token = ''                       # HA 长期访问令牌（个人资料 → 安全）
+```
+
+> 危险操作（开锁、断电类）在工具描述中要求 AI 与用户二次确认后再执行。
 
 ---
 
@@ -2730,17 +2937,55 @@ require (
 
 ## 附录 B：AI 模型推荐
 
+### B.1 硬件自适应默认模型（v0.21 生效，config.toml `[ai.tune].model` 可覆盖）
+
+| 硬件 | 模型 | 量化 | 体积 | 显存/内存占用 | 预设参数 |
+|------|------|------|------|--------------|---------|
+| NVIDIA GPU 显存 ≥ 8GB（RTX 4070 12GB 等） | `deepseek-r1:7b`（DeepSeek-R1-Distill-Qwen-7B） | Q4_K_M（官方默认） | 约 4.7GB | 全量进 GPU | num_ctx=8192、keep_alive=-1 常驻、num_parallel=2 |
+| 无 GPU 或显存 < 8GB（N100 等） | `qwen3.5:9b` | Q4_K_M | 约 5.9GB | CPU 内存推理 | num_ctx=4096、keep_alive=5m、num_parallel=1 |
+
+> `deepseek-r1:7b` 拉取即 Q4_K_M 量化，约 4.2–5.5GB 显存可全量加载进 12GB 显卡；
+> 需求原指定 `qwen3.5-7b-instruct:q4_K_M` 在 Ollama 官方库不存在该精确 tag，
+> 取最接近的 7B~9B 级 Q4_K_M 量化模型 `qwen3.5:9b`（9.65B 参数）；低内存设备
+> （总内存 < 12GB）自动兜底回落 `config.ai.default_model`。
+
+### B.2 备选对话模型
+
 | 模型 | 大小 | 用途 | 内存需求 |
 |------|------|------|---------|
 | `qwen2:7b-instruct` | 4.7GB (Q4) | 通用对话、工具调用 | 8GB |
 | `qwen2:14b-instruct` | 9GB (Q4) | 复杂推理、长文档理解 | 16GB |
 | `llama3.1:8b-instruct` | 4.9GB (Q4) | 英文为主的对话 | 8GB |
+
+### B.3 向量化模型（RAG）
+
+| 模型 | 大小 | 用途 | 内存需求 |
+|------|------|------|---------|
 | `nomic-embed-text` | 274MB | 文本向量化（RAG） | 1GB |
 | `mxbai-embed-large` | 670MB | 高质量中文向量化 | 2GB |
 
 ---
 
 ## 附录 C：版本变更记录
+
+### v0.23（2026-09-06）AI 设置与主辅机模式：auto 自动判定 + 网页 AI 设置 + 进程重启 + AI/智能家居页签
+- **机器模式 auto 自动判定（`cmd/server/main.go` `resolveDeployMode`）**：`[ai.deploy].mode` 新增 `auto` 取值——启动时配置了服务端地址（`remote_host`）且 Ollama Ping 可达（5 秒超时）→ 以**辅机**启动；未配置或不可达 → 以**服务端**启动并记录日志。判定结果仅作用于运行态（持久化保留 `auto` 原值），运行中不因断连切换身份；配置热更新回调中同样先解析再下发 AI 服务。
+- **网页 AI 设置扩展（`internal/server/handlers_ai.go`）**：`PUT /api/ai/settings` 新增 `deploy_mode`（auto|server|auxiliary）与 `server_addr`（写入 `ai.deploy.remote_host`），支持启动模型主动选择（`default_model`，热更新）；响应携带 `need_restart` 数组（`aiNeedRestartFields` 对比保存前后配置，列出 `ai.deploy.mode` / `ai.deploy.role` / `ai.deploy.remote_host` / `ai.deploy.remote_api` / `ai.ollama_host` / `ai.embedding_model` 等启动期装配字段，结果永不为 nil）。
+- **进程级重启（`internal/server/handlers_restart` + `cmd/server/restart_windows.go` / `restart_other.go`）**：新增 `POST /api/admin/restart`（仅主人/管理员，403/409/503 分支齐全）——`Deps.RestartCh`（缓冲 1）触发 main 的重启分支，复用优雅退出链路（卸载模型 → 停托管 Ollama → 停调度器）后由平台封装自动拉起新进程接力（Windows 父进程接力）；前端保存需重启项时提示确认并自动重启，轮询 `/healthz` 恢复后提示刷新页面。
+- **主页新增 AI / 智能家居页签（`web/templates/index.html` + `web/static/js/ai.js` / `smarthome.js`）**：AI 页签提供会话列表（新建/切换/删除）、流式对话窗口（SSE 逐字输出、AbortController 可中断）、模型切换与管理、设置面板；智能家居页签基于 HomeAssistant 设备网格（按 domain 展示名称与状态，开关类可直接点击控制），未启用/连接失败给出配置指引。
+- **HomeAssistant 设备管理 API（新文件 `internal/server/handlers_ha.go`，`Deps.HAClient`）**：`GET /api/ai/ha/status`（连接状态）、`GET /api/ai/ha/devices?domain=`（实体列表按 domain 过滤）、`POST /api/ai/ha/service`（服务调用，危险操作由 AI 工具层二次确认）。
+- **测试**：新增 `internal/server` 重启端点链路测试（主人 200 + RestartCh 信号 / 普通用户 403 / 通道满 409 / 未注入 503）与 `web_test.go` 模板/静态/回退链路测试；`go build ./...` / `go test ./...` 全部通过。
+
+### v0.21（2026-09-06）AI 管家与知识库：Ollama 生命周期 + 硬件自适应 + Eino + 主备双机 + HomeAssistant
+- **Ollama 全生命周期管理（新模块 `internal/ai/ollama/lifecycle.go`）**：启动检测（Ping `/api/tags`）→ 未运行且托管时后台拉起 `ollama serve`（PID 记录于 `data/ollama.pid`）→ 等就绪（超时可配）→ 空对话预热加载默认模型；优雅关闭先 `keep_alive=0` 卸载模型释放显存/内存再停止进程——**仅限本服务拉起或接管的实例，用户自启的 Ollama 绝不触碰**；服务重启凭 PID 文件接管上一任实例。跨平台 `os/exec`（Windows / Linux）。
+- **硬件自适应与模型调优（新模块 `internal/ai/hardware`）**：启动检测 NVIDIA GPU（nvidia-smi）/ 总内存 / CPU 型号；显存 ≥ 8GB → `deepseek-r1:7b`（num_ctx=8192、常驻、并行 2），无 GPU → `qwen3.5:9b`（num_ctx=4096、5m、并行 1；官方库无 `qwen3.5-7b-instruct` 精确 tag，取最接近的 Q4_K_M）；`[ai.tune]` 显式配置优先，实际生效值（含来源）记录日志与状态 API。
+- **Eino 框架集成（新模块 `internal/ai/eino`）**：引入 `github.com/cloudwego/eino` v0.9.x，Ollama 直连重构为 Eino `ToolCallingChatModel` 组件（Generate / Stream / WithTools），工具经适配器接入 Eino ToolsNode 并行执行；对外 API 行为不变，前端无感。
+- **服务端模型管理（`internal/server/handlers_ai.go`）**：模型列表 / 拉取（进度可查）/ 删除 / 推理参数查看与调整（仅主人/管理员）；状态总览 `/api/ai/status`（Ollama 进程、已加载模型、硬件预设、部署模式）。
+- **局域网调用**：拉起 Ollama 注入 `OLLAMA_HOST`（`[ai.ollama].bind_host` 可配 `0.0.0.0:11434`）；smart-nas 提供 OpenAI 兼容代理 `POST /api/ai/v1/chat/completions`（JWT 鉴权、model 缺省补当前生效模型、SSE 流式透传）。
+- **部署模式与主备双机（新模块 `internal/ai/deploy.go`，可选开启）**：`[ai.deploy] mode=single|dual`，切换只改配置不改代码；dual+primary（N100 常驻）低配模型 + RAG 服务端；dual+auxiliary（大主机）启动探测远端 Ollama——可达自动切换远端模型（卸载本地）+ RAG 走主服务（`NewRemoteRetriever` 登录主服务查询 `/api/ai/rag/search`，不建独立向量库），不可达降级回本机高级模型，周期探测自动双向切换。
+- **HomeAssistant 接入（新模块 `internal/ai/ha`）**：REST 客户端（自检 / 实体列表 / 状态 / 服务调用）+ 3 个 AI 工具（`ha_list_devices` / `ha_get_state` / `ha_call_service`）；未启用 / 自检失败降级不注册；单元测试 Mock 验证。
+- **配置**：新增 `[ai.ollama]`（managed/binary/bind_host/start_timeout/auto_warmup）、`[ai.tune]`（model/num_ctx/keep_alive/num_parallel）、`[ai.deploy]`（mode/role/remote_*/auto_switch/check_interval）、`[ai.homeassistant]`（enabled/base_url/token）四段，全部支持热更新。
+- **测试**：新增 `internal/ai/ha`（HA 工具链 Mock 测试）、`internal/ai/eino`、`internal/ai/hardware` 单元测试；`go build ./...` / `go vet ./...` / `go test ./...` 全部通过。
 
 ### v0.20（2026-09-01）文件备份还原模块
 - **任务化备份（新模块 `internal/backup`）**：以任务形式组织备份（多源 + 排除规则），

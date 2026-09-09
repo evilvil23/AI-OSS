@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -14,6 +15,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"smart-nas/internal/ai"
+	"smart-nas/internal/ai/ha"
+	"smart-nas/internal/ai/hardware"
+	"smart-nas/internal/ai/ollama"
 	"smart-nas/internal/api/types"
 	"smart-nas/internal/auth"
 	"smart-nas/internal/backup"
@@ -44,6 +48,10 @@ type Deps struct {
 	Tus        *tusd.Handler
 	Hub        *ws.Hub
 	AI         *ai.Service
+	Lifecycle  *ollama.Lifecycle // Ollama 进程生命周期管理（v0.21）
+	Hardware   *hardware.Info    // 硬件检测结果（v0.21）
+	HAClient   *ha.Client        // HomeAssistant 客户端（v0.23 设备管理 API）
+	RestartCh  chan struct{}     // 进程级重启请求通道（v0.23，main 收到后优雅重启；nil = 不支持）
 	IoT        *iot.Service
 	Plugins    *plugin.Manager
 	Scheduler  *task.Scheduler
@@ -55,6 +63,10 @@ type Deps struct {
 	TusPrefix    string
 }
 
+// WebVersion 前端静态资源版本号（index.html 模板经 {{.WebVersion}} 注入，
+// 作为资源 URL 的 ?v= 缓存参数；发布新前端时同步更新此处）
+const WebVersion = "0.23.0"
+
 // Server HTTP 服务
 type Server struct {
 	deps    Deps
@@ -62,6 +74,7 @@ type Server struct {
 	metrics *Metrics
 	cfg     *config.Manager
 	httpSrv *http.Server
+	webTmpl *template.Template // 前端页面模板（web/templates/index.html）
 }
 
 // New 创建服务实例并注册路由
@@ -77,6 +90,7 @@ func New(deps Deps) *Server {
 			gin.SetMode(mode)
 		}
 	}
+	s.loadWebTemplate()
 	s.engine = gin.New()
 	s.engine.Use(gin.Recovery(), TraceID(), AccessLog(), CORS())
 	s.setupRoutes()
@@ -99,11 +113,13 @@ func (s *Server) setupRoutes() {
 	})
 	engine.GET("/metrics", metrics.Handler())
 
-	// 静态前端（web/ 目录存在时启用，单页应用回退）
-	// 采用 NoRoute 回退而非 Static("/")，避免通配路由与 API 路由冲突；
-	// 未匹配的 API/接口路径仍返回 JSON 404。
-	if stat, err := os.Stat("web"); err == nil && stat.IsDir() {
-		engine.NoRoute(staticFallback("web"))
+	// 前端（v0.22 重组为 templates/ + static/）：
+	//   /static/*      —— css/js 静态资源（gin Static）
+	//   / 与 SPA 回退  —— html/template 渲染 templates/index.html（注入 WebVersion）
+	// NoRoute 回退而非通配路由，避免与 API 路由冲突；未匹配的接口路径仍返回 JSON 404。
+	if s.webTmpl != nil {
+		engine.Static("/static", "web/static")
+		engine.NoRoute(s.staticFallback())
 	}
 
 	// 公开 API
@@ -119,8 +135,12 @@ func (s *Server) setupRoutes() {
 	authed.POST("/auth/change-password", s.changePassword)
 	authed.GET("/system/status", s.systemStatus)
 	s.registerFileRoutes(authed)
-	// 说明：AI（/api/ai）与 IoT（/api/iot）模块当前仅保留扩展接口，
-	// 具体 HTTP 路由后续实现，届时在 authed 组注册 registerAIRoutes/registerIoTRoutes。
+	// AI 管家 / 知识库 / Ollama 管理（v0.21）：登录用户可见，管理接口要求管理员
+	if s.deps.AI != nil {
+		s.registerAIRoutes(authed)
+	}
+	// HomeAssistant 设备管理（v0.23）：独立于 AI 服务注册（HA 与 Ollama 解耦）
+	s.registerHARoutes(authed)
 	s.registerPluginRoutes(authed)
 
 	// 备份还原（v0.20）：登录用户可见任务与历史；触发/写操作要求主人/管理员
@@ -198,29 +218,57 @@ func (s *Server) Run(ctx context.Context, addr string) error {
 	}
 }
 
-// staticFallback 返回未匹配路由的处理器：优先服务静态文件，其余回退 index.html
-func staticFallback(webDir string) gin.HandlerFunc {
+// loadWebTemplate 启动时解析前端页面模板（web/templates/index.html）。
+// 模板缺失或语法错误时记日志并置空——服务仍可提供 API（前端不可用）。
+func (s *Server) loadWebTemplate() {
+	const tplPath = "web/templates/index.html"
+	data, err := os.ReadFile(tplPath)
+	if err != nil {
+		logger.Warn("前端页面模板不存在，Web 界面不可用", "path", tplPath, "error", err)
+		return
+	}
+	tpl, err := template.New("index.html").Parse(string(data))
+	if err != nil {
+		logger.Warn("前端页面模板解析失败，Web 界面不可用", "path", tplPath, "error", err)
+		return
+	}
+	s.webTmpl = tpl
+	logger.Info("前端页面模板加载完成", "version", WebVersion)
+}
+
+// webRender 渲染前端页面模板（注入 WebVersion 缓存参数）
+func (s *Server) webRender(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache") // 协商缓存：保证 ?v= 版本参数变更能及时生效
+	c.Status(http.StatusOK)
+	if err := s.webTmpl.Execute(c.Writer, gin.H{"WebVersion": WebVersion}); err != nil {
+		logger.Warn("前端页面渲染失败", "error", err)
+	}
+}
+
+// staticFallback 返回未匹配路由的处理器：/static 之外的静态文件优先服务，
+// 其余回退渲染 index 模板（SPA 单页应用回退）
+func (s *Server) staticFallback() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Request.URL.Path
-		// API / 实时 / 上传 / 指标等未命中路径返回 JSON 404，避免误回退到前端
+		// API / 实时 / 上传 / 指标 / 静态资源等未命中路径返回 JSON 404，避免误回退到前端
 		if strings.HasPrefix(p, "/api/") || strings.HasPrefix(p, "/files/upload") ||
 			strings.HasPrefix(p, "/metrics") || strings.HasPrefix(p, "/dav") ||
+			strings.HasPrefix(p, "/static/") ||
 			p == "/ws" || p == "/healthz" {
 			c.JSON(http.StatusNotFound, types.Fail(types.CodeServerError, "接口不存在"))
 			return
 		}
-		// index.html 使用协商缓存（每次回源校验），保证其引用的 ?v= 版本参数变更能及时生效
-		c.Header("Cache-Control", "no-cache")
-		if p == "/" {
-			c.File(filepath.Join(webDir, "index.html"))
+		if s.webTmpl == nil {
+			c.JSON(http.StatusNotFound, types.Fail(types.CodeServerError, "接口不存在"))
 			return
 		}
-		fp := filepath.Join(webDir, filepath.FromSlash(strings.TrimPrefix(p, "/")))
+		// 兼容旧路径：/favicon.ico 等根级静态文件（如后续新增，放 web/static 并改引用即可）
+		fp := filepath.Join("web/static", filepath.FromSlash(strings.TrimPrefix(p, "/")))
 		if fi, err := os.Stat(fp); err == nil && !fi.IsDir() {
 			c.File(fp)
 			return
 		}
-		c.File(filepath.Join(webDir, "index.html"))
+		s.webRender(c)
 	}
 }
 

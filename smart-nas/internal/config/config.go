@@ -99,6 +99,49 @@ type AIConfig struct {
 	ConversationMaxTokens int       `toml:"conversation_max_tokens"`
 	Temperature           float64   `toml:"temperature"`
 	RAG                   RAGConfig `toml:"rag"`
+	Ollama                OllamaConfig `toml:"ollama"`       // v0.21 Ollama 进程生命周期管理
+	Tune                  TuneConfig   `toml:"tune"`         // v0.21 硬件自适应调优预设（零值 = 自动检测）
+	Deploy                DeployConfig `toml:"deploy"`       // v0.21 部署模式（single / dual 主备双机）
+	HomeAssistant         HAConfig     `toml:"homeassistant"` // v0.21 HomeAssistant 智能家居接入
+}
+
+// OllamaConfig Ollama 进程生命周期（v0.21 M1）
+type OllamaConfig struct {
+	Managed      bool   `toml:"managed"`       // 由本服务拉起 / 停止 Ollama（false = 用户自行管理）
+	Binary       string `toml:"binary"`        // 可执行文件路径（空 = 自动探测 PATH 与常见安装位置）
+	BindHost     string `toml:"bind_host"`     // 拉起时注入 OLLAMA_HOST（局域网调用设 0.0.0.0:11434）
+	StartTimeout int    `toml:"start_timeout"` // 拉起后等待就绪的最长秒数
+	AutoWarmup   bool   `toml:"auto_warmup"`   // 就绪后空对话预热，触发默认模型加载
+}
+
+// TuneConfig 硬件调优预设（v0.21 M2）；字段为零值时按硬件自适应规则取默认
+type TuneConfig struct {
+	Model       string `toml:"model"`         // 覆盖自动模型选择（config 优先，禁止写死）
+	NumCtx      int    `toml:"num_ctx"`       // 上下文窗口
+	KeepAlive   string `toml:"keep_alive"`    // 如 "5m"、"-1"（常驻显存 / 内存）
+	NumParallel int    `toml:"num_parallel"`  // 并行推理数（拉起时注入 OLLAMA_NUM_PARALLEL）
+}
+
+// DeployConfig 部署模式（v0.21 M6）：三种形态互不依赖，切换无需改代码
+// v0.23 mode 支持 auto：启动时按 remote_host 可达性自动选边（可达→auxiliary，否则→primary），
+// 解析结果仅存在于运行态（持久化保留 auto 原值），运行中不因断连切换身份
+type DeployConfig struct {
+	Mode           string `toml:"mode"`            // auto（启动时自动判定）| single（默认）| dual
+	Role           string `toml:"role"`            // dual 生效：primary | auxiliary
+	RemoteHost     string `toml:"remote_host"`     // auxiliary：远端（主服务）Ollama 地址
+	RemoteModel    string `toml:"remote_model"`    // auxiliary：远端使用的模型（空 = 沿用 default_model）
+	RemoteAPI      string `toml:"remote_api"`      // auxiliary：主服务 smart-nas API 根地址（RAG 走主服务）
+	RemoteUsername string `toml:"remote_username"` // auxiliary：主服务登录账号（获取 JWT 调 RAG）
+	RemotePassword string `toml:"remote_password"`
+	AutoSwitch     bool   `toml:"auto_switch"`    // 辅助机自动切换远端 / 降级本机
+	CheckInterval  int    `toml:"check_interval"` // 远端可达性探测间隔（秒）
+}
+
+// HAConfig HomeAssistant 接入（v0.21 M7）
+type HAConfig struct {
+	Enabled bool   `toml:"enabled"`
+	BaseURL string `toml:"base_url"` // 如 http://homeassistant.local:8123
+	Token   string `toml:"token"`    // 长期访问令牌（长期访问令牌，个人资料 → 安全）
 }
 
 type RAGConfig struct {
@@ -238,6 +281,26 @@ func DefaultConfig() *Config {
 	c.AI.RAG.Qdrant.Port = 6334
 	c.AI.RAG.Qdrant.CollectionName = "file_chunks"
 
+	c.AI.Ollama.Managed = true
+	c.AI.Ollama.Binary = ""
+	c.AI.Ollama.BindHost = "127.0.0.1:11434"
+	c.AI.Ollama.StartTimeout = 60
+	c.AI.Ollama.AutoWarmup = true
+
+	c.AI.Tune.Model = ""
+	c.AI.Tune.NumCtx = 0
+	c.AI.Tune.KeepAlive = ""
+	c.AI.Tune.NumParallel = 0
+
+	c.AI.Deploy.Mode = "single"
+	c.AI.Deploy.Role = "primary"
+	c.AI.Deploy.CheckInterval = 30
+	c.AI.Deploy.AutoSwitch = true
+
+	c.AI.HomeAssistant.Enabled = false
+	c.AI.HomeAssistant.BaseURL = "http://homeassistant.local:8123"
+	c.AI.HomeAssistant.Token = ""
+
 	c.IoT.MQTT.Enabled = true
 	c.IoT.MQTT.Broker = "tcp://localhost:1883"
 	c.IoT.MQTT.ClientID = "smart-nas"
@@ -334,6 +397,13 @@ func knownFields() []string {
 		"ai.rag.chunk_overlap", "ai.rag.top_k",
 		"ai.rag.qdrant.host", "ai.rag.qdrant.port", "ai.rag.qdrant.api_key",
 		"ai.rag.qdrant.collection_name",
+		"ai.ollama.managed", "ai.ollama.binary", "ai.ollama.bind_host",
+		"ai.ollama.start_timeout", "ai.ollama.auto_warmup",
+		"ai.tune.model", "ai.tune.num_ctx", "ai.tune.keep_alive", "ai.tune.num_parallel",
+		"ai.deploy.mode", "ai.deploy.role", "ai.deploy.remote_host", "ai.deploy.remote_model",
+		"ai.deploy.remote_api", "ai.deploy.remote_username", "ai.deploy.remote_password",
+		"ai.deploy.auto_switch", "ai.deploy.check_interval",
+		"ai.homeassistant.enabled", "ai.homeassistant.base_url", "ai.homeassistant.token",
 		"iot.mihome.enabled", "iot.mihome.client_id", "iot.mihome.client_secret",
 		"iot.mihome.redirect_uri", "iot.mihome.api_base",
 		"iot.mqtt.enabled", "iot.mqtt.broker", "iot.mqtt.client_id",
@@ -465,6 +535,61 @@ func setByPath(c *Config, path, value string) error {
 	case "ai.rag.qdrant.collection_name":
 		c.AI.RAG.Qdrant.CollectionName = value
 		ok = true
+	case "ai.ollama.managed":
+		ok = parseSet(&c.AI.Ollama.Managed, value)
+	case "ai.ollama.binary":
+		c.AI.Ollama.Binary = value
+		ok = true
+	case "ai.ollama.bind_host":
+		c.AI.Ollama.BindHost = value
+		ok = true
+	case "ai.ollama.start_timeout":
+		ok = parseSet(&c.AI.Ollama.StartTimeout, value)
+	case "ai.ollama.auto_warmup":
+		ok = parseSet(&c.AI.Ollama.AutoWarmup, value)
+	case "ai.tune.model":
+		c.AI.Tune.Model = value
+		ok = true
+	case "ai.tune.num_ctx":
+		ok = parseSet(&c.AI.Tune.NumCtx, value)
+	case "ai.tune.keep_alive":
+		c.AI.Tune.KeepAlive = value
+		ok = true
+	case "ai.tune.num_parallel":
+		ok = parseSet(&c.AI.Tune.NumParallel, value)
+	case "ai.deploy.mode":
+		c.AI.Deploy.Mode = value
+		ok = true
+	case "ai.deploy.role":
+		c.AI.Deploy.Role = value
+		ok = true
+	case "ai.deploy.remote_host":
+		c.AI.Deploy.RemoteHost = value
+		ok = true
+	case "ai.deploy.remote_model":
+		c.AI.Deploy.RemoteModel = value
+		ok = true
+	case "ai.deploy.remote_api":
+		c.AI.Deploy.RemoteAPI = value
+		ok = true
+	case "ai.deploy.remote_username":
+		c.AI.Deploy.RemoteUsername = value
+		ok = true
+	case "ai.deploy.remote_password":
+		c.AI.Deploy.RemotePassword = value
+		ok = true
+	case "ai.deploy.auto_switch":
+		ok = parseSet(&c.AI.Deploy.AutoSwitch, value)
+	case "ai.deploy.check_interval":
+		ok = parseSet(&c.AI.Deploy.CheckInterval, value)
+	case "ai.homeassistant.enabled":
+		ok = parseSet(&c.AI.HomeAssistant.Enabled, value)
+	case "ai.homeassistant.base_url":
+		c.AI.HomeAssistant.BaseURL = value
+		ok = true
+	case "ai.homeassistant.token":
+		c.AI.HomeAssistant.Token = value
+		ok = true
 	case "iot.mihome.enabled":
 		ok = parseSet(&c.IoT.Mihome.Enabled, value)
 	case "iot.mihome.client_id":
@@ -578,7 +703,20 @@ func (m *Manager) UpdateConfig(p map[string]interface{}) error {
 	if m.onUpdate != nil {
 		m.onUpdate(m.cfg)
 	}
-	return m.Save()
+	// 已持写锁，直接落盘；不可调用 Save()（其内部 RLock 与本函数写锁互斥，会死锁）
+	return m.saveLocked()
+}
+
+// saveLocked 落盘当前配置（调用方须已持有 m.mu 写锁）
+func (m *Manager) saveLocked() error {
+	if m.path == "" {
+		return nil
+	}
+	data, err := toml.Marshal(m.cfg)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(m.path, data, 0o644)
 }
 
 // mergeMapIntoConfig 将嵌套 map 合并进配置

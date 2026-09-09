@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -27,7 +28,8 @@ const (
 // Client Ollama HTTP 客户端
 type Client struct {
 	baseURL    string
-	httpClient *http.Client
+	httpClient *http.Client // 常规请求（chat / tags 等）
+	longClient *http.Client // 长耗时请求（模型加载 / 拉取），上限由 ctx 控制
 }
 
 // NewClient 创建客户端；host 形如 http://localhost:11434
@@ -38,6 +40,7 @@ func NewClient(host string, timeout time.Duration) *Client {
 	return &Client{
 		baseURL:    strings.TrimRight(host, "/"),
 		httpClient: &http.Client{Timeout: timeout},
+		longClient: &http.Client{Timeout: 30 * time.Minute},
 	}
 }
 
@@ -83,14 +86,34 @@ type FunctionTool struct {
 	Parameters  json.RawMessage `json:"parameters"`
 }
 
+// KeepAlive 模型驻留时长。
+// Ollama 的 keep_alive 字段接受两种形态：整数秒（-1 常驻 / 0 卸载 / 正整数保持秒数）
+// 与 golang duration 字符串（"5m"、"1h"）。若直接以字符串发送裸数字（如 "-1"），
+// Ollama 会尝试按 duration 解析并报 "time: missing unit"。
+// 因此 MarshalJSON 将纯数字量化为 JSON number，其余保持字符串。
+type KeepAlive string
+
+// MarshalJSON 把纯数字（含负号）输出为 JSON 数值，其余输出为字符串。
+func (k KeepAlive) MarshalJSON() ([]byte, error) {
+	s := string(k)
+	if s == "" {
+		return []byte(`null`), nil
+	}
+	if _, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return []byte(s), nil // 裸整数 → JSON number
+	}
+	return json.Marshal(s) // duration 字符串 → JSON string
+}
+
 // ChatRequest 聊天请求体
 type ChatRequest struct {
-	Model    string        `json:"model"`
-	Messages []ChatMessage `json:"messages"`
-	Stream   bool          `json:"stream"`
-	Tools    []Tool        `json:"tools,omitempty"`
-	Options  *ChatOptions  `json:"options,omitempty"`
-	Format   string        `json:"format,omitempty"` // 如 json
+	Model     string        `json:"model"`
+	Messages  []ChatMessage `json:"messages"`
+	Stream    bool          `json:"stream"`
+	Tools     []Tool        `json:"tools,omitempty"`
+	Options   *ChatOptions  `json:"options,omitempty"`
+	Format    string        `json:"format,omitempty"`    // 如 json
+	KeepAlive KeepAlive     `json:"keep_alive,omitempty"` // 模型驻留时长（"5m" / "-1" 常驻）
 }
 
 // ChatResponse 非流式响应
@@ -124,6 +147,9 @@ type ModelInfo struct {
 		Quantization   string   `json:"quantization_level"`
 	} `json:"details"`
 }
+
+// BaseURL 返回 Ollama 服务地址
+func (c *Client) BaseURL() string { return c.baseURL }
 
 // Chat 非流式对话
 func (c *Client) Chat(ctx context.Context, req *ChatRequest) (*ChatResponse, error) {

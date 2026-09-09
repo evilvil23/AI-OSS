@@ -1,9 +1,0 @@
-cpu_refresh_seconds = 5
-disk_refresh_seconds = 60
-trash_path = ''
-log_path = ''
-log_max_size = 100
-log_max_age = 30
-backup_output_dir = ''
-backup_compress_level = 6
-backup_exclude_rules = ['# ── 虚拟内存、休眠文件 ──', 'pagefile.sys', 'hiberfil.sys', 'swapfile.sys', '# ── 回收站、系统还原点 ──', '$RECYCLE.BIN', 'System Volume Information', '# ── 系统临时目录、缓存（按目录名匹配，任意层级生效）──', 'Temp', 'tmp', 'cache', 'Cache', 'Prefetch', 'Minidump', 'PerfLogs', 'LocalLow', '# ── Linux 伪文件系统 / 挂载点（仅源根目录顶层，避免误伤同名数据目录）──', 'proc/', 'sys/', 'dev/', 'run/', 'mnt/', 'media/', 'lost+found/', '# ── Windows 更新旧系统 ──', 'Windows.old', '# ── 缩略图、系统生成文件 ──', 'Thumbs.db', 'desktop.ini', '~$*', '# ── 虚拟机镜像、快照 ──', '*.vmdk', '*.vhd', '*.vhdx', '*.ova', '# ── Outlook 缓存 ──', '*.ost', '# ── NAS 内部元数据、回收站快照 ──', '@Recycle', '@Recently-Snapshot', '@eadir', '.@__thumb', '.SynologyWorkingDirectory', '*.snapshots', '# ── macOS 遗留文件 ──', '.DS_Store', '.AppleDouble', '# ── Git 版本控制 ──', '.git', '.gitignore', '# ── 包依赖与构建产物 ──', 'node_modules', 'vendor', '.venv', 'venv', '__pycache__', 'dist', 'build', 'out', '# ── IDE / 工具缓存 ──', '.cache', '.idea', '.vs', '.pytest_cache', '# ── 日志、临时、编译产物 ──', '*.log', '*.tmp', '*.swp', '*.swo', '*.bak', '*.cache', '*.exe', '# ── 本地环境配置（按需）──', '.env', '.env.local', '# /var/log/ ← 日志默认不排除；排查故障需要时可取消注释']

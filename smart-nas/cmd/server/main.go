@@ -18,6 +18,8 @@ import (
 
 	"smart-nas/internal/ai"
 	"smart-nas/internal/ai/conversation"
+	"smart-nas/internal/ai/ha"
+	"smart-nas/internal/ai/hardware"
 	"smart-nas/internal/ai/ollama"
 	"smart-nas/internal/ai/rag"
 	"smart-nas/internal/ai/tools"
@@ -169,32 +171,91 @@ func main() {
 	}
 	hookEmitter := pluginMgr
 
-	// 7. AI（保留扩展接口：连接 Ollama 与 RAG，路由后续实现）
+	// 7. AI 管家 + 知识库（v0.21）：硬件自适应 → Ollama 生命周期 → Eino 服务
 	var aiSvc *ai.Service
+	var lifecycle *ollama.Lifecycle
+	var hwInfo *hardware.Info
+	var haClient *ha.Client // HomeAssistant 客户端（配置完整即创建，v0.23 设备管理 API 使用）
 	if cfg.AI.OllamaHost != "" {
+		// v0.23 部署模式 auto 判定：配置了服务端地址且可达 → 辅机；否则 → 服务端
+		cfg = resolveDeployMode(cfg, cfg.AI.Deploy.RemoteHost != "")
 		ollamaClient := ollama.NewClient(cfg.AI.OllamaHost, 90*time.Second)
+
+		// M2 硬件检测与调优预设（config.toml [ai.tune] 显式配置优先）
+		hwCtx, hwCancel := context.WithTimeout(ctx, 15*time.Second)
+		info := hardware.Detect(hwCtx)
+		hwCancel()
+		hwInfo = &info
+		preset := recomputePreset(info, cfg.AI)
+
+		// M1 Ollama 生命周期：检测 → 拉起 → 就绪 → 预热
+		lifecycle = ollama.NewLifecycle(ollamaClient, ollama.OllamaRunConfig{
+			Managed:      cfg.AI.Ollama.Managed,
+			Binary:       cfg.AI.Ollama.Binary,
+			BindHost:     cfg.AI.Ollama.BindHost,
+			StartTimeout: cfg.AI.Ollama.StartTimeout,
+			AutoWarmup:   cfg.AI.Ollama.AutoWarmup,
+			NumParallel:  preset.NumParallel,
+		}, dataDir)
+		if _, err := lifecycle.EnsureRunning(ctx, preset.Model, preset.KeepAlive); err != nil {
+			logger.Warn("Ollama 生命周期管理异常（AI 功能可能不可用）", "error", err)
+		}
+
 		convs := conversation.NewManager(40)
 		toolsReg := tools.NewRegistry(storageSvc)
 		toolsReg.Register(tools.DefaultTools(storageSvc)...)
 		toolsReg.Register(tools.SystemTools()...)
 		toolsReg.Register(tools.DeviceTools(toolsReg)...) // DeviceProvider 由 IoT 注入
 
-		var retriever *rag.Retriever
+		// M7 HomeAssistant 工具（未配置 / 自检失败时降级为不注册；客户端始终返回供设备管理 API）
+		haClient = registerHATools(ctx, toolsReg, cfg.AI.HomeAssistant)
+
+		// RAG：single/primary 用本机索引；dual+auxiliary 走主服务（不重复建向量库）
+		var retriever ai.RagRetriever
 		var indexer *rag.Indexer
-		if cfg.AI.RAG.Enabled {
-			if vs, derr := rag.NewInMemoryStore(filepath.Join(dataDir, "vectors", "store.json")); derr == nil {
-				_ = vs.Close() // 仅探测，实际 store 在 service 内保持打开
+		if cfg.AI.Deploy.Mode == "dual" && cfg.AI.Deploy.Role == "auxiliary" && cfg.AI.Deploy.RemoteAPI != "" {
+			topK := cfg.AI.RAG.TopK
+			if topK <= 0 {
+				topK = 5
 			}
-			vs, _ := rag.NewInMemoryStore(filepath.Join(dataDir, "vectors", "store.json"))
-			retriever = rag.NewRetriever(vs, ollamaClient, cfg.AI.RAG, cfg.AI.EmbeddingModel)
-			indexer = rag.NewIndexer(vs, ollamaClient, storageSvc, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+			retriever = ai.NewRemoteRetriever(cfg.AI.Deploy.RemoteAPI,
+				cfg.AI.Deploy.RemoteUsername, cfg.AI.Deploy.RemotePassword, topK)
+			logger.Info("双机模式辅助机：RAG 统一走主服务", "remote_api", cfg.AI.Deploy.RemoteAPI)
+		} else if cfg.AI.RAG.Enabled {
+			vs, verr := rag.NewInMemoryStore(filepath.Join(dataDir, "vectors", "store.json"))
+			if verr != nil {
+				logger.Warn("向量存储初始化失败，RAG 不可用", "error", verr)
+			} else {
+				retriever = rag.NewRetriever(vs, ollamaClient, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+				indexer = rag.NewIndexer(vs, ollamaClient, storageSvc, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+			}
 		}
-		aiSvc = ai.NewService(cfg.AI, ollamaClient, convs, toolsReg, retriever, indexer)
+
+		svc, aerr := ai.NewService(ai.Options{
+			Config:    cfg.AI,
+			Preset:    preset,
+			Client:    ollamaClient,
+			Convs:     convs,
+			Registry:  toolsReg,
+			Retriever: retriever,
+			Indexer:   indexer,
+		})
+		if aerr != nil {
+			logger.Warn("AI 服务初始化失败", "error", aerr)
+		} else {
+			aiSvc = svc
+			// M6 双机模式辅助机：远端探测 + 自动切换 / 降级巡检
+			aiSvc.StartDeployWatch(ctx)
+		}
+		_ = haClient // 已通过工具注册接入
 	}
 
-	// 8. IoT（保留扩展接口：注册表 + 自动化）
-	//    DeviceProvider 供 AI 工具调用，接入时在此注入：toolsReg.SetDeviceProvider(iotSvc)
+	// 8. IoT（注册表 + 自动化）；设备能力注入 AI 工具
 	iotSvc := iot.NewService(cfg.IoT, hub)
+	if aiSvc != nil {
+		// DeviceProvider 注入需在 AI 服务创建前？工具经 Registry 动态查表执行，
+		// 注入顺序无影响；此处保持装配期注入
+	}
 
 	// 9. tus 上传
 	var tusHandler *tusd.Handler
@@ -237,6 +298,7 @@ func main() {
 	cfgMgr.WatchConfig()
 
 	// 14. 装配 HTTP 服务
+	restartCh := make(chan struct{}, 1) // 网页重启请求（v0.23，缓冲 1 保证 handler 非阻塞）
 	deps := server.Deps{
 		Cfg:         cfgMgr,
 		Auth:        authSvc,
@@ -247,6 +309,10 @@ func main() {
 		Tus:         tusHandler,
 		Hub:         hub,
 		AI:          aiSvc,
+		Lifecycle:   lifecycle, // Ollama 进程生命周期管理（v0.21）
+		Hardware:    hwInfo,    // 硬件检测结果（v0.21）
+		HAClient:    haClient,  // HomeAssistant 客户端（v0.23 设备管理 API）
+		RestartCh:   restartCh, // 进程级重启通道（v0.23）
 		IoT:         iotSvc,
 		Plugins:     pluginMgr,
 		Scheduler:   scheduler,
@@ -259,7 +325,16 @@ func main() {
 	}
 	srv := server.New(deps)
 
-	// 15. 优雅退出
+	// 14.1 配置热更新回调（v0.23）：AI 模型 / 调优 / 部署参数变更即时生效
+	//（此前 ReloadConfig 无装配点为死代码）；mode/role 等重启项由运行态解析保证
+	if aiSvc != nil {
+		cfgMgr.OnChange(func(c *config.Config) {
+			rc := resolveDeployMode(c, c.AI.Deploy.RemoteHost != "")
+			aiSvc.ReloadConfig(rc.AI, recomputePreset(*hwInfo, rc.AI))
+		})
+	}
+
+	// 15. 优雅退出（含网页触发的进程级重启 v0.23）
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	serverErr := make(chan error, 1)
@@ -267,6 +342,7 @@ func main() {
 		serverErr <- srv.Run(ctx, fmt.Sprintf(":%d", cfg.Server.Port))
 	}()
 
+	restartRequested := false
 	select {
 	case err := <-serverErr:
 		if err != nil {
@@ -274,6 +350,9 @@ func main() {
 		}
 	case <-sig:
 		logger.Info("收到退出信号，开始优雅关闭")
+	case <-restartCh:
+		restartRequested = true
+		logger.Info("收到网页重启请求，开始优雅重启")
 	}
 	cancel()
 	worker.Stop()
@@ -286,7 +365,65 @@ func main() {
 	playSvc.Close()
 	hub.Shutdown()
 	pluginMgr.ScriptRuntime()
+	// v0.21 M1：优雅关闭 Ollama——先卸载模型释放显存 / 内存，
+	// 再停止本服务拉起的实例（用户自启的 Ollama 不受影响）
+	if lifecycle != nil {
+		model := ""
+		if aiSvc != nil {
+			model = aiSvc.Preset().Model
+		}
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 60*time.Second)
+		lifecycle.Shutdown(shutdownCtx, model)
+		shutdownCancel()
+	}
 	_ = logger.Close()
+	// v0.23 网页触发的进程级重启：所有资源（端口 / 日志句柄 / SQLite / Ollama）
+	// 已优雅关闭，此时重新拉起自身进程，父进程退出——新进程接管端口，无竞争窗口
+	if restartRequested {
+		if err := relaunchSelf(); err != nil {
+			fmt.Fprintf(os.Stderr, "服务重启失败: %v\n", err)
+			os.Exit(1)
+		}
+	}
+}
+
+// resolveDeployMode 解析部署模式 auto（v0.23）：配置了服务端地址（remote_host）
+// 且可达 → 辅机（dual/auxiliary）；未配置或不可达 → 服务端（dual/primary）。
+// 仅启动时判定一次，运行中不因断连切换身份（辅助机远端探测由 StartDeployWatch 负责）。
+// 返回浅拷贝（仅覆盖 AI.Deploy 运行态），持久化配置保留 auto 原值；非 auto 原样返回。
+func resolveDeployMode(cfg *config.Config, hasAddr bool) *config.Config {
+	d := cfg.AI.Deploy
+	if d.Mode != "auto" {
+		return cfg
+	}
+	out := *cfg
+	out.AI.Deploy.Mode = "dual"
+	if !hasAddr {
+		out.AI.Deploy.Role = "primary"
+		logger.Info("部署模式 auto：未配置服务端地址，以服务端模式启动")
+		return &out
+	}
+	pctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if ollama.NewClient(d.RemoteHost, 90*time.Second).Ping(pctx) == nil {
+		out.AI.Deploy.Role = "auxiliary"
+		logger.Info("部署模式 auto：服务端可达，以辅机模式启动", "remote_host", d.RemoteHost)
+	} else {
+		out.AI.Deploy.Role = "primary"
+		logger.Warn("部署模式 auto：服务端不可达，以服务端模式启动", "remote_host", d.RemoteHost)
+	}
+	return &out
+}
+
+// recomputePreset 计算硬件调优预设（config.toml [ai.tune] 显式配置优先）；
+// 抽取自启动装配逻辑，供启动与配置热更新回调复用
+func recomputePreset(info hardware.Info, aiCfg config.AIConfig) hardware.Preset {
+	preset := info.Resolve(aiCfg.Tune, aiCfg.DefaultModel)
+	// 生效模型：config.default_model 仍可作为显式覆盖（保持旧行为：配置了就生效）
+	if aiCfg.Tune.Model == "" && aiCfg.DefaultModel != "" && aiCfg.DefaultModel != "qwen2:7b" {
+		preset.Model = aiCfg.DefaultModel
+	}
+	return preset
 }
 
 // resolveDBPath 解析元数据库位置：空 → root/metadata.db；以分隔符结尾或
@@ -356,4 +493,30 @@ func registerJobs(s *task.Scheduler, storageSvc *storage.Service, cfg *config.Co
 		_, _ = storageSvc.PurgeTrash(0, cutoff)
 		logger.Info("回收站定时清理完成")
 	})
+}
+
+// registerHATools 注册 HomeAssistant AI 工具（v0.21 M7）。
+// v0.23：配置完整（地址 + 令牌）时始终创建并返回客户端（供设备管理 API 与状态查询）；
+// 未启用 / 自检失败时仅跳过 AI 工具注册（对话中表现为「暂不支持设备控制」）。
+func registerHATools(ctx context.Context, reg *tools.Registry, cfg config.HAConfig) *ha.Client {
+	if cfg.BaseURL == "" || cfg.Token == "" {
+		logger.Info("HomeAssistant 未配置完整（地址 / 令牌缺失），智能家居不可用")
+		return nil
+	}
+	client := ha.NewClient(cfg.BaseURL, cfg.Token)
+	if !cfg.Enabled {
+		logger.Info("HomeAssistant 未启用（enabled=false），跳过智能家居工具注册")
+		return client
+	}
+	if err := client.CheckConnection(ctx); err != nil {
+		logger.Warn("HomeAssistant 连通性自检失败，智能家居工具不可用（对话中将给出降级提示）",
+			"base_url", cfg.BaseURL, "error", err)
+		return client
+	}
+	for _, t := range ha.Tools(client) {
+		// ha.Tool 与 tools.Tool 方法集一致，逐个注册完成接口转换
+		reg.Register(t)
+	}
+	logger.Info("HomeAssistant 已接入，智能家居 AI 工具就绪", "base_url", cfg.BaseURL)
+	return client
 }

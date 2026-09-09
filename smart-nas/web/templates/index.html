@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能家庭 NAS</title>
+<link rel="stylesheet" href="/static/css/style.css?v={{.WebVersion}}">
+<link rel="stylesheet" href="/static/js/video-js-8.24.0/video-js.min.css">
+</head>
+<body>
+
+<!-- 登录 -->
+<div id="login-view">
+  <div class="login-card">
+    <h1>智能家庭 NAS</h1>
+    <p>登录以访问你的文件</p>
+    <input id="username" placeholder="用户名" autocomplete="username">
+    <input id="password" type="password" placeholder="密码" autocomplete="current-password">
+    <button id="btn-login" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div id="main-view" style="display:none">
+  <div class="container">
+    <div class="topbar">
+      <h1>智能家庭 NAS</h1>
+      <div class="right">
+        <span class="ws-badge"><span class="dot" id="ws-dot"></span><span id="ws-text">连接中…</span></span>
+        <button id="user-name" class="link-btn" onclick="showProfile()" title="查看个人信息与权限"></button>
+        <button onclick="doLogout()">退出登录</button>
+      </div>
+    </div>
+
+    <div class="nav" id="main-nav">
+      <button data-tab="system" class="active" onclick="showTab('system')">系统</button>
+      <button data-tab="files" onclick="showTab('files')">文件</button>
+      <button data-tab="backup" onclick="showTab('backup')">备份</button>
+      <button data-tab="trash" onclick="showTab('trash')">回收站</button>
+      <button data-tab="ai" onclick="showTab('ai')">AI</button>
+      <button data-tab="smarthome" onclick="showTab('smarthome')">智能家居</button>
+      <button data-tab="admin" id="nav-admin" style="display:none" onclick="showTab('admin')">管理</button>
+    </div>
+
+    <!-- ===== 系统（主页） ===== -->
+    <div id="view-system">
+      <div class="cards">
+        <div class="stat-card"><div class="label">主机</div><div class="value" style="font-size:15px" id="sys-host">-</div></div>
+        <div class="stat-card"><div class="label">系统</div><div class="value" style="font-size:15px" id="sys-os">-</div></div>
+        <div class="stat-card"><div class="label">CPU 使用率</div><div class="value" id="sys-cpu">-</div></div>
+        <div class="stat-card"><div class="label">内存</div><div class="value" id="sys-mem">-</div></div>
+        <div class="stat-card"><div class="label">运行时长 / 内网 IP</div><div class="value" style="font-size:14px" id="sys-up">-</div></div>
+        <div class="stat-card clickable" onclick="showOnline()" title="点击查看在线用户">
+          <div class="label">在线连接</div><div class="value" id="sys-ws">0</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>磁盘使用</h2>
+        <div id="sys-disks"></div>
+      </div>
+    </div>
+
+    <!-- ===== 文件 ===== -->
+    <div id="view-files">
+      <div class="cards">
+        <div class="stat-card"><div class="label">文件数</div><div class="value" id="st-files">-</div></div>
+        <div class="stat-card"><div class="label">已用空间</div><div class="value" id="st-used">-</div></div>
+        <div class="stat-card"><div class="label">版本占用</div><div class="value" id="st-version">-</div></div>
+        <div class="stat-card"><div class="label">回收站</div><div class="value" id="st-trash">-</div></div>
+      </div>
+      <div class="panel">
+        <div class="crumb" id="crumb"></div>
+        <div class="toolbar">
+          <button class="btn" onclick="refresh()">刷新</button>
+          <button class="btn" id="btn-new-folder" onclick="newFolder()">新建文件夹</button>
+          <label class="btn primary" id="btn-upload" for="file-input">上传文件</label>
+          <input type="file" id="file-input" multiple onchange="onFilesSelected(this)">
+          <input type="text" id="keyword" placeholder="搜索文件名…" onkeydown="if(event.key==='Enter'){refresh()}">
+          <button class="btn" onclick="refresh()">搜索</button>
+          <span class="sel-info" id="sel-info" style="display:none"></span>
+          <button class="btn" id="btn-copy" style="display:none" onclick="batchAction('copy')">复制</button>
+          <button class="btn" id="btn-move" style="display:none" onclick="batchAction('move')">移动</button>
+          <button class="btn" id="btn-delete" style="display:none" onclick="batchDelete()">删除</button>
+          <button class="btn" id="btn-clear-sel" style="display:none" onclick="clearSel()">取消选择</button>
+        </div>
+        <div class="file-hint" id="batch-tip" style="display:none">勾选文件后可使用上方批量操作（复制 / 移动 / 删除）</div>
+        <div class="file-hint" id="disk-tip" style="display:none">磁盘列表视图：仅列出可用磁盘，进入磁盘目录后可新建 / 上传 / 批量操作</div>
+        <div id="file-table"></div>
+      </div>
+    </div>
+
+    <!-- ===== 备份 ===== -->
+    <div id="view-backup" style="display:none">
+      <div class="panel">
+        <h2>备份任务</h2>
+        <div class="toolbar">
+          <button class="btn" onclick="loadBackupTasks()">刷新</button>
+          <button class="btn primary" id="btn-new-task" style="display:none" onclick="showBackupTaskModal()">创建备份任务</button>
+          <button class="btn" id="btn-bk-progress" onclick="toggleBackupProgress()">任务进度</button>
+        </div>
+        <div class="file-hint">增量备份依赖父备份链：还原前会校验整条链完整性，链损坏将拒绝还原；冻结的备份不参与配额统计，且自动清理绝不删除冻结备份</div>
+        <div id="backup-progress-panel" style="display:none"></div>
+        <div id="backup-tasks-table"></div>
+      </div>
+      <div class="panel" id="backup-history-panel" style="display:none">
+        <h2 id="backup-history-title">备份历史</h2>
+        <div class="toolbar"><button class="btn" onclick="closeBackupHistory()">收起</button></div>
+        <div id="backup-history-table"></div>
+      </div>
+    </div>
+
+    <!-- ===== 回收站 ===== -->
+    <div id="view-trash" style="display:none">
+      <div class="panel">
+        <h2>回收站</h2>
+        <div class="toolbar">
+          <button class="btn" onclick="loadTrash()">刷新</button>
+          <button class="btn" id="btn-trash-restore-all" onclick="askRestoreAllTrash()">一键还原</button>
+          <button class="btn" id="btn-trash-clear" onclick="askClearTrash()">一键清空</button>
+          <span class="sel-info" id="trash-sel-info" style="display:none"></span>
+          <button class="btn" id="btn-trash-restore" style="display:none" onclick="doBatchRestoreTrash()">批量还原</button>
+          <button class="btn" id="btn-trash-purge" style="display:none" onclick="askBatchPurgeTrash()">批量删除</button>
+          <button class="btn" id="btn-trash-clearsel" style="display:none" onclick="clearTrashSel()">取消选择</button>
+        </div>
+        <div class="file-hint" id="trash-tip">删除的文件在保留期（默认 30 天）内可恢复；「删除」为永久删除，不可恢复</div>
+        <div id="trash-table"></div>
+      </div>
+    </div>
+
+    <!-- ===== AI 管家（v0.23） ===== -->
+    <div id="view-ai" style="display:none">
+      <div class="panel ai-layout">
+        <div class="ai-sidebar">
+          <div class="toolbar" style="margin-bottom:8px">
+            <button class="btn primary" onclick="aiNewConversation()">+ 新会话</button>
+            <button class="btn" onclick="aiLoadConversations()">刷新</button>
+          </div>
+          <div id="ai-conv-list" class="ai-conv-list"></div>
+        </div>
+        <div class="ai-main">
+          <div class="ai-header">
+            <span id="ai-title">AI 管家</span>
+            <span id="ai-meta" class="ai-meta"></span>
+            <span style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn" onclick="aiOpenSettings()">设置</button>
+            </span>
+          </div>
+          <div id="ai-messages" class="ai-messages">
+            <div class="empty">向 AI 提问，例如：「帮我总结 NAS 里的文档」「打开客厅的灯」</div>
+          </div>
+          <div class="ai-input-bar">
+            <textarea id="ai-input" rows="2" placeholder="输入消息，Enter 发送（Shift+Enter 换行）"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend()}"></textarea>
+            <button class="primary" id="btn-ai-send" onclick="aiSend()">发送</button>
+            <button class="btn" id="btn-ai-stop" style="display:none" onclick="aiStop()">停止</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 智能家居（v0.23） ===== -->
+    <div id="view-smarthome" style="display:none">
+      <div class="panel">
+        <h2>设备管理</h2>
+        <div class="toolbar">
+          <button class="btn" onclick="shLoadDevices()">刷新</button>
+          <span id="sh-status" class="ai-meta"></span>
+        </div>
+        <div class="nav" id="sh-domains" style="border:none;padding:6px 0;margin-bottom:10px"></div>
+        <div class="file-hint" id="sh-tip" style="display:none">设备列表来自 HomeAssistant；开关 / 灯 / 空调等可直接控制，传感器仅展示状态</div>
+        <div id="sh-devices" class="device-grid"></div>
+      </div>
+    </div>
+
+    <!-- ===== 管理 ===== -->
+    <div id="view-admin" style="display:none">
+      <div class="nav" id="admin-nav" style="border:none;padding:0;margin-bottom:14px">
+        <button data-aview="users" class="active" onclick="showAdminView('users')">用户管理</button>
+        <button data-aview="settings" onclick="showAdminView('settings')">设置</button>
+        <button data-aview="plugins" onclick="showAdminView('plugins')">插件管理</button>
+      </div>
+
+      <div id="aview-users">
+        <div class="panel">
+          <h2>创建用户</h2>
+          <div class="form-inline">
+            <input id="nu-name" placeholder="用户名">
+            <input id="nu-pass" type="password" placeholder="密码">
+            <select id="nu-role"><option value="user">普通用户</option><option value="admin" id="nu-role-admin" style="display:none">管理员</option></select>
+            <span style="font-size:12px;color:var(--muted)">创建后可为其配置目录权限</span>
+            <button class="btn primary" onclick="adminCreateUser()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>创建用户</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>用户列表</h2>
+          <div id="users-table"></div>
+        </div>
+      </div>
+
+      <div id="aview-settings" style="display:none">
+        <div class="panel">
+          <h2>系统设置</h2>
+          <div class="file-hint" id="settings-lock-tip" style="display:none">系统设置仅主人可修改；当前账号为只读查看</div>
+          <div class="form-row">
+            <label>CPU/内存刷新频率</label>
+            <input type="number" id="set-cpu" min="2" value="5" style="width:160px!important;flex:none!important">
+            <span class="set-desc">秒。系统主页的「CPU 使用率 / 内存」多久刷新一次（最小 2 秒）</span>
+          </div>
+          <div class="form-row">
+            <label>磁盘刷新频率</label>
+            <input type="number" id="set-disk" min="5" value="60" style="width:160px!important;flex:none!important">
+            <span class="set-desc">秒。系统主页的「磁盘使用 / 已用空间」多久刷新一次（最小 5 秒）</span>
+          </div>
+          <div class="form-row">
+            <label>回收站位置</label>
+            <input type="text" id="set-trash" placeholder="默认：./data/files/trash">
+            <button class="btn icon-btn" onclick="pickTrashDir()" id="btn-pick-trash" style="flex:none" title="选择回收站位置" aria-label="选择回收站位置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
+            <span class="set-desc" id="trash-default-note">删除的文件存放目录。留空使用默认位置 ./data/files/trash（集中存放，不在各盘符建 .trash）</span>
+          </div>
+          <div class="form-row">
+            <label>日志文件位置</label>
+            <input type="text" id="set-logpath" placeholder="默认：./data/logs/smart-nas.log">
+            <button class="btn icon-btn" onclick="pickLogDir()" id="btn-pick-log" style="flex:none" title="选择日志位置" aria-label="选择日志位置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
+            <span class="set-desc">日志输出的完整文件路径。留空使用 config.toml 中的默认位置</span>
+          </div>
+          <div class="form-row">
+            <label>日志最大大小</label>
+            <input type="number" id="set-logsize" min="1" value="100" style="width:160px!important;flex:none!important">
+            <span class="set-desc">MB。单个日志文件超过该大小后自动滚动归档（默认 100 MB）</span>
+          </div>
+          <div class="form-row">
+            <label>日志保留天数</label>
+            <input type="number" id="set-logage" min="1" value="30" style="width:160px!important;flex:none!important">
+            <span class="set-desc">天。超期的历史日志每天自动清理一次（默认保留 30 天）</span>
+          </div>
+          <div class="form-row">
+            <label>备份默认存放目录</label>
+            <input type="text" id="set-bkdir" placeholder="如 Y:\nas-backup">
+            <button class="btn icon-btn" onclick="pickBackupDir()" id="btn-pick-bkdir" style="flex:none" title="选择备份默认存放目录" aria-label="选择备份默认存放目录"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
+            <span class="set-desc">新建备份任务时默认使用的备份包存放目录（任务内可单独修改）</span>
+          </div>
+          <div class="form-row">
+            <label>备份默认压缩级别</label>
+            <select id="set-bklevel" style="width:160px!important;flex:none!important">
+              <option value="9">9 - 最高（推荐）</option>
+              <option value="8">8</option>
+              <option value="7">7</option>
+              <option value="6">6</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1 - 最快</option>
+            </select>
+            <span class="set-desc">zip 为无损压缩，级别越高体积越小但耗时越长；新建任务默认使用该级别（任务内可单独调整）</span>
+          </div>
+          <div class="form-row form-row-top">
+            <label>备份全局排除规则</label>
+            <textarea id="set-bkexcludes" class="set-textarea" rows="10" spellcheck="false"
+              placeholder="每行一条规则，支持文件名 / 目录名 / 通配符；「#」开头为注释行"></textarea>
+            <span class="set-desc">新建任务时默认套用（任务内可增删/清空）。规则按文件（目录）名匹配、任意层级生效；带「/」后缀的仅匹配源根目录顶层。独立保存于数据目录 exclude-list.txt（每行一条，支持 # 注释），可直接复制用作 exclude-list.txt</span>
+          </div>
+
+          <h2 id="ai-settings-anchor" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">AI 设置</h2>
+          <div class="form-row">
+            <label>对话模型</label>
+            <select id="set-ai-model" style="max-width:100%!important;flex:none!important"></select>
+            <span class="set-desc">启动与对话使用的默认模型（选择后热更新生效，无需重启）</span>
+          </div>
+          <div class="form-row">
+            <label>机器模式</label>
+            <select id="set-ai-mode" style="width:160px!important;flex:none!important">
+              <option value="auto">自动</option>
+              <option value="server">服务端</option>
+              <option value="auxiliary">辅机</option>
+            </select>
+            <span class="set-desc">自动 = 配置服务端地址且可达 → 辅机；否则 → 服务端。需重启服务后生效</span>
+          </div>
+          <div class="form-row">
+            <label>服务端地址</label>
+            <input type="text" id="set-ai-server" placeholder="如 192.168.1.10:11434">
+            <span class="set-desc">辅机连接的服务端 Ollama 地址（需重启服务后生效）</span>
+          </div>
+          <div class="form-row">
+            <label>温度</label>
+            <input type="number" id="set-ai-temp" step="0.1" min="0" max="2" value="0.7" style="width:160px!important;flex:none!important">
+            <span class="set-desc">采样温度（0~2，越高越随机）</span>
+          </div>
+          <div class="form-row">
+            <label>最大输出 Token</label>
+            <input type="number" id="set-ai-maxtok" step="10" min="100" value="4096" style="width:160px!important;flex:none!important">
+            <span class="set-desc">单次回复最大 token 数</span>
+          </div>
+          <div class="m-actions" id="ai-settings-actions">
+            <button class="btn" onclick="saveAISettings()">保存 AI 设置</button>
+          </div>
+
+          <div class="m-actions">
+            <button class="primary save-btn" id="btn-save-settings" onclick="saveSettings()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              保存设置
+            </button>
+            <button class="btn" id="btn-clear-cache" onclick="clearSystemCache()" title="清空视频转封装产物缓存目录（data/cache/video）">清除缓存</button>
+            <button class="btn" id="btn-reset-settings" onclick="resetSystemSettings()" title="所有设置恢复默认值，包括备份全局排除规则">重置设置</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="aview-plugins" style="display:none">
+        <div class="panel">
+          <h2>已安装插件</h2>
+          <div class="toolbar"><button class="btn" onclick="loadPlugins()">刷新</button></div>
+          <div id="plugins-table"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 通用弹窗 -->
+<div class="modal-mask" id="gen-modal" onclick="if(event.target===this)closeGen()">
+  <div class="modal">
+    <div class="m-head"><span id="gen-title">操作</span><button onclick="closeGen()">✕</button></div>
+    <div class="m-body" id="gen-body"></div>
+  </div>
+</div>
+
+<!-- 目录选择器弹窗（独立于通用弹窗，可在任务弹窗之上叠加而不破坏其表单） -->
+<div class="modal-mask" id="fpk-modal" onclick="if(event.target===this)closeFpk()">
+  <div class="modal">
+    <div class="m-head"><span id="fpk-title">选择目录</span><button onclick="closeFpk()">✕</button></div>
+    <div class="m-body" id="fpk-body"></div>
+  </div>
+</div>
+
+<!-- 版本弹窗 -->
+<div class="modal-mask" id="version-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="m-head"><span id="vm-title">历史版本</span><button onclick="closeModal()">✕</button></div>
+    <div class="m-body" id="vm-body"></div>
+  </div>
+</div>
+
+<!-- 权限弹窗 -->
+<div class="modal-mask" id="perm-modal" onclick="if(event.target===this)closePermModal()">
+  <div class="modal">
+    <div class="m-head"><span id="perm-title">目录权限</span><button onclick="closePermModal()">✕</button></div>
+    <div class="m-body">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">
+        配置用户可访问的目录路径（如 D:/ 或 D:/photo）。留空表示全量访问；
+        写权限自动包含读权限。未匹配任何规则的目录将被拒绝访问。
+      </div>
+      <div id="perm-rows"></div>
+      <div class="toolbar" style="margin-top:10px">
+        <button class="btn" onclick="addPermRow()">+ 添加目录</button>
+        <button class="btn primary" onclick="savePerms()">保存权限</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-box"></div>
+
+<!-- 视频播放器抽屉（v0.17，Video.js） -->
+<div id="player-drawer" class="drawer">
+  <div class="drawer-head">
+    <span id="pv-title" class="drawer-title">视频播放</span>
+    <div class="drawer-head-right">
+      <span id="pv-badge" class="pv-badge" style="display:none">高清</span>
+      <button class="drawer-close" onclick="closePlayer()" title="关闭播放器（释放播放凭证）">✕</button>
+    </div>
+  </div>
+  <div class="drawer-stage" id="pv-stage">
+    <video id="pv-video" class="video-js vjs-big-play-centered" playsinline preload="auto"></video>
+    <div id="pv-loading" class="pv-loading"><div class="spinner"></div><span id="pv-loading-text">加载中…</span></div>
+    <div id="pv-error" class="pv-error" style="display:none">
+      <div id="pv-error-msg">播放失败</div>
+      <div class="pv-error-actions">
+        <button class="btn" onclick="retryPlayer()">重试</button>
+        <button class="btn primary" onclick="closePlayer()">关闭</button>
+      </div>
+    </div>
+    <div id="pv-hd-warn" class="pv-warn" style="display:none">
+      <div class="pv-warn-text">该视频分辨率超过2K，为获得流畅体验，建议下载后本地播放。是否继续在线播放？</div>
+      <div class="pv-warn-actions">
+        <button id="pv-warn-play" class="btn primary">继续播放</button>
+        <button id="pv-warn-dl" class="btn">下载</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/video-js-8.24.0/video.min.js"></script>
+<script src="/static/js/app.js?v={{.WebVersion}}"></script>
+<script src="/static/js/ai.js?v={{.WebVersion}}"></script>
+<script src="/static/js/smarthome.js?v={{.WebVersion}}"></script>
+</body>
+</html>

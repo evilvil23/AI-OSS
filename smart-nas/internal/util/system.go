@@ -4,9 +4,7 @@ package util
 import (
 	"os"
 	"runtime"
-	"syscall"
 	"time"
-	"unsafe"
 )
 
 // SystemStatus 系统状态信息
@@ -33,7 +31,7 @@ type DiskInfo struct {
 }
 
 // GetSystemStatus 采集系统状态。
-// 说明：当前离线环境 x/sys/windows 缺失部分 API，这里直接封装 kernel32 系统调用。
+// Windows API 经 purego 动态加载（见 system_windows.go），非 Windows 平台为桩实现。
 func GetSystemStatus() (*SystemStatus, error) {
 	hostname, _ := os.Hostname()
 	st := &SystemStatus{
@@ -50,65 +48,9 @@ func GetSystemStatus() (*SystemStatus, error) {
 	return st, nil
 }
 
-// memoryStatusEx 对应 Windows MEMORYSTATUSEX
-type memoryStatusEx struct {
-	Length            uint32
-	MemoryLoad        uint32
-	TotalPhys         uint64
-	AvailPhys         uint64
-	TotalPageFile     uint64
-	AvailPageFile     uint64
-	TotalVirtual      uint64
-	AvailVirtual      uint64
-	AvailExtendedVirt uint64
-}
-
-func collectMemory(st *SystemStatus) {
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GlobalMemoryStatusEx")
-	var ms memoryStatusEx
-	ms.Length = uint32(unsafe.Sizeof(ms))
-	ok, _, _ := proc.Call(uintptr(unsafe.Pointer(&ms)))
-	if ok == 0 {
-		return
-	}
-	st.MemoryTotal = ms.TotalPhys
-	st.MemoryUsed = ms.TotalPhys - ms.AvailPhys
-	if ms.TotalPhys > 0 {
-		st.MemoryUsage = float64(st.MemoryUsed) / float64(ms.TotalPhys) * 100
-	}
-}
-
-func getTickCount64() uint64 {
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetTickCount64")
-	r, _, _ := proc.Call()
-	return uint64(r)
-}
-
-// filetime 对应 Windows FILETIME
-type filetime struct {
-	LowDateTime  uint32
-	HighDateTime uint32
-}
-
+// filetimeToUint64 将 64 位 FILETIME 组合为整数
 func filetimeToUint64(ft filetime) uint64 {
 	return uint64(ft.HighDateTime)<<32 | uint64(ft.LowDateTime)
-}
-
-func systemTimes() (idle, kernel, user uint64) {
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetSystemTimes")
-	var l, k, u filetime
-	ok, _, _ := proc.Call(
-		uintptr(unsafe.Pointer(&l)),
-		uintptr(unsafe.Pointer(&k)),
-		uintptr(unsafe.Pointer(&u)),
-	)
-	if ok == 0 {
-		return 0, 0, 0
-	}
-	return filetimeToUint64(l), filetimeToUint64(k), filetimeToUint64(u)
 }
 
 func collectCPU(st *SystemStatus) {
@@ -126,24 +68,12 @@ func collectCPU(st *SystemStatus) {
 }
 
 func collectDisks(st *SystemStatus) {
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	driveType := kernel32.NewProc("GetDriveTypeW")
-	freeSpace := kernel32.NewProc("GetDiskFreeSpaceExW")
-	const driveFixed = 3 // DRIVE_FIXED
 	for _, root := range fixedDriveRoots() {
-		rp, _ := syscall.UTF16PtrFromString(root)
-		t, _, _ := driveType.Call(uintptr(unsafe.Pointer(rp)))
-		if t != driveFixed {
+		if driveTypeOf(root) != _driveFixed {
 			continue
 		}
-		var freeAvail, totalBytes, totalFree uint64
-		ok, _, _ := freeSpace.Call(
-			uintptr(unsafe.Pointer(rp)),
-			uintptr(unsafe.Pointer(&freeAvail)),
-			uintptr(unsafe.Pointer(&totalBytes)),
-			uintptr(unsafe.Pointer(&totalFree)),
-		)
-		if ok == 0 || totalBytes == 0 {
+		_, totalBytes, totalFree, ok := diskSpaceOf(root)
+		if !ok || totalBytes == 0 {
 			continue
 		}
 		used := totalBytes - totalFree
@@ -162,14 +92,9 @@ func ListFixedDrives() []string {
 	if runtime.GOOS != "windows" {
 		return nil
 	}
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	driveType := kernel32.NewProc("GetDriveTypeW")
-	const driveFixed = 3 // DRIVE_FIXED
 	var out []string
 	for _, root := range fixedDriveRoots() {
-		rp, _ := syscall.UTF16PtrFromString(root)
-		t, _, _ := driveType.Call(uintptr(unsafe.Pointer(rp)))
-		if t == driveFixed {
+		if driveTypeOf(root) == _driveFixed {
 			out = append(out, root)
 		}
 	}
@@ -183,20 +108,11 @@ func IsHiddenSystemFile(path string) bool {
 	if runtime.GOOS != "windows" || path == "" {
 		return false
 	}
-	kernel32 := syscall.NewLazyDLL("kernel32.dll")
-	proc := kernel32.NewProc("GetFileAttributesW")
-	p, err := syscall.UTF16PtrFromString(path)
-	if err != nil {
+	attrs := fileAttributesOf(path)
+	if attrs == _invalidAttrs {
 		return false
 	}
-	attrs, _, _ := proc.Call(uintptr(unsafe.Pointer(p)))
-	const invalidAttrs = 0xFFFFFFFF
-	const fileAttributeHidden = 0x2
-	const fileAttributeSystem = 0x4
-	if attrs == invalidAttrs {
-		return false
-	}
-	return attrs&(fileAttributeHidden|fileAttributeSystem) != 0
+	return attrs&(_fileAttrHidden|_fileAttrSystem) != 0
 }
 
 func fixedDriveRoots() []string {

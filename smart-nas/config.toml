@@ -8,6 +8,7 @@ write_timeout = 300
 root = './data/files'
 disks = []
 trash_path = ''
+metadata_db = ''
 version_keep = 5
 trash_days = 30
 webdav_enabled = true
@@ -40,7 +41,7 @@ admin_password = 'admin123'
 
 [ai]
 ollama_host = 'http://localhost:11434'
-default_model = 'qwen2:7b'
+default_model = 'deepseek-r1:7b'
 embedding_model = 'nomic-embed-text'
 conversation_max_tokens = 4096
 temperature = 0.7
@@ -57,6 +58,35 @@ host = 'localhost'
 port = 6334
 api_key = ''
 collection_name = 'file_chunks'
+
+[ai.ollama]
+managed = true
+binary = ''
+bind_host = '127.0.0.1:11434'
+start_timeout = 60
+auto_warmup = true
+
+[ai.tune]
+model = ''
+num_ctx = 0
+keep_alive = ''
+num_parallel = 0
+
+[ai.deploy]
+mode = 'auto'
+role = 'primary'
+remote_host = ''
+remote_model = ''
+remote_api = ''
+remote_username = ''
+remote_password = ''
+auto_switch = true
+check_interval = 30
+
+[ai.homeassistant]
+enabled = false
+base_url = 'http://homeassistant.local:8123'
+token = ''
 
 [iot]
 [iot.mihome]
@@ -92,12 +122,19 @@ cpu_threshold = 0.85
 
 [play]
 enabled = true
-max_online_height = 1440        # 最高在线播放分辨率高度（2K=1440），超出提示下载
-ffmpeg_path = 'ffmpeg'          # 留空自动从 PATH 查找；优先使用 exe 同目录/运行目录下的内置二进制（v0.19）
+max_online_height = 1440
+ffmpeg_path = 'ffmpeg'
 ffprobe_path = 'ffprobe'
-remux_concurrency = 3           # 转封装（-c copy）最大并发
-transcode_concurrency = 1       # 实时转码最大并发（大开销，防止 NAS 过载）
-transcode_threads = 2           # 单个转码任务线程数
-ticket_ttl_minutes = 30         # 播放凭证无 Range 请求自动失效时长
-cache_dir = './data/cache/video' # 转封装产物缓存目录
-ip_bind = true                  # 播放凭证与请求 IP 绑定（防盗链）
+remux_concurrency = 3
+transcode_concurrency = 1
+transcode_threads = 2
+ticket_ttl_minutes = 30
+cache_dir = './data/cache/video'
+ip_bind = true
+
+[backup]
+enabled = true
+db_path = './data/backup/backup.db'
+log_path = './data/logs/backup.log'
+watch_interval = 30
+usb_poll_interval = 3

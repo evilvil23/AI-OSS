@@ -24,8 +24,28 @@ func (s *Server) registerAdminRoutes(admin *gin.RouterGroup) {
 	admin.PUT("/settings", s.adminSaveSettings)
 	admin.POST("/settings/reset", s.adminResetSettings)
 	admin.POST("/cache/clear", s.adminClearCache)
+	admin.POST("/restart", s.adminRestart)
 	admin.GET("/system/status", s.adminSystemStatus)
 	admin.GET("/metrics", s.adminMetrics)
+}
+
+// adminRestart POST /api/admin/restart 请求进程级重启（主人/管理员，v0.23）。
+// 非阻塞写入 RestartCh（缓冲 1），main goroutine 收到后走完整优雅关闭序列并重新
+// 拉起自身进程；响应先于重启同步返回，前端轮询 /healthz 恢复后刷新页面。
+func (s *Server) adminRestart(c *gin.Context) {
+	if s.deps.RestartCh == nil {
+		c.JSON(http.StatusServiceUnavailable, types.Fail(types.CodeServerError, "当前运行方式不支持自重启"))
+		return
+	}
+	select {
+	case s.deps.RestartCh <- struct{}{}:
+	default:
+		c.JSON(http.StatusConflict, types.Fail(types.CodeServerError, "重启已在进行中"))
+		return
+	}
+	op := s.currentUser(c)
+	logger.Info("收到网页重启请求，服务即将重启", "by", op.Username)
+	c.JSON(http.StatusOK, types.OK(gin.H{"restarting": true}))
 }
 
 // systemStatus GET /api/system/status（所有登录用户可用，作为主页）

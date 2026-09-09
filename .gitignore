@@ -1,0 +1,10 @@
+# 编译产物
+smart-nas/smart-nas.exe
+*.exe
+
+# 运行时数据（启动后自动生成）
+smart-nas/data/
+smart-nas/dat/
+
+# IDE / 本地配置
+.trae/
