@@ -21,7 +21,7 @@ import (
 type Settings struct {
 	CPURefreshSeconds  int    `toml:"cpu_refresh_seconds" json:"cpu_refresh_seconds"`   // CPU/内存刷新频率（秒）
 	DiskRefreshSeconds int    `toml:"disk_refresh_seconds" json:"disk_refresh_seconds"` // 磁盘使用刷新频率（秒）
-	TrashPath          string `toml:"trash_path" json:"trash_path"`                     // 全局回收站目录（空=各磁盘 .trash）
+	TrashPath          string `toml:"trash_path" json:"trash_path"`                     // 全局回收站目录（空=运行目录 data/trash）
 	LogPath            string `toml:"log_path" json:"log_path"`                         // 日志文件路径（空=使用 config.toml）
 	LogMaxSize         int    `toml:"log_max_size" json:"log_max_size"`                 // 单个日志文件最大大小（MB）
 	LogMaxAge          int    `toml:"log_max_age" json:"log_max_age"`                   // 日志保留天数

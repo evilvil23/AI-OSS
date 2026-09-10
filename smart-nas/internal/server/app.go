@@ -58,14 +58,15 @@ type Deps struct {
 	Worker     *task.Worker
 	WebDAV     *webdav.Handler
 	Play       *play.Service
-	Backup     *backup.Service
+	Backup       *backup.Service
+	DataDir      string            // 运行数据目录（绝对路径，供设置页默认值计算）
 	WebDAVPrefix string
 	TusPrefix    string
 }
 
 // WebVersion 前端静态资源版本号（index.html 模板经 {{.WebVersion}} 注入，
 // 作为资源 URL 的 ?v= 缓存参数；发布新前端时同步更新此处）
-const WebVersion = "0.23.0"
+const WebVersion = "0.23.1"
 
 // Server HTTP 服务
 type Server struct {

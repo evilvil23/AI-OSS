@@ -1,140 +1,263 @@
+# ===== 服务器配置 =====
 [server]
+# HTTP 服务监听端口
 port = 8080
+# 运行模式：debug / release / test（release 为生产模式）
 mode = 'release'
+# 读超时（秒）
 read_timeout = 60
+# 写超时（秒）
 write_timeout = 300
 
+# ===== 存储配置 =====
 [storage]
+# 文件存储根目录（上传文件默认落盘位置）
 root = './data/files'
+# 允许访问的磁盘列表（留空 = 所有盘符均可访问）
 disks = []
+# 回收站位置（留空 = 运行目录下 data/trash，即 ./data/trash）
 trash_path = ''
+# 元数据库路径（留空 = 使用默认位置）
 metadata_db = ''
+# 文件版本保留数量（超出后删除最旧版本）
 version_keep = 5
+# 回收站文件保留天数（过期自动清理）
 trash_days = 30
+# 是否启用 WebDAV 服务
 webdav_enabled = true
+# WebDAV 访问路径前缀
 webdav_prefix = '/dav'
 
+# ===== rclone 云端同步 =====
 [storage.rclone]
+# 是否启用 rclone 同步
 enabled = false
+# rclone 远程名称（如 gdrive:、onedrive:）
 remote = ''
+# 同步计划（cron 表达式）
 schedule = ''
 
+# ===== 大文件分片上传（tus 协议）=====
 [tus]
+# 是否启用 tus 分片上传
 enabled = true
+# 上传接口路径前缀
 path_prefix = '/files/upload/'
+# 分片大小（字节，默认 5MB）
 chunk_size = 5242880
+# 单文件最大大小（字节，默认 10GB）
 max_size = 10737418240
+# 分片临时存储目录
 store_dir = './data/tus'
+# 是否允许并发上传
 concurrent_uploads = true
+# 是否启用秒传去重（相同文件跳过上传）
 dedup = true
 
+# ===== 认证与安全 =====
 [auth]
+# JWT 签名密钥（生产环境务必修改）
 jwt_secret = 'change-me-in-production'
+# JWT 有效期（秒，默认 24 小时）
 jwt_expire = 86400
+# Argon2 哈希迭代次数（越高越安全越慢）
 argon2_time = 3
+# Argon2 内存开销（KB）
 argon2_memory = 65536
+# Argon2 并行线程数
 argon2_threads = 4
+# Argon2 派生密钥长度（字节）
 argon2_key_len = 32
+# Argon2 盐长度（字节）
 argon2_salt_len = 16
+# 默认主人账号用户名（仅能通过配置文件修改）
 admin_username = 'admin'
+# 默认主人账号密码（仅能通过配置文件修改）
 admin_password = 'admin123'
 
+# ===== AI 基础配置 =====
 [ai]
+# Ollama 服务地址
 ollama_host = 'http://localhost:11434'
+# 默认对话模型
 default_model = 'deepseek-r1:7b'
+# 文本向量化（嵌入）模型
 embedding_model = 'nomic-embed-text'
+# 单次对话最大生成 token 数
 conversation_max_tokens = 4096
+# 生成温度（0-1，越高回答越发散）
 temperature = 0.7
 
+# ===== AI RAG 检索增强 =====
 [ai.rag]
+# 是否启用 RAG 文件知识库检索
 enabled = true
+# 向量存储类型：chromem（本地）/ qdrant
 store_type = 'chromem'
+# 文档切分块大小
 chunk_size = 512
+# 相邻块重叠大小
 chunk_overlap = 50
+# 检索返回的最相关片段数
 top_k = 5
 
+# ===== Qdrant 向量库（store_type=qdrant 时生效）=====
 [ai.rag.qdrant]
+# Qdrant 服务地址
 host = 'localhost'
+# gRPC 端口
 port = 6334
+# API 密钥（未开启认证留空）
 api_key = ''
+# 向量集合名称
 collection_name = 'file_chunks'
 
+# ===== Ollama 进程托管 =====
 [ai.ollama]
+# 是否由本服务托管 Ollama 生命周期（自动拉起/停止）
 managed = true
+# Ollama 可执行文件路径（留空 = 自动探测常见安装位置）
 binary = ''
+# 拉起时注入的 OLLAMA_HOST
 bind_host = '127.0.0.1:11434'
+# 等待 Ollama 就绪超时（秒）
 start_timeout = 60
+# 就绪后是否自动预热默认模型
 auto_warmup = true
 
+# ===== 模型推理调优 =====
 [ai.tune]
+# 指定推理模型（留空 = 使用 default_model）
 model = ''
+# 上下文窗口大小（0 = 使用模型默认值）
 num_ctx = 0
+# 模型驻留内存时长（如 5m、1h、-1 常驻、0 用完即卸载）
 keep_alive = ''
+# 并行推理数（0 = 使用 Ollama 默认值）
 num_parallel = 0
 
+# ===== AI 部署模式（主机/副机）=====
 [ai.deploy]
+# 部署模式：auto（自动检测）/ server（主机）/ secondary（副机）
 mode = 'auto'
+# 本机角色：primary（主机）/ secondary（副机）
 role = 'primary'
+# 远端主机地址（副机模式连接的主机）
 remote_host = ''
+# 远端主机使用的模型
 remote_model = ''
+# 远端 API 地址
 remote_api = ''
+# 远端登录用户名
 remote_username = ''
+# 远端登录密码
 remote_password = ''
+# 主机不可用时是否自动切换
 auto_switch = true
+# 可用性检测间隔（秒）
 check_interval = 30
 
+# ===== Home Assistant 集成 =====
 [ai.homeassistant]
+# 是否启用 Home Assistant
 enabled = false
+# Home Assistant 服务地址
 base_url = 'http://homeassistant.local:8123'
+# 长期访问令牌
 token = ''
 
+# ===== IoT 智能家庭设备 =====
 [iot]
+
+# 米家设备接入
 [iot.mihome]
+# 是否启用米家接入
 enabled = false
+# 米家 OAuth Client ID
 client_id = ''
+# 米家 OAuth Client Secret
 client_secret = ''
+# OAuth 回调地址
 redirect_uri = ''
+# 米家 API 地址
 api_base = ''
 
+# MQTT 设备接入
 [iot.mqtt]
+# 是否启用 MQTT
 enabled = true
+# MQTT Broker 地址
 broker = 'tcp://localhost:1883'
+# MQTT 客户端 ID
 client_id = 'smart-nas'
+# Broker 用户名（未开启认证留空）
 username = ''
+# Broker 密码（未开启认证留空）
 password = ''
 
+# ===== 插件系统 =====
 [plugin]
+# 是否启用插件系统
 enabled = true
+# 插件目录
 dir = './plugins'
+# 是否自动加载目录内插件
 auto_load = true
+# 插件调用超时（秒）
 timeout = 30
 
+# ===== 日志配置 =====
 [log]
+# 日志级别：debug / info / warn / error
 level = 'info'
+# 日志文件路径
 path = './data/logs/smart-nas.log'
+# 单个日志文件最大大小（MB）
 max_size = 100
+# 保留的历史日志文件数
 max_backups = 7
+# 日志保留天数
 max_age = 30
 
+# ===== 服务降级 =====
 [degradation]
+# CPU 过高时是否自动关闭 RAG 检索
 auto_disable_rag_on_high_cpu = true
+# 触发降级的 CPU 使用率阈值（0-1）
 cpu_threshold = 0.85
 
+# ===== 视频播放/转码 =====
 [play]
+# 是否启用在线播放
 enabled = true
+# 允许原盘直出的最大分辨率高度（超过则转码）
 max_online_height = 1440
+# ffmpeg 可执行文件路径
 ffmpeg_path = 'ffmpeg'
+# ffprobe 可执行文件路径
 ffprobe_path = 'ffprobe'
+# 同时 remux（封装转换）任务数
 remux_concurrency = 3
+# 同时转码任务数
 transcode_concurrency = 1
+# 转码使用的 CPU 线程数
 transcode_threads = 2
+# 播放票据有效期（分钟）
 ticket_ttl_minutes = 30
+# 转码/缓存临时目录
 cache_dir = './data/cache/video'
+# 播放票据是否绑定来源 IP
 ip_bind = true
 
+# ===== 备份任务 =====
 [backup]
+# 是否启用备份功能
 enabled = true
+# 备份数据库路径
 db_path = './data/backup/backup.db'
+# 备份日志路径（独立于主日志）
 log_path = './data/logs/backup.log'
+# 备份任务监控间隔（秒）
 watch_interval = 30
+# U 盘插入轮询检测间隔（秒）
 usb_poll_interval = 3

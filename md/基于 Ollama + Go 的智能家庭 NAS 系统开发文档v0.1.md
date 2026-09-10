@@ -225,6 +225,7 @@ write_timeout = 300
 [storage]
 # 本地文件系统存储
 root = "./data/files"
+trash_path = ""                  # 回收站位置（空 = 运行目录 data/trash，v0.24.3 起默认）
 metadata_db = ""                 # 元数据库 SQLite 位置（空 = root/metadata.db，v0.11 起）
 version_keep = 5                 # 保留历史版本数
 trash_days = 30                  # 回收站保留天数
@@ -758,7 +759,7 @@ type FileVersion struct {
 
 - **扁平存储**：按 MD5 前两级目录分散存储，避免单目录文件过多。
 - **秒传去重**：相同 MD5 文件只存一份物理副本，元数据引用计数。
-- **软删除**：删除文件移入回收站（v0.10 起默认集中存放于 `data/files/trash`，不再在各盘符建 `.trash`；可在设置页自定义位置），30 天后自动清理（可配置）。
+- **软删除**：删除文件移入回收站（v0.24.3 起默认集中存放于运行目录 `data/trash`，v0.10–v0.24.2 为 `data/files/trash`；不在各盘符建 `.trash`；可在设置页自定义位置，留空使用默认），30 天后自动清理（可配置）。
 - **版本管理**：同名文件上传时保留历史版本（默认 5 个），旧版本存入 `data/versions/`。
 - **临时分块**：上传中的分块存入 `data/uploads/`，完成后合并清理。
 - **隐藏/系统文件屏蔽（v0.10）**：共用方法 `util.IsProtectedName / IsProtectedPath`（名称级，REST 与 WebDAV 共用）+ Windows 隐藏/系统属性检测；`$RECYCLE.BIN`、`System Volume Information`、`pagefile.sys`、`Config.Msi`、`DeliveryOptimization` 等系统条目在列表/搜索/回收站中不显示，且详情、下载、重命名、删除、移动、复制、上传、分享、恢复等全部操作统一拒绝，防止误操作破坏系统。
@@ -2100,6 +2101,7 @@ Collection: "file_chunks"
 | DELETE | `/api/admin/users/:id` | 删除用户 |
 | GET | `/api/admin/system/status` | 系统状态（主人/管理员视角，含在线用户） |
 | GET | `/api/admin/settings` | 获取系统设置（刷新频率 / 回收站位置 / 日志位置、最大大小与保留天数，v0.03 新增、v0.08 扩展） |
+| GET | `/api/admin/settings/defaults` | 获取可留空设置项的系统默认值（`trash_path` = 运行目录 data/trash、`log_path` = config 日志路径绝对路径、`backup_output_dir` = 运行目录 data/backup；v0.24.3 新增，供设置页 placeholder 显示） |
 | PUT | `/api/admin/settings` | 更新系统设置（**仅主人可修改**，管理员/普通用户返回 403，v0.06 起；日志设置保存后立即生效，v0.08 起；回收站路径格式校验与归一化，v0.13 起） |
 | GET | `/api/admin/metrics` | 指标快照（JSON，v0.01 新增） |
 | GET | `/api/admin/config` | 获取配置 |

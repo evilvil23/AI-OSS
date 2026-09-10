@@ -6,6 +6,7 @@ package server
 
 import (
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -50,6 +51,7 @@ func (s *Server) registerBackupRoutes(authed *gin.RouterGroup) {
 }
 
 // backupDefaults GET /api/backup/defaults （全局默认：存放目录/压缩级别/排除规则，新建任务表单预填）
+// 存放目录为空时返回系统默认（运行目录 data/backup）
 func (s *Server) backupDefaults(c *gin.Context) {
 	out := map[string]interface{}{"output_dir": "", "compress_level": 6, "exclude_rules": []string{}}
 	if s.deps.Settings != nil {
@@ -61,6 +63,9 @@ func (s *Server) backupDefaults(c *gin.Context) {
 		if st.BackupExcludeRules != nil {
 			out["exclude_rules"] = visibleExcludeRules(st.BackupExcludeRules)
 		}
+	}
+	if out["output_dir"] == "" && s.deps.DataDir != "" {
+		out["output_dir"] = filepath.Join(s.deps.DataDir, "backup")
 	}
 	c.JSON(http.StatusOK, types.OK(out))
 }
@@ -138,6 +143,10 @@ func (s *Server) buildTask(req *backupTaskRequest, existing *backup.Task, applyD
 		st := s.deps.Settings.Get()
 		if t.OutputDir == "" {
 			t.OutputDir = st.BackupOutputDir
+		}
+		// 全局默认也为空时回退系统默认目录（运行目录 data/backup）
+		if t.OutputDir == "" && s.deps.DataDir != "" {
+			t.OutputDir = filepath.Join(s.deps.DataDir, "backup")
 		}
 		if t.EnableCompress && t.CompressLevel <= 0 {
 			t.CompressLevel = st.BackupCompressLevel

@@ -25,7 +25,8 @@ type Service struct {
 	argon       security.Argon2Params
 	permFn      PermFn
 	permScopeFn func(userID uint, dir string) bool
-	trashPath   string // 全局回收站目录（为空时使用默认位置 root/trash）
+	trashPath        string // 全局回收站目录（设置页/配置文件自定义，优先级最高）
+	defaultTrashPath string // 默认回收站目录（运行目录下 data/trash）
 }
 
 // PermFn 权限校验回调：判断用户对某路径是否具有读/写权限（由 server 层注入）
@@ -36,7 +37,7 @@ func NewService(repo *Repository, root string, cfg config.StorageConfig, argon s
 	if err := os.MkdirAll(root, 0o755); err != nil {
 		return nil, err
 	}
-	s := &Service{repo: repo, root: root, cfg: cfg, argon: argon}
+	s := &Service{repo: repo, root: root, cfg: cfg, argon: argon, defaultTrashPath: filepath.Join(filepath.Dir(root), "trash")}
 	// 初始化磁盘根节点元数据（单盘失败不阻断启动，仅记录警告）
 	for _, d := range s.disks() {
 		if err := s.ensureDisk(d); err != nil {
@@ -54,9 +55,21 @@ func (s *Service) SetPermFn(fn PermFn) { s.permFn = fn }
 // 使其能够逐级导航进入被授权的目录（修复配置了子目录权限却看不到磁盘的问题）。
 func (s *Service) SetPermScopeFn(fn func(userID uint, dir string) bool) { s.permScopeFn = fn }
 
-// SetTrashPath 设置全局回收站目录（空表示使用磁盘下 .trash）
+// SetTrashPath 设置全局回收站目录（空表示使用默认位置 运行目录/data/trash）
 func (s *Service) SetTrashPath(p string) {
 	s.trashPath = strings.TrimSpace(p)
+}
+
+// SetDefaultTrashPath 设置默认回收站目录（main 注入运行目录 data/trash；自定义 trashPath 优先）
+func (s *Service) SetDefaultTrashPath(p string) {
+	if p != "" {
+		s.defaultTrashPath = filepath.Clean(p)
+	}
+}
+
+// DefaultTrashPath 返回当前默认回收站目录（供设置页预填显示）
+func (s *Service) DefaultTrashPath() string {
+	return filepath.Clean(s.defaultTrashPath)
 }
 
 func (s *Service) canRead(userID uint, path string) bool {
@@ -802,12 +815,12 @@ func (s *Service) resolveDirPath(parentID uint) (string, error) {
 }
 
 // trashDirFor 返回回收站目录：设置页自定义位置优先；
-// 默认集中存放于 root/trash（即 ./data/files/trash），不再在各盘符下建 .trash
+// 默认集中存放于运行目录 data/trash（即 ./data/trash），不再在各盘符下建 .trash
 func (s *Service) trashDirFor(path string) string {
 	if s.trashPath != "" {
 		return filepath.Clean(s.trashPath)
 	}
-	return filepath.Join(s.root, "trash")
+	return filepath.Clean(s.defaultTrashPath)
 }
 
 // isDBArtifact 判断路径是否为元数据库自身或其 WAL 伴随文件

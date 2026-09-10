@@ -213,15 +213,13 @@
           </div>
           <div class="form-row">
             <label>回收站位置</label>
-            <input type="text" id="set-trash" placeholder="默认：./data/files/trash">
+            <input type="text" id="set-trash" placeholder="默认位置加载中…">
             <button class="btn icon-btn" onclick="pickTrashDir()" id="btn-pick-trash" style="flex:none" title="选择回收站位置" aria-label="选择回收站位置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
-            <span class="set-desc" id="trash-default-note">删除的文件存放目录。留空使用默认位置 ./data/files/trash（集中存放，不在各盘符建 .trash）</span>
           </div>
           <div class="form-row">
             <label>日志文件位置</label>
-            <input type="text" id="set-logpath" placeholder="默认：./data/logs/smart-nas.log">
+            <input type="text" id="set-logpath" placeholder="默认位置加载中…">
             <button class="btn icon-btn" onclick="pickLogDir()" id="btn-pick-log" style="flex:none" title="选择日志位置" aria-label="选择日志位置"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
-            <span class="set-desc">日志输出的完整文件路径。留空使用 config.toml 中的默认位置</span>
           </div>
           <div class="form-row">
             <label>日志最大大小</label>
@@ -235,7 +233,7 @@
           </div>
           <div class="form-row">
             <label>备份默认存放目录</label>
-            <input type="text" id="set-bkdir" placeholder="如 Y:\nas-backup">
+            <input type="text" id="set-bkdir" placeholder="默认位置加载中…">
             <button class="btn icon-btn" onclick="pickBackupDir()" id="btn-pick-bkdir" style="flex:none" title="选择备份默认存放目录" aria-label="选择备份默认存放目录"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
             <span class="set-desc">新建备份任务时默认使用的备份包存放目录（任务内可单独修改）</span>
           </div>
@@ -264,7 +262,7 @@
           <h2 id="ai-settings-anchor" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">AI 设置</h2>
           <div class="form-row">
             <label>对话模型</label>
-            <select id="set-ai-model" style="max-width:100%!important;flex:none!important"></select>
+            <select id="set-ai-model" style="width:280px!important;flex:none!important"></select>
             <span class="set-desc">启动与对话使用的默认模型（选择后热更新生效，无需重启）</span>
           </div>
           <div class="form-row">
@@ -278,7 +276,7 @@
           </div>
           <div class="form-row">
             <label>服务端地址</label>
-            <input type="text" id="set-ai-server" placeholder="如 192.168.1.10:11434">
+            <input type="text" id="set-ai-server" placeholder="如 192.168.1.10:11434" style="width:260px!important;flex:none!important">
             <span class="set-desc">辅机连接的服务端 Ollama 地址（需重启服务后生效）</span>
           </div>
           <div class="form-row">

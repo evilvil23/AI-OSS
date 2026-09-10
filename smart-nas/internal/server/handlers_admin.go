@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 
@@ -21,6 +22,7 @@ func (s *Server) registerAdminRoutes(admin *gin.RouterGroup) {
 	admin.PUT("/users/:id/permissions", s.adminSetPermissions)
 	admin.DELETE("/users/:id", s.adminDeleteUser)
 	admin.GET("/settings", s.adminGetSettings)
+	admin.GET("/settings/defaults", s.adminSettingsDefaults)
 	admin.PUT("/settings", s.adminSaveSettings)
 	admin.POST("/settings/reset", s.adminResetSettings)
 	admin.POST("/cache/clear", s.adminClearCache)
@@ -230,6 +232,26 @@ func (s *Server) adminDeleteUser(c *gin.Context) {
 // adminGetSettings GET /api/admin/settings
 func (s *Server) adminGetSettings(c *gin.Context) {
 	c.JSON(http.StatusOK, types.OK(s.deps.Settings.Get()))
+}
+
+// adminSettingsDefaults GET /api/admin/settings/defaults
+// 返回可留空设置项的系统默认值（绝对路径），供设置页 placeholder 显示：
+// trash_path = 运行目录/data/trash；log_path = config.toml 日志路径的绝对路径；
+// backup_output_dir = 运行目录/data/backup
+func (s *Server) adminSettingsDefaults(c *gin.Context) {
+	defaults := map[string]string{}
+	if s.deps.Storage != nil {
+		defaults["trash_path"] = s.deps.Storage.DefaultTrashPath()
+	}
+	if lp := s.cfg.GetConfig().Log.Path; lp != "" {
+		if abs, err := filepath.Abs(lp); err == nil {
+			defaults["log_path"] = abs
+		}
+	}
+	if s.deps.DataDir != "" {
+		defaults["backup_output_dir"] = filepath.Join(s.deps.DataDir, "backup")
+	}
+	c.JSON(http.StatusOK, types.OK(defaults))
 }
 
 // adminSaveSettings PUT /api/admin/settings {…设置项}

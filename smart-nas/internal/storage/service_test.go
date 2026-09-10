@@ -208,7 +208,7 @@ func TestDeleteToTrashAndGlobalTrash(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateDir: %v", err)
 	}
-	// 未配置回收站位置 → 默认集中存放于 root/trash（./data/files/trash）
+	// 未配置回收站位置 → 默认集中存放于运行目录 data/trash（base/trash）
 	if err := s.DeleteFile(0, []uint{sub.ID}); err != nil {
 		t.Fatalf("DeleteFile: %v", err)
 	}
@@ -216,8 +216,8 @@ func TestDeleteToTrashAndGlobalTrash(t *testing.T) {
 	if len(trash) != 1 || trash[0].Name != "照片" {
 		t.Fatalf("回收站列表不符: %+v", trash)
 	}
-	if dir := s.trashDirFor(filepath.Join(diskDir, "x")); filepath.Clean(dir) != filepath.Join(filepath.Dir(diskDir), "root", "trash") {
-		t.Fatalf("默认回收站应为 root/trash, got %s", dir)
+	if dir := s.trashDirFor(filepath.Join(diskDir, "x")); filepath.Clean(dir) != filepath.Join(filepath.Dir(diskDir), "trash") {
+		t.Fatalf("默认回收站应为 data/trash, got %s", dir)
 	}
 	// 配置自定义回收站 → 自定义路径优先
 	s.SetTrashPath(filepath.Join(diskDir, "..", "global-trash"))

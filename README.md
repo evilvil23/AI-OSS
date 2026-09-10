@@ -85,10 +85,11 @@ data/
 │   ├── exclude-list.txt   # 备份全局排除规则（v0.21.2，每行一条，支持 # 注释）
 │   └── file_metas.toml.migrated  # 旧版文件元数据（已迁移至 SQLite 后的备份）
 ├── files/                 # 文件 blob（按 MD5 分散存储）
-│   ├── metadata.db        # 文件元数据 SQLite 库（v0.11 起，含 -wal/-shm 伴随文件）
-│   └── trash/             # 默认回收站（删除的文件集中存放于此）
+│   └── metadata.db        # 文件元数据 SQLite 库（v0.11 起，含 -wal/-shm 伴随文件）
+├── trash/                 # 默认回收站（v0.24.3 起集中存放于运行目录 data/trash，不在各盘符/文件根下创建）
 ├── tus/                   # 上传临时分块（uploads.toml 任务记录）
-├── backup/                # 备份元数据 SQLite（backup.db，backup_task / backup_history）
+├── backup/                # 备份元数据 SQLite（backup.db，backup_task / backup_history）；
+│                          # v0.24.3 起同时作为备份默认存放目录（全局设置为空时，备份产物按任务名存放于此）
 ├── vectors/               # RAG 向量库（可选，store.json 为向量数据缓存）
 ├── logs/                  # 日志（smart-nas.log，按大小滚动、按天数清理）
 └── plugins/               # 插件数据目录
@@ -274,7 +275,7 @@ http://localhost:8080/
 多选批量 **复制/移动/删除**、目标目录选择、列排序、图片/文本预览、**视频在线播放**
 （抽屉式播放器：进度拖拽 / 音量 / 全屏 / 2K 拦截提示，见 §6.12）、新建文件夹、
 **tus 单块上传**、下载、重命名、分享链接、**回收站**（多选单个/批量还原与
-物理删除、一键还原、一键清空，默认位置 `./data/files/trash`）、**文件备份还原**
+物理删除、一键还原、一键清空，默认位置 `./data/trash`）、**文件备份还原**
 （任务化管理：完整/增量、定时/间隔/USB 实时/手动、配额与冻结、还原与邮件通知，见 §6.13）、
 **AI 对话页签**（v0.23：会话列表 / 流式对话 / 模型管理 / AI 设置，见 §6.14）、
 **智能家居页签**（v0.23：HomeAssistant 设备网格管理与开关控制，见 §6.14）、
@@ -433,6 +434,8 @@ curl.exe -s -X PUT http://localhost:8080/api/admin/users/2/permissions `
   -d '{"permissions":[{"path":"D:/","read":true,"write":true},{"path":"E:/photo","read":true,"write":false}]}'
 # 系统设置（刷新频率 / 回收站位置 / 日志位置与清理，界面"管理 → 设置"可改；仅主人可修改）
 curl.exe -s http://localhost:8080/api/admin/settings -H $AUTH
+# 设置项默认值（v0.24.3：回收站/日志/备份目录的系统默认绝对路径，供设置页占位显示）
+curl.exe -s http://localhost:8080/api/admin/settings/defaults -H $AUTH
 curl.exe -s -X PUT http://localhost:8080/api/admin/settings `
   -H $AUTH -H "Content-Type: application/json" `
   -d '{"cpu_refresh_seconds":5,"disk_refresh_seconds":60,"trash_path":"D:/nas-trash","log_path":"D:/logs/nas.log","log_max_size":100,"log_max_age":30}'
@@ -531,6 +534,7 @@ curl.exe -s -X DELETE http://localhost:8080/api/play/ticket/<token> -H $AUTH
   「管理 → 设置」调整，任务内可单独覆盖；
 - **全局默认**（「管理 → 设置」）：备份默认存放目录、备份默认压缩级别、
   **备份全局排除规则**——新建任务时自动套用，任务内可单独修改；
+  存放目录留空时使用系统默认 `data/backup`（v0.24.3 起）；
   规则自 v0.21.2 起独立存储于数据目录 `data/db/exclude-list.txt`
   （每行一条、支持 `#` 注释）；
   排除规则已预置 Windows / Linux 系统目录、开发项目产物（node_modules、.git 等）

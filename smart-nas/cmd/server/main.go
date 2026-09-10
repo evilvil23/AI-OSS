@@ -115,6 +115,8 @@ func main() {
 	must(err)
 	storageSvc, err := storage.NewService(storageRepo, fileRoot, cfg.Storage, argon2Params(cfg))
 	must(err)
+	// 默认回收站：运行目录下 data/trash（设置页/config 自定义位置优先）
+	storageSvc.SetDefaultTrashPath(filepath.Join(dataDir, "trash"))
 
 	// 5. 用户与认证
 	userRepo, err := user.NewRepository(metaDir)
@@ -322,6 +324,7 @@ func main() {
 		TusPrefix:    tusPrefix,
 		Play:         playSvc,
 		Backup:       backupSvc,
+		DataDir:      dataDir,
 	}
 	srv := server.New(deps)
 

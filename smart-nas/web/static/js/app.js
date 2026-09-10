@@ -319,20 +319,31 @@ function setSettingsDisabled(disabled) {
   ["btn-pick-trash", "btn-pick-log", "btn-pick-bkdir", "btn-save-settings", "btn-clear-cache", "btn-reset-settings"].forEach(id => { const el = $(id); if (el) el.disabled = disabled; });
   const tip = $("settings-lock-tip"); if (tip) tip.style.display = disabled ? "" : "none";
 }
+let SET_DEFAULTS = {}; // 各可留空设置项的系统默认值（/api/admin/settings/defaults）
+// 路径类设置输入框统一渲染：placeholder 显示系统默认位置；
+// 值为空或与默认一致时显示空（即使用默认），修改为不同值后才显示实际值
+function applyPathInput(id, val, def) {
+  const el = $(id); if (!el) return;
+  def = def || "";
+  el.placeholder = def ? ("默认：" + def) : "";
+  const v = (val || "").trim();
+  el.value = (v && v !== def) ? v : "";
+}
 async function loadSettings() {
   const locked = !IS_MASTER(); // 主人可改，其余只读
   setSettingsDisabled(locked);
   try {
     const s = await api("/api/admin/settings", { headers: AUTH() });
+    try { SET_DEFAULTS = await api("/api/admin/settings/defaults", { headers: AUTH() }); } catch (_) { SET_DEFAULTS = {}; }
     SYS_REFRESH.cpu = (s.cpu_refresh_seconds || 5) * 1000;
     SYS_REFRESH.disk = (s.disk_refresh_seconds || 60) * 1000;
     $("set-cpu").value = s.cpu_refresh_seconds || 5;
     $("set-disk").value = s.disk_refresh_seconds || 60;
-    $("set-trash").value = s.trash_path || "";
-    $("set-logpath").value = s.log_path || "";
+    applyPathInput("set-trash", s.trash_path, SET_DEFAULTS.trash_path);
+    applyPathInput("set-logpath", s.log_path, SET_DEFAULTS.log_path);
     $("set-logsize").value = s.log_max_size || 100;
     $("set-logage").value = s.log_max_age || 30;
-    $("set-bkdir").value = s.backup_output_dir || "";
+    applyPathInput("set-bkdir", s.backup_output_dir, SET_DEFAULTS.backup_output_dir);
     $("set-bklevel").value = String(s.backup_compress_level || 9);
     $("set-bkexcludes").value = (s.backup_exclude_rules || []).join("\n");
   } catch (e) { /* 忽略 */ } finally { setSettingsDisabled(locked); }
@@ -354,10 +365,14 @@ async function saveSettings() {
     logpath = normalizeWinPath(logpath);
     if (!isValidWinPath(logpath)) { toast("日志路径不合法：应为盘符开头的绝对路径", "err"); return; }
   }
+  // 输入值与系统默认一致 → 传空字符串，保持「留空 = 使用默认」语义
+  if (trash && SET_DEFAULTS.trash_path && trash === normalizeWinPath(SET_DEFAULTS.trash_path)) trash = "";
+  if (logpath && SET_DEFAULTS.log_path && logpath === normalizeWinPath(SET_DEFAULTS.log_path)) logpath = "";
   let bkdir = $("set-bkdir").value.trim();
   if (bkdir) {
     bkdir = normalizeWinPath(bkdir);
     if (!isValidWinPath(bkdir)) { toast("备份存放目录不合法：应为盘符开头的绝对路径", "err"); return; }
+    if (SET_DEFAULTS.backup_output_dir && bkdir === normalizeWinPath(SET_DEFAULTS.backup_output_dir)) bkdir = "";
   }
   const bklevel = parseInt($("set-bklevel").value, 10) || 9;
   // 全局排除规则：每行一条（可直接复制用作 exclude-list.txt）
@@ -417,12 +432,17 @@ function pickNasFolder(title) {
     });
   });
 }
+// 与系统默认一致 → 显示为空（placeholder 展示默认），保持「留空 = 默认」语义
+function pathInputValue(id, key, p) {
+  const def = (SET_DEFAULTS && SET_DEFAULTS[key]) || "";
+  $(id).value = (def && normalizeWinPath(p) === normalizeWinPath(def)) ? "" : p;
+}
 // 回收站位置选择
 async function pickTrashDir() {
   if (!IS_MASTER()) { toast("只有主人可以修改系统设置", "err"); return; }
   const p = await pickNasFolder("选择回收站位置");
   if (p) {
-    $("set-trash").value = p;
+    pathInputValue("set-trash", "trash_path", p);
     toast("已选择回收站位置：" + p, "ok");
   }
 }
@@ -431,8 +451,8 @@ async function pickBackupDir() {
   if (!IS_MASTER()) { toast("只有主人可以修改系统设置", "err"); return; }
   const p = await pickNasFolder("选择备份默认存放目录");
   if (p) {
-    $("set-bkdir").value = p;
-    toast("已选择备份默认存放目录：" + p, "ok");
+    pathInputValue("set-bkdir", "backup_output_dir", p);
+    toast("已选择备份存放目录：" + p, "ok");
   }
 }
 // 日志位置选择：选择目录后自动拼接默认日志文件名 smart-nas.log
@@ -441,7 +461,7 @@ async function pickLogDir() {
   const p = await pickNasFolder("选择日志位置");
   if (p) {
     const file = p.replace(/[\\/]+$/, "") + "\\smart-nas.log";
-    $("set-logpath").value = file;
+    pathInputValue("set-logpath", "log_path", file);
     toast("已选择日志位置：" + file, "ok");
   }
 }
