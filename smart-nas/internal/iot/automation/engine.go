@@ -114,7 +114,7 @@ func (e *Engine) Get(id string) (*Automation, bool) {
 func (e *Engine) List() []*Automation {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
-	var out []*Automation
+	out := make([]*Automation, 0, len(e.automation))
 	for _, a := range e.automation {
 		cp := *a
 		out = append(out, &cp)

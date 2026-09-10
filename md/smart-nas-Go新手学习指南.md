@@ -865,12 +865,19 @@ db.QueryRow(`SELECT ... FROM file_metas WHERE id=?`, id)
 
 **新手要点**：`database/sql` 是 Go 标准库的数据库接口，`sql.Open` 打开连接，`db.Query/QueryRow/Exec` 执行 SQL。项目里时间字段用 Unix 纳秒整数存储（`nanos()`/`timeOf()` 转换），因为 `database/sql` 不会自动把 int64 转成 `time.Time`。
 
-#### google/uuid（ID 生成）
+#### uuid（Go 1.27 标准库，ID 生成）
 
 ```go
-// util/id.go
-func NewUUIDCompact() string { return uuid.NewString()[:32] }  // 上传任务 ID
+// util/id.go —— v0.25 起改用 Go 1.27 内置的 uuid 包（RFC 9562），不再依赖 github.com/google/uuid
+import "uuid" // 标准库，无需 go get
+
+func NewUUID() string { return uuid.NewV4().String() }           // 标准 v4 UUID（含短横线）
+func NewUUIDCompact() string {                                   // 32 字符无短横线（上传任务/会话 ID）
+    return strings.ReplaceAll(uuid.NewV4().String(), "-", "")
+}
 ```
+
+**新手要点**：`uuid.NewV4()` 用加密安全随机数生成，碰撞概率可忽略；需要按时间排序的 ID（数据库索引友好）可用 `uuid.NewV7()`。
 
 #### log/slog（标准库结构化日志）
 
@@ -893,7 +900,7 @@ logger.Error("初始化失败", "error", err)
 
 ### 5.1 环境准备
 
-1. **安装 Go**：https://go.dev/dl/ ，推荐 1.25+（`go.mod` 声明 `go 1.25.0`）。安装后验证：
+1. **安装 Go**：https://go.dev/dl/ ，推荐 1.27+（`go.mod` 声明 `go 1.27.1`，v0.25 起使用 Go 1.27 标准库 `uuid` 包与泛型工具）。安装后验证：
 
 ```powershell
 go version

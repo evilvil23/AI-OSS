@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"smart-nas/internal/util"
 )
 
 // objectSchema 快速构造 object 类型 JSON Schema
@@ -60,11 +62,10 @@ func (t *listDevicesTool) Execute(ctx context.Context, args json.RawMessage) (st
 		Name     string `json:"name"`
 		State    string `json:"state"`
 	}
-	items := make([]item, 0, len(states))
-	for _, s := range states {
+	items := util.Map(states, func(s State) item {
 		name, _ := s.Attributes["friendly_name"].(string)
-		items = append(items, item{EntityID: s.EntityID, Name: name, State: s.State})
-	}
+		return item{EntityID: s.EntityID, Name: name, State: s.State}
+	})
 	return jsonString(items), nil
 }
 

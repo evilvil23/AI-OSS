@@ -8,6 +8,8 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+
+	"smart-nas/internal/util"
 )
 
 // Metrics 轻量 Prometheus 文本协议指标收集器
@@ -98,19 +100,13 @@ func (m *Metrics) render() string {
 }
 
 func (m *Metrics) sortedGauges() []string {
-	names := make([]string, 0, len(m.gauges))
-	for n := range m.gauges {
-		names = append(names, n)
-	}
+	names := util.Keys(m.gauges)
 	sort.Strings(names)
 	return names
 }
 
 func (m *Metrics) sortedCounters() []string {
-	names := make([]string, 0, len(m.counters))
-	for n := range m.counters {
-		names = append(names, n)
-	}
+	names := util.Keys(m.counters)
 	sort.Strings(names)
 	return names
 }

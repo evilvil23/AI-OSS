@@ -3,18 +3,19 @@ package util
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"strings"
 
-	"github.com/google/uuid"
+	"uuid" // Go 1.27 标准库（RFC 9562），替代 github.com/google/uuid
 )
 
-// NewUUID 生成标准 UUID 字符串（无短横线版本用 NewUUIDCompact）
+// NewUUID 生成标准 UUID 字符串（v4 随机，含短横线；无短横线版本用 NewUUIDCompact）
 func NewUUID() string {
-	return uuid.NewString()
+	return uuid.NewV4().String()
 }
 
-// NewUUIDCompact 生成无短横线的 UUID（可作为文件名后缀等）
+// NewUUIDCompact 生成无短横线的 32 字符 UUID（可作为文件名后缀等）
 func NewUUIDCompact() string {
-	return uuid.NewString()[:32]
+	return strings.ReplaceAll(uuid.NewV4().String(), "-", "")
 }
 
 // RandomHex 生成随机十六进制字符串（长度为 2*n 字符）

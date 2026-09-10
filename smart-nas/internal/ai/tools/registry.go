@@ -12,6 +12,7 @@ import (
 
 	"smart-nas/internal/ai/ollama"
 	"smart-nas/internal/storage"
+	"smart-nas/internal/util"
 	"smart-nas/pkg/logger"
 )
 
@@ -144,11 +145,7 @@ func (r *Registry) ToolSchemas() []json.RawMessage {
 func (r *Registry) Names() []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	names := make([]string, 0, len(r.tools))
-	for n := range r.tools {
-		names = append(names, n)
-	}
-	return names
+	return util.Keys(r.tools)
 }
 
 // ---- 辅助 ----

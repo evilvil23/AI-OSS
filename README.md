@@ -11,7 +11,7 @@
 
 ### 1.1 安装 Go
 
-- 下载 Go 安装包：https://go.dev/dl/ （推荐 **1.25 或更高**，`go.mod` 声明 `go 1.25`）
+- 下载 Go 安装包：https://go.dev/dl/ （推荐 **1.27.1 或更高**，`go.mod` 声明 `go 1.27.1`；v0.25 起使用 Go 1.27 标准库 `uuid` 包替代第三方 google/uuid）
 - 安装完成后确认：
 
 ```powershell

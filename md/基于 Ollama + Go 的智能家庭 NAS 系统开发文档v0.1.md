@@ -2908,6 +2908,10 @@ func TraceMiddleware() gin.HandlerFunc {
 所有日志条目必须包含 trace_id 字段，便于问题定位。
 ## 附录 A：Go 模块依赖（go.mod 关键依赖）
 
+> **注**：以下为项目早期规划稿；实际以 `smart-nas/go.mod` 为准（v0.25 起：`go 1.27.1`，
+> 使用 Go 1.27 标准库 `uuid` 包与泛型切片工具，`google/uuid` 已从直接依赖移除——
+> 仅作为 `eino` 的间接依赖保留；`encoding/json` 由 Go 1.27 内部 JSON v2 引擎驱动）。
+
 ```
 module github.com/yourname/smart-nas
 

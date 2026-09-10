@@ -441,27 +441,23 @@ func toInt(v interface{}) (int, error) {
 
 // toStringSlice JSON 反序列化出的 []interface{} / TOML 的 []string 统一转 []string（逐条 trim、去空）
 func toStringSlice(v interface{}) ([]string, error) {
+	// 逐条 trim 后滤掉空串（泛型工具见 internal/util/slice.go）
+	clean := func(strs []string) []string {
+		return util.Filter(util.Map(strs, strings.TrimSpace), func(s string) bool { return s != "" })
+	}
 	switch t := v.(type) {
 	case []interface{}:
-		out := make([]string, 0, len(t))
+		strs := make([]string, 0, len(t))
 		for _, item := range t {
 			s, ok := item.(string)
 			if !ok {
 				return nil, errors.New("排除规则应为字符串数组")
 			}
-			if s = strings.TrimSpace(s); s != "" {
-				out = append(out, s)
-			}
+			strs = append(strs, s)
 		}
-		return out, nil
+		return clean(strs), nil
 	case []string:
-		out := make([]string, 0, len(t))
-		for _, s := range t {
-			if s = strings.TrimSpace(s); s != "" {
-				out = append(out, s)
-			}
-		}
-		return out, nil
+		return clean(t), nil
 	case nil:
 		return []string{}, nil
 	default:
