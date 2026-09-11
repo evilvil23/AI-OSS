@@ -134,6 +134,7 @@ enabled = true
 path_prefix = "/files/upload/"
 
 [ai]                         # AI 管家（v0.21）
+enabled = false              # v0.26 总开关（默认关闭）：开启后启动初始化 AI；关闭时其余功能不受影响
 ollama_host = "http://localhost:11434"   # Ollama 服务地址
 default_model = "qwen2:7b"               # 显式默认模型（配置了就生效）
 embedding_model = "nomic-embed-text"     # RAG 向量模型
@@ -247,6 +248,12 @@ go run ./cmd/server -config config.toml -data ./data
 `Ctrl + C` 会触发优雅退出（保存元数据、关闭日志、停止调度器；v0.21 起还会先卸载
 AI 模型释放显存，再停止本服务拉起的 Ollama 进程——用户自启的 Ollama 不受影响，
 详见 §6.15）。
+
+> **v0.26 说明**：`go run` 默认不向子进程转发 Ctrl+C（[golang/go#40467](https://github.com/golang/go/issues/40467)），
+> 直接按 Ctrl+C 只会结束 `go run` 而留下服务进程继续占用端口。服务已内置**父进程看门狗**：
+> 检测到由 `go run` 启动时，父进程退出即自动触发同一优雅关闭流程，无需手动清理；
+> 直接运行编译产物或由服务管理器启动时不启用。关闭期间**再次按 Ctrl+C** 可立即强制退出，
+> 另有 90 秒关闭总超时兜底。若仍有异常残留进程，可 `Stop-Process -Name smart-nas -Force`。
 
 ---
 
@@ -593,9 +600,15 @@ curl.exe -s http://localhost:8080/api/backup/progress -H $AUTH
 
 ### 6.14 AI 管家 / 知识库 / Ollama 管理（v0.21）
 
-> 前置：安装 Ollama（见 §7.1）。服务启动时**自动完成一切**——检测 Ollama →
+> 前置：① `config.toml [ai] enabled = true`（**v0.26 起默认关闭**，也可在「管理 → 设置 → AI 设置」
+> 打开开关并重启服务）；② 安装 Ollama（见 §7.1）。开启后服务启动时**自动完成一切**——检测 Ollama →
 > 未运行则后台拉起（`[ai.ollama].managed=true` 默认开启）→ 等就绪 → 按硬件
 > 自适应加载默认模型 → 记录生效预设日志。所有 AI 接口走 JWT 鉴权。
+>
+> **v0.26 启动预检**：开启 AI 且为本机推理时，启动会预检 ① Ollama 可用性 ② 实际使用的
+> **对话模型**是否已拉取；缺失时控制台打印 `[AI] 预检失败：…`，服务仍正常启动、其余功能
+> 不受影响，前端 AI 页签给出差异化禁用提示（点击 AI 菜单弹出自动消失提示、输入区置灰）。
+> RAG 向量模型（`nomic-embed-text`）缺失只降级知识库，不影响对话。
 
 **硬件自适应**：启动日志可见「硬件检测完成 / 硬件调优预设生效」：
 
@@ -640,9 +653,10 @@ curl.exe -s -X PUT http://localhost:8080/api/ai/settings `
 curl.exe -s -X PUT http://localhost:8080/api/ai/settings `
   -H $AUTH -H "Content-Type: application/json" `
   -d '{"default_model":"qwen2:7b","deploy_mode":"auto","server_addr":"192.168.1.10:11434"}'
-# 响应含 need_restart 数组：列出需重启服务才能生效的字段（如 ai.deploy.mode）。
-# 网页「AI → 设置」保存时若该项非空，会提示确认并自动重启服务（POST /api/admin/restart），
-# 重启完成（/healthz 恢复）后提示刷新页面。
+# 响应含 need_restart（v0.26 起为布尔标志）：保存过启动期装配项（ai.enabled / deploy.mode 等）
+#   即为 true，服务重启后自动重置；网页设置页顶部会显示「需重启」提示条与「立即重启」按钮
+#   （POST /api/admin/restart，页面轮询 /healthz 恢复后自动刷新）。
+# v0.26：AI 设置已并入设置页统一的「保存设置」按钮，不再单独提交。
 
 # HomeAssistant 设备管理（v0.23，需启用 [ai.homeassistant]）
 curl.exe -s http://localhost:8080/api/ai/ha/status -H $AUTH            # 连接状态
@@ -705,6 +719,10 @@ curl.exe -s -X POST http://<NAS主机IP>:8080/api/ai/v1/chat/completions `
 **本服务拉起的** Ollama 进程。用户自己启动的 Ollama **永远不会被停止**；
 服务重启时凭 `data/ollama.pid` 自动接管上一任服务拉起的实例。
 
+> **v0.26 退出兜底**：① 关闭期间再次收到退出信号立即强制退出；② 关闭总超时 90 秒
+> 后强制退出，避免个别模块阻塞导致进程无法结束；③ 由 `go run` 启动时启用父进程看门狗
+> （go run 不转发 Ctrl+C），父进程退出即自动优雅关闭。
+
 ---
 
 ## 7. 可选组件（可选启用）
@@ -729,6 +747,10 @@ ollama pull nomic-embed-text  # 向量模型（RAG 用）
    局域网调用改 `[ai.ollama].bind_host = '0.0.0.0:11434'`（见 §6.14）；
 4. 重启服务：启动日志确认「硬件检测完成 → 硬件调优预设生效 → Ollama 已就绪 →
    默认模型预热完成」，即可对话（见 §6.14 验证命令）。
+
+> **v0.26 注意**：`[ai] enabled` 默认 `false`，需先改为 `true`（或经「管理 → 设置 →
+> AI 设置」打开开关并重启）AI 才会初始化；开启后若本机缺少所需模型，启动日志会打印
+> `[AI] 预检失败` 并禁用前端 AI，按提示 `ollama pull <模型名>` 后重启即可。
 
 ### 7.2 MQTT Broker（IoT 设备接入，可选）
 

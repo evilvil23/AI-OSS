@@ -781,6 +781,35 @@ store.NewStore[string, *Upload](filepath.Join(cfg.StoreDir, "uploads.toml"))
 
 `comparable` 表示"可比较的类型"（能当 map 的 key），`any` 表示任意类型。
 
+**进阶用法：用泛型构造器消除重复分支**（v0.26 `internal/config/config.go`）。
+配置项设置原本是 100+ 个 `case` 分支，每个分支都重复「解析字符串 → 赋值 → 标记成功」。
+现在用泛型函数**生成 setter 闭包**，把「解析」与「赋值」解耦：
+
+```go
+// parseSetter[T]：由「赋值函数」生成「解析字符串 + 赋值」的 setter
+func parseSetter[T any](f func(*Config, T)) func(*Config, string) error {
+    return func(c *Config, v string) error {
+        var t T
+        if _, err := fmt.Sscan(v, &t); err != nil {   // 按 T 推导解析目标类型
+            return fmt.Errorf("无效的配置值 %q", v)
+        }
+        f(c, t)
+        return nil
+    }
+}
+
+// 登记时只写一行；类型参数由 lambda 签名自动推导（int / int64 / bool / float64 / uint32 …）
+var configSetters = map[string]func(*Config, string) error{
+    "server.port":        parseSetter(func(c *Config, v int) { c.Server.Port = v }),
+    "tus.chunk_size":     parseSetter(func(c *Config, v int64) { c.Tus.ChunkSize = v }),
+    "storage.trash_path": strSetter(func(c *Config, v string) { c.Storage.TrashPath = v }),
+}
+```
+
+要点：泛型参数由传入的 lambda 签名**自动推导**（调用处无需写 `parseSetter[int](...)`）；
+把「路径 → 行为」登记进 map，运行时查表执行——**新增配置项只需登记一行，调度逻辑不动**，
+这也是「用数据（映射表）代替控制流（长 switch）」的典型手法。
+
 ### 4.7 第三方库逐个讲
 
 #### Gin（Web 框架）
@@ -1064,6 +1093,15 @@ curl.exe -s http://localhost:8080/healthz
 4. **权限校验**：所有文件操作都要过 `storage.Service` 的 `canRead/canWrite`（内部调用 `user.Service.CanAccess`）。**不要绕过权限直接操作文件**。
 
 5. **WebDAV 方法集**：gin 的 `Any()` 不包含 PROPFIND/MKCOL 等 WebDAV 扩展方法，必须显式注册（`webdav/handler.go` 的 `davMethods`）。
+
+6. **`go run` 的 Ctrl+C 陷阱**（v0.26）：`go run` **不会把 Ctrl+C 转发给子进程**
+   （[golang/go#40467](https://github.com/golang/go/issues/40467)），Ctrl+C 只结束 `go run`
+   本身，它编译出的程序会变成**孤儿进程继续占用端口**——表现为「终端按了 Ctrl+C，服务却还在跑」。
+   项目为此加了父进程看门狗（`cmd/server/parent_watch.go` + `parent_watch_windows.go` /
+   `parent_watch_unix.go`）：以「可执行文件是否位于 `go-build*` 临时目录」**精确判定** go run
+   场景，父进程退出即触发同一优雅关闭流程（直接运行编译产物时不启用，避免误退出）。
+   自行编写跨平台子进程管理时可参考：Windows 用 `OpenProcess(SYNCHRONIZE)` +
+   `WaitForSingleObject` 等待进程句柄（事件驱动、零 CPU 占用），Unix 用 `kill(pid, 0)` 轮询兜底。
 
 ---
 

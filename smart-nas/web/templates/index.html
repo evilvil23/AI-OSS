@@ -201,6 +201,11 @@
         <div class="panel">
           <h2>系统设置</h2>
           <div class="file-hint" id="settings-lock-tip" style="display:none">系统设置仅主人可修改；当前账号为只读查看</div>
+          <div class="restart-tip" id="settings-restart-tip" style="display:none">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+            <span>已保存的设置中包含需重启服务才生效的项（AI 开关 / 模型 / 部署模式等）</span>
+            <button class="btn" onclick="restartService()">立即重启</button>
+          </div>
           <div class="form-row">
             <label>CPU/内存刷新频率</label>
             <input type="number" id="set-cpu" min="2" value="5" style="width:160px!important;flex:none!important">
@@ -261,6 +266,11 @@
 
           <h2 id="ai-settings-anchor" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">AI 设置</h2>
           <div class="form-row">
+            <label>启用 AI</label>
+            <label class="switch"><input type="checkbox" id="set-ai-enabled"><span class="slider"></span></label>
+            <span class="set-desc">总开关（默认关闭）：开启后服务启动初始化 AI；本地部署会预检 Ollama 与所选对话模型，缺失则禁用 AI（其余功能不受影响）；变更需重启服务</span>
+          </div>
+          <div class="form-row">
             <label>对话模型</label>
             <select id="set-ai-model" style="width:280px!important;flex:none!important"></select>
             <span class="set-desc">启动与对话使用的默认模型（选择后热更新生效，无需重启）</span>
@@ -289,12 +299,8 @@
             <input type="number" id="set-ai-maxtok" step="10" min="100" value="4096" style="width:160px!important;flex:none!important">
             <span class="set-desc">单次回复最大 token 数</span>
           </div>
-          <div class="m-actions" id="ai-settings-actions">
-            <button class="btn" onclick="saveAISettings()">保存 AI 设置</button>
-          </div>
-
           <div class="m-actions">
-            <button class="primary save-btn" id="btn-save-settings" onclick="saveSettings()">
+            <button class="primary save-btn" id="btn-save-settings" onclick="saveSettings()" title="保存系统设置与 AI 设置">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               保存设置
             </button>

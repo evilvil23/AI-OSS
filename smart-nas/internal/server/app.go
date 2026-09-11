@@ -48,6 +48,7 @@ type Deps struct {
 	Tus        *tusd.Handler
 	Hub        *ws.Hub
 	AI         *ai.Service
+	AIReason   string            // AI 禁用原因（AI == nil 时下发给前端做差异化提示，v0.26）
 	Lifecycle  *ollama.Lifecycle // Ollama 进程生命周期管理（v0.21）
 	Hardware   *hardware.Info    // 硬件检测结果（v0.21）
 	HAClient   *ha.Client        // HomeAssistant 客户端（v0.23 设备管理 API）
@@ -136,10 +137,10 @@ func (s *Server) setupRoutes() {
 	authed.POST("/auth/change-password", s.changePassword)
 	authed.GET("/system/status", s.systemStatus)
 	s.registerFileRoutes(authed)
-	// AI 管家 / 知识库 / Ollama 管理（v0.21）：登录用户可见，管理接口要求管理员
-	if s.deps.AI != nil {
-		s.registerAIRoutes(authed)
-	}
+	// AI 管家 / 知识库 / Ollama 管理（v0.21）：登录用户可见，管理接口要求管理员。
+	// v0.26：AI 禁用时同样注册（status 下发禁用原因、settings 支持重新启用），
+	// 对话等运行期接口由 requireAI 以 503 降级
+	s.registerAIRoutes(authed)
 	// HomeAssistant 设备管理（v0.23）：独立于 AI 服务注册（HA 与 Ollama 解耦）
 	s.registerHARoutes(authed)
 	s.registerPluginRoutes(authed)

@@ -19,10 +19,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"smart-nas/internal/api/types"
 	"smart-nas/internal/ai/ollama"
 	"smart-nas/internal/ai/rag"
-	"smart-nas/internal/config"
+	"smart-nas/internal/api/types"
 	"smart-nas/pkg/logger"
 )
 
@@ -236,14 +235,21 @@ func (s *Server) aiRAGStatus(c *gin.Context) {
 // ---- 状态总览 ----
 
 // aiStatus GET /api/ai/status
+// AI 禁用时不报错，返回 enabled=false 与禁用原因（前端据此给出差异化提示）
 func (s *Server) aiStatus(c *gin.Context) {
-	if !s.requireAI(c) {
+	if s.deps.AI == nil {
+		reason := s.deps.AIReason
+		if reason == "" {
+			reason = "AI 模块未启用（检查 [ai] 配置与 Ollama）"
+		}
+		c.JSON(http.StatusOK, types.OK(gin.H{"enabled": false, "reason": reason}))
 		return
 	}
 	ctx := c.Request.Context()
 	out := gin.H{
-		"preset": s.deps.AI.Preset(),
-		"deploy": s.deps.AI.DeployStatus(),
+		"enabled": true,
+		"preset":  s.deps.AI.Preset(),
+		"deploy":  s.deps.AI.DeployStatus(),
 	}
 	if s.deps.Lifecycle != nil {
 		out["ollama"] = s.deps.Lifecycle.Status(ctx)
@@ -433,23 +439,21 @@ func (s *Server) aiDeleteModel(c *gin.Context) {
 
 // ---- 推理参数（M4） ----
 
-// aiGetSettings GET /api/ai/settings 当前生效模型与调优参数
+// aiGetSettings GET /api/ai/settings 当前生效模型与调优参数。
+// AI 禁用时同样可用（设置页需要展示开关并在启用后重启服务）
 func (s *Server) aiGetSettings(c *gin.Context) {
-	if !s.requireAI(c) {
-		return
-	}
 	c.JSON(http.StatusOK, types.OK(s.aiSettingsData()))
 }
 
 // aiUpdateSettings PUT /api/ai/settings 调整模型与推理参数（config.toml 热更新）
 // v0.23 增加：deploy_mode（auto|server|auxiliary）、server_addr（服务端地址）；
-// 部署模式 / 服务端地址 / Ollama 地址 / 向量模型等启动期装配项变更时响应
-// need_restart 列表，前端据此提示用户重启服务。
+// 部署模式 / 服务端地址 / Ollama 地址 / 向量模型等启动期装配项变更时，
+// config.Manager 置位待重启标志（响应 need_restart=true），前端据此提示用户重启服务。
+// v0.26 增加：enabled（AI 总开关，变更需重启）；AI 禁用时接口同样可用
+//（否则开关关闭后无法再从页面启用）
 func (s *Server) aiUpdateSettings(c *gin.Context) {
-	if !s.requireAI(c) {
-		return
-	}
 	var req struct {
+		Enabled               *bool    `json:"enabled"` // AI 功能总开关
 		Model                 *string  `json:"model"`
 		NumCtx                *int     `json:"num_ctx"`
 		KeepAlive             *string  `json:"keep_alive"`
@@ -464,9 +468,11 @@ func (s *Server) aiUpdateSettings(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, types.Fail(types.CodeBadRequest, err.Error()))
 		return
 	}
-	oldCfg := s.deps.Cfg.GetConfig().AI // 保存前快照（need_restart 对比用）
 	patch := map[string]interface{}{}
 	aiPatch := map[string]interface{}{}
+	if req.Enabled != nil {
+		aiPatch["enabled"] = *req.Enabled
+	}
 	if req.Model != nil {
 		aiPatch["default_model"] = *req.Model
 	}
@@ -534,55 +540,35 @@ func (s *Server) aiUpdateSettings(c *gin.Context) {
 		return
 	}
 	logger.Info("AI 参数已更新", "by", uid(c))
-	resp := s.aiSettingsData()
-	resp["need_restart"] = s.aiNeedRestartFields(oldCfg, s.deps.Cfg.GetConfig().AI)
-	c.JSON(http.StatusOK, types.OK(resp))
+	// need_restart 由 aiSettingsData 一并下发（config.Manager 已按变更置位）
+	c.JSON(http.StatusOK, types.OK(s.aiSettingsData()))
 }
 
-// aiNeedRestartFields 对比保存前后配置，返回需重启服务才能生效的字段清单。
-// 这些字段在启动期装配（部署模式 / 远端地址 / Ollama 地址 / 向量模型），
-// 运行中热更新不改变已装配行为；结果永不为 nil（JSON 输出 [] 而非 null）。
-func (s *Server) aiNeedRestartFields(old, new config.AIConfig) []string {
-	fields := make([]string, 0, 6)
-	if old.Deploy.Mode != new.Deploy.Mode {
-		fields = append(fields, "ai.deploy.mode")
-	}
-	if old.Deploy.Role != new.Deploy.Role {
-		fields = append(fields, "ai.deploy.role")
-	}
-	if old.Deploy.RemoteHost != new.Deploy.RemoteHost {
-		fields = append(fields, "ai.deploy.remote_host")
-	}
-	if old.Deploy.RemoteAPI != new.Deploy.RemoteAPI {
-		fields = append(fields, "ai.deploy.remote_api")
-	}
-	if old.OllamaHost != new.OllamaHost {
-		fields = append(fields, "ai.ollama_host")
-	}
-	if old.EmbeddingModel != new.EmbeddingModel {
-		fields = append(fields, "ai.embedding_model")
-	}
-	return fields
-}
-
-// aiSettingsData 组装当前设置视图
+// aiSettingsData 组装当前设置视图；AI 禁用时（无 preset）以 config 持久值
+// 代替运行态预设，保证设置页可展示并在重新启用后重启生效
 func (s *Server) aiSettingsData() gin.H {
-	preset := s.deps.AI.Preset()
 	cfg := s.deps.Cfg.GetConfig()
+	model, numCtx, keepAlive, numParallel, presetSource := cfg.AI.DefaultModel, cfg.AI.Tune.NumCtx, cfg.AI.Tune.KeepAlive, cfg.AI.Tune.NumParallel, "config"
+	if s.deps.AI != nil {
+		preset := s.deps.AI.Preset()
+		model, numCtx, keepAlive, numParallel, presetSource = preset.Model, preset.NumCtx, preset.KeepAlive, preset.NumParallel, preset.Source
+	}
 	return gin.H{
-		"model":                   preset.Model,
-		"preset_source":           preset.Source,
-		"num_ctx":                 preset.NumCtx,
-		"keep_alive":              preset.KeepAlive,
-		"num_parallel":            preset.NumParallel,
+		"enabled":                 cfg.AI.Enabled,
+		"model":                   model,
+		"preset_source":           presetSource,
+		"num_ctx":                 numCtx,
+		"keep_alive":              keepAlive,
+		"num_parallel":            numParallel,
 		"temperature":             cfg.AI.Temperature,
 		"conversation_max_tokens": cfg.AI.ConversationMaxTokens,
 		"embedding_model":         cfg.AI.EmbeddingModel,
 		// v0.23 部署模式：deploy_mode 为 config.toml 持久值（auto / dual / single），
-		// role 为解析或显式配置的角色；deploy 为运行态快照（含 remote_active）
+		// role 为解析或显式配置的角色
 		"deploy_mode": cfg.AI.Deploy.Mode,
 		"role":        cfg.AI.Deploy.Role,
 		"server_addr": cfg.AI.Deploy.RemoteHost,
-		"deploy":      s.deps.AI.DeployStatus(),
+		// v0.26 待重启标志：保存过启动期装配项后置位，服务重启后重置
+		"need_restart": s.deps.Cfg.RestartRequired(),
 	}
 }

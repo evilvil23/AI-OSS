@@ -3,32 +3,62 @@
  *
  * 复用 app.js 的全局工具：$ / api / AUTH / esc / toast / IS_PRI / openGen / closeGen。
  * 对话走流式 SSE（POST /api/ai/chat/stream），失败自动回退非流式 /api/ai/chat；
- * 机器模式 / 服务端地址等需重启项保存后提示用户确认并自动重启（轮询 /healthz）。
+ * AI 设置并入设置页「保存设置」统一提交（v0.26）；需重启项由页面提示条 +
+ * 「立即重启」按钮处理（后端以 need_restart 标志下发，重启后自动重置）。
  */
 
 let aiConvID = "";          // 当前会话 ID
 let aiConvs = [];           // 会话列表缓存
 let aiCtrl = null;          // 流式请求 AbortController
 let aiInited = false;       // 已初始化（避免重复拉取）
+let aiOffReason = "";       // AI 禁用原因（非空 = AI 已禁用，v0.26）
 
 /* ==================== AI 对话 ==================== */
+
+// aiTabEnter 点击「AI」菜单时调用：已禁用则每次给出自动消失的差异化提示；
+// 正常时首次进入执行初始化
+function aiTabEnter() {
+  if (aiOffReason) { toast(aiOffReason, "err"); return; }
+  aiInit();
+}
 
 async function aiInit() {
   if (aiInited) { return; }
   aiInited = true;
-  aiLoadConversations();
-  // 状态徽标：当前模型与部署身份（失败静默，AI 未启用时对话接口也会给降级提示）
-  api("/api/ai/status", { headers: AUTH() }).then(d => {
-    const model = (d.preset && d.preset.model) || "-";
-    const dep = d.deploy || {};
+  try {
+    const d = await api("/api/ai/status", { headers: AUTH() });
+    // v0.26 后端显式下发禁用态（enabled=false + 差异化原因）
+    if (d && d.enabled === false) {
+      aiOffReason = d.reason || "AI 功能不可用";
+      markAIDisabled();
+      toast(aiOffReason, "err");
+      return;
+    }
+    const model = (d && d.preset && d.preset.model) || "-";
+    const dep = (d && d.deploy) || {};
     const roleText = dep.role === "auxiliary" ? "辅机" : "服务端";
     const remote = dep.remote_active ? "（远端模型）" : "";
     const meta = $("ai-meta");
     if (meta) meta.textContent = "模型：" + model + " · " + roleText + remote;
-  }).catch(() => {
-    const meta = $("ai-meta");
-    if (meta) meta.textContent = "AI 未启用（检查 [ai] 配置与 Ollama）";
-  });
+    aiLoadConversations();
+  } catch (e) {
+    // status 接口异常：视为 AI 不可用（对话接口也会给降级提示）
+    aiOffReason = "AI 状态查询失败：" + e.message;
+    markAIDisabled();
+    toast(aiOffReason, "err");
+  }
+}
+
+// markAIDisabled AI 禁用后的界面降级：状态徽标提示 + 禁用输入区
+function markAIDisabled() {
+  const meta = $("ai-meta");
+  if (meta) meta.textContent = "AI 已禁用";
+  const box = $("ai-messages");
+  if (box) box.innerHTML = '<div class="empty">' + esc(aiOffReason) + "</div>";
+  const input = $("ai-input");
+  const send = $("btn-ai-send");
+  if (input) input.disabled = true;
+  if (send) send.disabled = true;
 }
 
 async function aiLoadConversations() {
@@ -86,8 +116,12 @@ function aiRenderConvActive() {
 }
 
 function aiMsgHtml(role, text) {
-  return `<div class="ai-msg ${role === "user" ? "user" : "assistant"}"><div class="ai-msg-role">${role === "user" ? "我" : "AI"}</div><div class="ai-msg-body">${esc(text)}</div></div>`;
+  return `<div class="ai-msg ${role === "user" ? "user" : "assistant"}"><div class="ai-msg-role">${role === "user" ? "我" : "AI"}</div><div class="ai-msg-body">${esc(lstrip(text))}</div></div>`;
 }
+
+// lstrip 去除开头空白：部分模型首帧以换行起始，会在气泡顶部留下空白
+//（后端 trimLeadingBlank 已清理入库文本，此处覆盖流式实时显示与历史消息）
+function lstrip(s) { return (s || "").replace(/^\s+/, ""); }
 
 async function aiSend() {
   const input = $("ai-input");
@@ -127,7 +161,7 @@ async function aiSend() {
       if (ev.delta) acc += ev.delta;
       // done 帧携带全量最终文本（含工具轮次汇总），以此为准覆盖增量
       if (ev.content) acc = ev.content;
-      bodyEl.textContent = acc || "…";
+      bodyEl.textContent = lstrip(acc) || "…";
       box.scrollTop = box.scrollHeight;
     });
     if (!acc) { bodyEl.textContent = "（空回复）"; }
@@ -179,7 +213,7 @@ async function aiFallbackSend(content, bodyEl) {
       headers: AUTH(),
       body: JSON.stringify({ conversation_id: aiConvID, content })
     });
-    bodyEl.textContent = d.reply || "（空回复）";
+    bodyEl.textContent = lstrip(d.reply) || "（空回复）";
     if (d.conversation_id) aiConvID = d.conversation_id;
     aiLoadConversations();
   } catch (e) {
@@ -207,6 +241,11 @@ async function loadAISettings() {
       api("/api/ai/settings", { headers: AUTH() }),
       api("/api/ai/models", { headers: AUTH() }).catch(() => null)
     ]);
+    // v0.26 AI 总开关（拨动开关；AI 禁用时接口仍可用，保证可重新启用）
+    const sw = $("set-ai-enabled");
+    if (sw) sw.checked = !!(st && st.enabled);
+    // v0.26 待重启提示：存在需重启服务才生效的已保存变更时显示提示条
+    setRestartTip(!!(st && st.need_restart));
     // 模式下拉：deploy_mode=auto → 自动；role=auxiliary → 辅机；其余 → 服务端
     $("set-ai-mode").value = st.deploy_mode === "auto" ? "auto"
       : (st.role === "auxiliary" ? "auxiliary" : "server");
@@ -236,56 +275,16 @@ async function loadAISettings() {
 }
 
 async function saveAISettings() {
+  const sw = $("set-ai-enabled");
   const payload = {
+    enabled: sw ? !!sw.checked : undefined,
     model: $("set-ai-model").value || undefined,
     temperature: parseFloat($("set-ai-temp").value),
     conversation_max_tokens: parseInt($("set-ai-maxtok").value, 10) || undefined,
     deploy_mode: $("set-ai-mode").value,
     server_addr: $("set-ai-server").value.trim()
   };
-  let st;
-  try {
-    st = await api("/api/ai/settings", { method: "PUT", headers: AUTH(), body: JSON.stringify(payload) });
-  } catch (e) { toast(e.message, "err"); return; }
-
-  const need = (st && st.need_restart) || [];
-  if (!need.length) {
-    toast("AI 设置已保存并生效", "ok");
-    return;
-  }
-  // 需重启项被修改：确认后自动重启，重启完成提示刷新
-  if (!confirm("以下设置需重启服务后才能生效：\n" + need.join("、") +
-    "\n\n是否立即重启服务？（重启完成后请刷新页面）")) {
-    toast("已保存，部分设置将在下次重启后生效", "ok");
-    return;
-  }
-  try {
-    await api("/api/admin/restart", { method: "POST", headers: AUTH() });
-  } catch (e) { toast("重启请求失败：" + e.message, "err"); return; }
-  toast("服务正在重启，完成后将自动刷新页面…", "ok");
-  aiPollRestartAndReload();
-}
-
-// aiPollRestartAndReload 轮询 /healthz：先容忍旧进程关闭（连接断开），再等新进程就绪后刷新
-function aiPollRestartAndReload() {
-  const started = Date.now();
-  let seenDown = false;
-  const timer = setInterval(async () => {
-    const elapsed = Date.now() - started;
-    if (elapsed > 210000) { // 3.5 分钟兜底：提示手动刷新
-      clearInterval(timer);
-      toast("重启超时，请稍后手动刷新页面", "err");
-      return;
-    }
-    try {
-      const r = await fetch(BASE + "/healthz", { cache: "no-store" });
-      if (r.ok && seenDown) {
-        clearInterval(timer);
-        toast("服务已重启完成", "ok");
-        setTimeout(() => location.reload(), 800);
-      }
-    } catch (_) {
-      seenDown = true; // 旧进程已停止监听
-    }
-  }, 1500);
+  // 统一由设置页「保存设置」按钮调用：仅提交并返回响应，
+  // 需重启项由调用方依据响应中的 need_restart 展示提示条（v0.26）
+  return await api("/api/ai/settings", { method: "PUT", headers: AUTH(), body: JSON.stringify(payload) });
 }

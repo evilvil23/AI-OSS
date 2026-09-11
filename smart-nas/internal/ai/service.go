@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
@@ -179,8 +180,9 @@ func (s *Service) Chat(ctx context.Context, userID uint, convID, content string)
 	if err != nil {
 		return "", err
 	}
-	s.convs.Append(convID, "assistant", resp.Content, nil)
-	return resp.Content, nil
+	reply := trimLeadingBlank(resp.Content)
+	s.convs.Append(convID, "assistant", reply, nil)
+	return reply, nil
 }
 
 // StreamChat 流式对话；返回事件通道，读取完自动关闭
@@ -204,10 +206,17 @@ func (s *Service) StreamChat(ctx context.Context, userID uint, convID, content s
 			events <- StreamEvent{Error: err.Error(), Done: true}
 			return
 		}
+		final = trimLeadingBlank(final)
 		s.convs.Append(convID, "assistant", final, nil)
 		events <- StreamEvent{Content: final, Done: true}
 	}()
 	return events, nil
+}
+
+// trimLeadingBlank 去除模型输出开头空白行：部分模型（如 DeepSeek-R1 蒸馏版）
+// 首帧以 \n 起始，会在前端气泡顶部留出空白
+func trimLeadingBlank(s string) string {
+	return strings.TrimLeft(s, " \t\r\n")
 }
 
 // buildMessages 组装 Eino 消息：system（含 RAG 上下文）+ 历史

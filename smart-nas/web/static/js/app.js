@@ -191,7 +191,7 @@ function showTab(name) {
   if (name === "files") refresh();
   if (name === "backup") loadBackupTasks();
   if (name === "trash") loadTrash();
-  if (name === "ai") aiInit();
+  if (name === "ai") aiTabEnter();
   if (name === "smarthome") shInit();
   if (name === "admin") { showAdminView("users"); adminLoadUsers(); loadSettings(); loadPlugins(); loadAISettings(); }
 }
@@ -391,8 +391,58 @@ async function saveSettings() {
     SYS_REFRESH.cpu = cpu * 1000;
     SYS_REFRESH.disk = disk * 1000;
     if (startSysTimers) startSysTimers();
-    toast("设置已保存并生效", "ok");
-  } catch (e) { toast(e.message, "err"); }
+  } catch (e) { toast(e.message, "err"); return; }
+
+  // AI 设置与系统设置共用「保存设置」按钮统一提交（v0.26）
+  let aiResp;
+  try {
+    aiResp = await saveAISettings();
+  } catch (e) { toast("AI 设置保存失败：" + e.message, "err"); return; }
+
+  // 需重启项变更：显示提示条（后端 need_restart 标志，服务重启后自动重置），不弹窗打断
+  const needRestart = !!(aiResp && aiResp.need_restart);
+  setRestartTip(needRestart);
+  toast(needRestart ? "设置已保存；部分设置需重启服务后生效" : "设置已保存并生效", "ok");
+}
+
+// setRestartTip 显示 / 隐藏「待重启生效」提示条
+function setRestartTip(on) {
+  const el = $("settings-restart-tip");
+  if (el) el.style.display = on ? "" : "none";
+}
+
+// restartService 请求进程级重启，并轮询 /healthz 待新进程就绪后自动刷新页面（仅主人）
+async function restartService() {
+  if (!IS_MASTER()) { toast("只有主人可以重启服务", "err"); return; }
+  if (!confirm("确定立即重启服务？\n重启期间服务短暂不可用，完成后页面会自动刷新。")) return;
+  try {
+    await api("/api/admin/restart", { method: "POST", headers: AUTH() });
+  } catch (e) { toast("重启请求失败：" + e.message, "err"); return; }
+  toast("服务正在重启，完成后将自动刷新页面…", "ok");
+  pollRestartAndReload();
+}
+
+// pollRestartAndReload 轮询 /healthz：先容忍旧进程关闭（连接断开），再等新进程就绪后刷新
+function pollRestartAndReload() {
+  const started = Date.now();
+  let seenDown = false;
+  const timer = setInterval(async () => {
+    if (Date.now() - started > 210000) { // 3.5 分钟兜底：提示手动刷新
+      clearInterval(timer);
+      toast("重启超时，请稍后手动刷新页面", "err");
+      return;
+    }
+    try {
+      const r = await fetch(BASE + "/healthz", { cache: "no-store" });
+      if (r.ok && seenDown) {
+        clearInterval(timer);
+        toast("服务已重启完成", "ok");
+        setTimeout(() => location.reload(), 800);
+      }
+    } catch (_) {
+      seenDown = true; // 旧进程已停止监听
+    }
+  }, 1500);
 }
 
 // 清除缓存：清空视频转封装产物缓存目录（仅主人）

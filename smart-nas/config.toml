@@ -1,66 +1,66 @@
 # ===== 服务器配置 =====
 [server]
-# HTTP 服务监听端口
+# 服务监听端口
 port = 8080
-# 运行模式：debug / release / test（release 为生产模式）
+# 运行模式：release（生产）/ debug / test
 mode = 'release'
-# 读超时（秒）
+# 单请求读取超时（秒）
 read_timeout = 60
-# 写超时（秒）
+# 单请求写入超时（秒）
 write_timeout = 300
 
 # ===== 存储配置 =====
 [storage]
-# 文件存储根目录（上传文件默认落盘位置）
+# 存储根目录（相对路径以运行目录为基准）
 root = './data/files'
-# 允许访问的磁盘列表（留空 = 所有盘符均可访问）
+# 允许 NAS 访问的磁盘根目录（为空时自动发现盘符，再回退到 root）
 disks = []
-# 回收站位置（留空 = 运行目录下 data/trash，即 ./data/trash）
+# 全局回收站目录（留空 = 运行目录下 data/trash，集中存放，不在各盘符建 .trash）
 trash_path = ''
-# 元数据库路径（留空 = 使用默认位置）
+# 元数据库位置（留空 = root/metadata.db）
 metadata_db = ''
-# 文件版本保留数量（超出后删除最旧版本）
+# 每个文件保留的历史版本数量
 version_keep = 5
-# 回收站文件保留天数（过期自动清理）
+# 回收站文件保留天数（超期由定时任务自动清理）
 trash_days = 30
-# 是否启用 WebDAV 服务
+# 是否启用 WebDAV 挂载
 webdav_enabled = true
-# WebDAV 访问路径前缀
+# WebDAV 挂载前缀
 webdav_prefix = '/dav'
 
 # ===== rclone 云端同步 =====
 [storage.rclone]
 # 是否启用 rclone 同步
 enabled = false
-# rclone 远程名称（如 gdrive:、onedrive:）
+# rclone 远端名称（rclone config 中配置的 remote）
 remote = ''
-# 同步计划（cron 表达式）
+# 同步计划（cron 表达式，留空 = 仅手动触发）
 schedule = ''
 
-# ===== 大文件分片上传（tus 协议）=====
+# ===== tus 分片上传 =====
 [tus]
-# 是否启用 tus 分片上传
+# 是否启用 tus 断点续传上传
 enabled = true
 # 上传接口路径前缀
 path_prefix = '/files/upload/'
-# 分片大小（字节，默认 5MB）
+# 单个分片大小（字节，默认 5MB）
 chunk_size = 5242880
-# 单文件最大大小（字节，默认 10GB）
+# 单文件最大体积（字节，默认 10GB）
 max_size = 10737418240
 # 分片临时存储目录
 store_dir = './data/tus'
 # 是否允许并发上传
 concurrent_uploads = true
-# 是否启用秒传去重（相同文件跳过上传）
+# 是否启用秒传（内容去重）
 dedup = true
 
-# ===== 认证与安全 =====
+# ===== 认证配置 =====
 [auth]
 # JWT 签名密钥（生产环境务必修改）
 jwt_secret = 'change-me-in-production'
-# JWT 有效期（秒，默认 24 小时）
+# JWT 有效期（秒，默认 1 天）
 jwt_expire = 86400
-# Argon2 哈希迭代次数（越高越安全越慢）
+# Argon2 迭代次数
 argon2_time = 3
 # Argon2 内存开销（KB）
 argon2_memory = 65536
@@ -70,13 +70,16 @@ argon2_threads = 4
 argon2_key_len = 32
 # Argon2 盐长度（字节）
 argon2_salt_len = 16
-# 默认主人账号用户名（仅能通过配置文件修改）
+# 首次启动自动创建的主人账号用户名（主人密码仅能通过本文件修改）
 admin_username = 'admin'
-# 默认主人账号密码（仅能通过配置文件修改）
+# 默认主人账号密码
 admin_password = 'admin123'
 
 # ===== AI 基础配置 =====
 [ai]
+# AI 功能总开关（代码默认关闭）：开启后服务启动时初始化 AI；
+# 本地部署会预检 Ollama 与所选对话模型，缺失则禁用 AI 并在控制台提示（其余功能不受影响）
+enabled = false
 # Ollama 服务地址
 ollama_host = 'http://localhost:11434'
 # 默认对话模型
@@ -90,109 +93,105 @@ temperature = 0.7
 
 # ===== AI RAG 检索增强 =====
 [ai.rag]
-# 是否启用 RAG 文件知识库检索
+# 是否启用知识库检索
 enabled = true
-# 向量存储类型：chromem（本地）/ qdrant
+# 向量库类型（chromem = 内置内存向量库）
 store_type = 'chromem'
-# 文档切分块大小
+# 文本分块大小（字符）
 chunk_size = 512
-# 相邻块重叠大小
+# 相邻分块重叠字符数
 chunk_overlap = 50
-# 检索返回的最相关片段数
+# 检索返回的片段数量
 top_k = 5
 
-# ===== Qdrant 向量库（store_type=qdrant 时生效）=====
+# ===== Qdrant 向量库 =====
 [ai.rag.qdrant]
-# Qdrant 服务地址
+# Qdrant 服务主机
 host = 'localhost'
-# gRPC 端口
+# Qdrant gRPC 端口
 port = 6334
-# API 密钥（未开启认证留空）
+# Qdrant API Key（无鉴权时留空）
 api_key = ''
-# 向量集合名称
+# 集合名称
 collection_name = 'file_chunks'
 
-# ===== Ollama 进程托管 =====
+# ===== Ollama 进程管理 =====
 [ai.ollama]
-# 是否由本服务托管 Ollama 生命周期（自动拉起/停止）
+# 由本服务拉起 / 停止 Ollama（false = 用户自行管理）
 managed = true
-# Ollama 可执行文件路径（留空 = 自动探测常见安装位置）
+# ollama 可执行文件路径（留空 = 自动探测 PATH 与常见安装位置）
 binary = ''
-# 拉起时注入的 OLLAMA_HOST
+# 拉起时注入的 OLLAMA_HOST（局域网调用设 0.0.0.0:11434）
 bind_host = '127.0.0.1:11434'
-# 等待 Ollama 就绪超时（秒）
+# 拉起后等待就绪的最长秒数
 start_timeout = 60
-# 就绪后是否自动预热默认模型
+# 就绪后空对话预热，触发默认模型加载
 auto_warmup = true
 
-# ===== 模型推理调优 =====
+# ===== 硬件自适应调优 =====
 [ai.tune]
-# 指定推理模型（留空 = 使用 default_model）
+# 覆盖自动模型选择（留空 = 按硬件自适应）
 model = ''
-# 上下文窗口大小（0 = 使用模型默认值）
+# 上下文窗口（0 = 自动）
 num_ctx = 0
-# 模型驻留内存时长（如 5m、1h、-1 常驻、0 用完即卸载）
+# 模型驻留时长（如 "5m"；"-1" 常驻显存 / 内存，"0" 立即卸载）
 keep_alive = ''
-# 并行推理数（0 = 使用 Ollama 默认值）
+# 并行推理数（0 = 自动；>0 时拉起注入 OLLAMA_NUM_PARALLEL）
 num_parallel = 0
 
-# ===== AI 部署模式（主机/副机）=====
+# ===== 部署模式 =====
 [ai.deploy]
-# 部署模式：auto（自动检测）/ server（主机）/ secondary（副机）
+# auto（启动时按服务端可达性自动判定）| single（单机）| dual（主备双机）
 mode = 'auto'
-# 本机角色：primary（主机）/ secondary（副机）
+# dual 生效：primary（服务端）| auxiliary（辅机）
 role = 'primary'
-# 远端主机地址（副机模式连接的主机）
+# auxiliary：远端（主服务）Ollama 地址
 remote_host = ''
-# 远端主机使用的模型
+# auxiliary：远端使用的模型（留空 = 沿用 default_model）
 remote_model = ''
-# 远端 API 地址
+# auxiliary：主服务 smart-nas API 根地址（RAG 走主服务）
 remote_api = ''
-# 远端登录用户名
+# auxiliary：主服务登录账号（获取 JWT 调 RAG）
 remote_username = ''
-# 远端登录密码
 remote_password = ''
-# 主机不可用时是否自动切换
+# 辅助机自动切换远端 / 降级本机
 auto_switch = true
-# 可用性检测间隔（秒）
+# 远端可达性探测间隔（秒）
 check_interval = 30
 
 # ===== Home Assistant 集成 =====
 [ai.homeassistant]
 # 是否启用 Home Assistant
 enabled = false
-# Home Assistant 服务地址
+# Home Assistant 地址
 base_url = 'http://homeassistant.local:8123'
-# 长期访问令牌
+# 长期访问令牌（个人资料 → 安全）
 token = ''
 
-# ===== IoT 智能家庭设备 =====
+# ===== IoT =====
 [iot]
-
-# 米家设备接入
 [iot.mihome]
 # 是否启用米家接入
 enabled = false
-# 米家 OAuth Client ID
+# 米家开放平台 Client ID
 client_id = ''
-# 米家 OAuth Client Secret
+# 米家开放平台 Client Secret
 client_secret = ''
 # OAuth 回调地址
 redirect_uri = ''
 # 米家 API 地址
 api_base = ''
 
-# MQTT 设备接入
 [iot.mqtt]
 # 是否启用 MQTT
 enabled = true
-# MQTT Broker 地址
+# MQTT broker 地址
 broker = 'tcp://localhost:1883'
-# MQTT 客户端 ID
+# 客户端 ID
 client_id = 'smart-nas'
-# Broker 用户名（未开启认证留空）
+# MQTT 用户名
 username = ''
-# Broker 密码（未开启认证留空）
+# MQTT 密码
 password = ''
 
 # ===== 插件系统 =====
@@ -201,63 +200,63 @@ password = ''
 enabled = true
 # 插件目录
 dir = './plugins'
-# 是否自动加载目录内插件
+# 启动时自动加载插件
 auto_load = true
-# 插件调用超时（秒）
+# 插件执行超时（秒）
 timeout = 30
 
-# ===== 日志配置 =====
+# ===== 日志 =====
 [log]
 # 日志级别：debug / info / warn / error
 level = 'info'
-# 日志文件路径
+# 日志文件路径（留空 = 仅输出到控制台）
 path = './data/logs/smart-nas.log'
-# 单个日志文件最大大小（MB）
+# 单个日志文件大小上限（MB，超出自动滚动归档）
 max_size = 100
-# 保留的历史日志文件数
+# 保留的历史日志文件数量
 max_backups = 7
-# 日志保留天数
+# 历史日志保留天数（超期自动清理）
 max_age = 30
 
-# ===== 服务降级 =====
+# ===== 性能降级 =====
 [degradation]
-# CPU 过高时是否自动关闭 RAG 检索
+# CPU 高负载时自动停用 RAG 检索
 auto_disable_rag_on_high_cpu = true
-# 触发降级的 CPU 使用率阈值（0-1）
+# CPU 负载阈值（0-1）
 cpu_threshold = 0.85
 
-# ===== 视频播放/转码 =====
+# ===== 视频在线播放 =====
 [play]
-# 是否启用在线播放
+# 是否启用视频在线播放
 enabled = true
-# 允许原盘直出的最大分辨率高度（超过则转码）
+# 最高在线播放分辨率高度（默认 1440 = 2K，超出提示下载）
 max_online_height = 1440
-# ffmpeg 可执行文件路径
+# ffmpeg 可执行文件路径（留空自动从 PATH 查找）
 ffmpeg_path = 'ffmpeg'
 # ffprobe 可执行文件路径
 ffprobe_path = 'ffprobe'
-# 同时 remux（封装转换）任务数
+# 转封装（-c copy）最大并发
 remux_concurrency = 3
-# 同时转码任务数
+# 实时转码最大并发（大开销，默认 1）
 transcode_concurrency = 1
-# 转码使用的 CPU 线程数
+# 单个转码任务使用的线程数
 transcode_threads = 2
-# 播放票据有效期（分钟）
+# 播放凭证无 Range 请求自动失效时长（分钟）
 ticket_ttl_minutes = 30
-# 转码/缓存临时目录
+# 转封装产物缓存目录
 cache_dir = './data/cache/video'
-# 播放票据是否绑定来源 IP
+# 播放凭证是否与请求 IP 绑定（防盗链）
 ip_bind = true
 
-# ===== 备份任务 =====
+# ===== 备份还原 =====
 [backup]
 # 是否启用备份功能
 enabled = true
-# 备份数据库路径
+# 备份元数据库（留空 = data/backup/backup.db）
 db_path = './data/backup/backup.db'
-# 备份日志路径（独立于主日志）
+# 独立 backup.log（留空 = data/logs/backup.log）
 log_path = './data/logs/backup.log'
-# 备份任务监控间隔（秒）
+# 任务表重载间隔（秒）
 watch_interval = 30
-# U 盘插入轮询检测间隔（秒）
+# USB 设备轮询间隔（秒）
 usb_poll_interval = 3

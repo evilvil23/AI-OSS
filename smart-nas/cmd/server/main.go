@@ -174,11 +174,21 @@ func main() {
 	hookEmitter := pluginMgr
 
 	// 7. AI 管家 + 知识库（v0.21）：硬件自适应 → Ollama 生命周期 → Eino 服务
+	// v0.26：[ai].enabled 总开关关闭时整体跳过 AI 初始化；本地部署预检
+	// Ollama 与所需模型，缺失时控制台提示并禁用前端 AI（不阻断服务启动）
 	var aiSvc *ai.Service
 	var lifecycle *ollama.Lifecycle
 	var hwInfo *hardware.Info
 	var haClient *ha.Client // HomeAssistant 客户端（配置完整即创建，v0.23 设备管理 API 使用）
-	if cfg.AI.OllamaHost != "" {
+	var aiReason string     // AI 禁用原因（下发前端展示）
+	switch {
+	case !cfg.AI.Enabled:
+		aiReason = "AI 功能已在设置中关闭（启用 AI 开关）"
+		logger.Info("AI 功能已关闭（[ai].enabled=false），跳过 AI 初始化")
+	case cfg.AI.OllamaHost == "":
+		aiReason = "未配置 Ollama 服务地址（[ai].ollama_host）"
+		logger.Info("未配置 Ollama 服务地址，跳过 AI 初始化")
+	default:
 		// v0.23 部署模式 auto 判定：配置了服务端地址且可达 → 辅机；否则 → 服务端
 		cfg = resolveDeployMode(cfg, cfg.AI.Deploy.RemoteHost != "")
 		ollamaClient := ollama.NewClient(cfg.AI.OllamaHost, 90*time.Second)
@@ -199,55 +209,100 @@ func main() {
 			AutoWarmup:   cfg.AI.Ollama.AutoWarmup,
 			NumParallel:  preset.NumParallel,
 		}, dataDir)
+		// aiLocalReady 本机 Ollama 是否就绪（EnsureRunning 成功）；
+		// 本机 RAG 向量模型的加载以此为前提——AI 模型无法启动时不加载向量模型
+		aiLocalReady := false
 		if _, err := lifecycle.EnsureRunning(ctx, preset.Model, preset.KeepAlive); err != nil {
-			logger.Warn("Ollama 生命周期管理异常（AI 功能可能不可用）", "error", err)
-		}
-
-		convs := conversation.NewManager(40)
-		toolsReg := tools.NewRegistry(storageSvc)
-		toolsReg.Register(tools.DefaultTools(storageSvc)...)
-		toolsReg.Register(tools.SystemTools()...)
-		toolsReg.Register(tools.DeviceTools(toolsReg)...) // DeviceProvider 由 IoT 注入
-
-		// M7 HomeAssistant 工具（未配置 / 自检失败时降级为不注册；客户端始终返回供设备管理 API）
-		haClient = registerHATools(ctx, toolsReg, cfg.AI.HomeAssistant)
-
-		// RAG：single/primary 用本机索引；dual+auxiliary 走主服务（不重复建向量库）
-		var retriever ai.RagRetriever
-		var indexer *rag.Indexer
-		if cfg.AI.Deploy.Mode == "dual" && cfg.AI.Deploy.Role == "auxiliary" && cfg.AI.Deploy.RemoteAPI != "" {
-			topK := cfg.AI.RAG.TopK
-			if topK <= 0 {
-				topK = 5
-			}
-			retriever = ai.NewRemoteRetriever(cfg.AI.Deploy.RemoteAPI,
-				cfg.AI.Deploy.RemoteUsername, cfg.AI.Deploy.RemotePassword, topK)
-			logger.Info("双机模式辅助机：RAG 统一走主服务", "remote_api", cfg.AI.Deploy.RemoteAPI)
-		} else if cfg.AI.RAG.Enabled {
-			vs, verr := rag.NewInMemoryStore(filepath.Join(dataDir, "vectors", "store.json"))
-			if verr != nil {
-				logger.Warn("向量存储初始化失败，RAG 不可用", "error", verr)
+			// 本地部署：Ollama 不可用（未安装 / 未运行 / 拉起失败）→ 禁用 AI，不阻断启动
+			if isLocalDeploy(cfg) {
+				aiReason = "本机 Ollama 不可用：" + err.Error()
+				fmt.Fprintf(os.Stderr, "[AI] 预检失败：%s\n[AI] 前端 AI 功能已禁用，其余功能不受影响；"+
+					"请安装 Ollama（https://ollama.com）或在设置中开启托管后重启服务\n", aiReason)
+				logger.Warn("本地 AI 预检失败，前端 AI 功能已禁用", "reason", aiReason)
+				cfg = disableAI(cfg)
 			} else {
-				retriever = rag.NewRetriever(vs, ollamaClient, cfg.AI.RAG, cfg.AI.EmbeddingModel)
-				indexer = rag.NewIndexer(vs, ollamaClient, storageSvc, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+				// 辅机模式：推理走远端模型，本机 Ollama 异常不停用 AI，但本机 RAG 不可用
+				logger.Warn("Ollama 生命周期管理异常（AI 功能可能不可用）", "error", err)
+			}
+		} else {
+			aiLocalReady = true
+			// 本地部署第二道预检：确认实际使用的对话模型已拉取（提示与所选模型一致）。
+			// RAG 向量模型缺失只影响知识库，单独降级处理，不停用 AI
+			if isLocalDeploy(cfg) && !hasModel(ctx, ollamaClient, preset.Model) {
+				aiReason = "本机缺少对话模型：" + preset.Model
+				fmt.Fprintf(os.Stderr, "[AI] 预检失败：%s\n[AI] 前端 AI 功能已禁用，其余功能不受影响；"+
+					"请执行 ollama pull %s 安装后重启服务\n", aiReason, preset.Model)
+				logger.Warn("本地对话模型预检失败，前端 AI 功能已禁用", "model", preset.Model)
+				cfg = disableAI(cfg)
 			}
 		}
 
-		svc, aerr := ai.NewService(ai.Options{
-			Config:    cfg.AI,
-			Preset:    preset,
-			Client:    ollamaClient,
-			Convs:     convs,
-			Registry:  toolsReg,
-			Retriever: retriever,
-			Indexer:   indexer,
-		})
-		if aerr != nil {
-			logger.Warn("AI 服务初始化失败", "error", aerr)
+		if cfg.AI.Enabled {
+			convs := conversation.NewManager(40)
+			toolsReg := tools.NewRegistry(storageSvc)
+			toolsReg.Register(tools.DefaultTools(storageSvc)...)
+			toolsReg.Register(tools.SystemTools()...)
+			toolsReg.Register(tools.DeviceTools(toolsReg)...) // DeviceProvider 由 IoT 注入
+
+			// M7 HomeAssistant 工具（未配置 / 自检失败时降级为不注册；客户端始终返回供设备管理 API）
+			haClient = registerHATools(ctx, toolsReg, cfg.AI.HomeAssistant)
+
+			// RAG：single/primary 用本机索引；dual+auxiliary 走主服务（不重复建向量库）
+			var retriever ai.RagRetriever
+			var indexer *rag.Indexer
+			if cfg.AI.Deploy.Mode == "dual" && cfg.AI.Deploy.Role == "auxiliary" && cfg.AI.Deploy.RemoteAPI != "" {
+				topK := cfg.AI.RAG.TopK
+				if topK <= 0 {
+					topK = 5
+				}
+				retriever = ai.NewRemoteRetriever(cfg.AI.Deploy.RemoteAPI,
+					cfg.AI.Deploy.RemoteUsername, cfg.AI.Deploy.RemotePassword, topK)
+				logger.Info("双机模式辅助机：RAG 统一走主服务", "remote_api", cfg.AI.Deploy.RemoteAPI)
+			} else if cfg.AI.RAG.Enabled {
+				switch {
+				case !aiLocalReady:
+					// 本机 Ollama 未就绪：AI 模型无法启动，同样不加载 RAG 向量模型
+					fmt.Fprintln(os.Stderr, "[AI] 知识库未启动：本机 Ollama 不可用，向量模型不会加载；"+
+						"辅机模式可在 [ai.deploy] 配置 remote_api 以复用主服务知识库")
+					logger.Warn("本机 Ollama 不可用，跳过本机 RAG 初始化")
+				case !hasModel(ctx, ollamaClient, cfg.AI.EmbeddingModel):
+					// 向量模型缺失仅影响知识库：对话功能照常，控制台给出降级提示
+					fmt.Fprintf(os.Stderr, "[AI] 知识库降级：本机缺少向量模型 %s，RAG 检索不可用"+
+						"（对话功能不受影响）；如需知识库请执行 ollama pull %s\n",
+						cfg.AI.EmbeddingModel, cfg.AI.EmbeddingModel)
+					logger.Warn("本机缺少向量模型，RAG 知识库不可用", "model", cfg.AI.EmbeddingModel)
+				default:
+					vs, verr := rag.NewInMemoryStore(filepath.Join(dataDir, "vectors", "store.json"))
+					if verr != nil {
+						logger.Warn("向量存储初始化失败，RAG 不可用", "error", verr)
+					} else {
+						retriever = rag.NewRetriever(vs, ollamaClient, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+						indexer = rag.NewIndexer(vs, ollamaClient, storageSvc, cfg.AI.RAG, cfg.AI.EmbeddingModel)
+					}
+				}
+			}
+
+			svc, aerr := ai.NewService(ai.Options{
+				Config:    cfg.AI,
+				Preset:    preset,
+				Client:    ollamaClient,
+				Convs:     convs,
+				Registry:  toolsReg,
+				Retriever: retriever,
+				Indexer:   indexer,
+			})
+			if aerr != nil {
+				logger.Warn("AI 服务初始化失败", "error", aerr)
+				aiReason = "AI 服务初始化失败：" + aerr.Error()
+			} else {
+				aiSvc = svc
+				// M6 双机模式辅助机：远端探测 + 自动切换 / 降级巡检
+				aiSvc.StartDeployWatch(ctx)
+			}
 		} else {
-			aiSvc = svc
-			// M6 双机模式辅助机：远端探测 + 自动切换 / 降级巡检
-			aiSvc.StartDeployWatch(ctx)
+			// AI 被预检禁用 / 总开关关闭：智能家居设备管理不受影响，仍创建 HA 客户端
+			reg := tools.NewRegistry(storageSvc)
+			haClient = registerHATools(ctx, reg, cfg.AI.HomeAssistant)
 		}
 		_ = haClient // 已通过工具注册接入
 	}
@@ -311,6 +366,7 @@ func main() {
 		Tus:         tusHandler,
 		Hub:         hub,
 		AI:          aiSvc,
+		AIReason:    aiReason,  // AI 禁用原因（前端差异化提示，v0.26）
 		Lifecycle:   lifecycle, // Ollama 进程生命周期管理（v0.21）
 		Hardware:    hwInfo,    // 硬件检测结果（v0.21）
 		HAClient:    haClient,  // HomeAssistant 客户端（v0.23 设备管理 API）
@@ -345,6 +401,15 @@ func main() {
 		serverErr <- srv.Run(ctx, fmt.Sprintf(":%d", cfg.Server.Port))
 	}()
 
+	// 15.1 go run 兜底（v0.26）：go run 不向子进程转发 Ctrl+C（golang/go#40467），
+	// 其退出后本进程成为孤儿继续占用端口；检测到 go run 场景时监控父进程退出并同步关闭
+	watchParentExit(func() {
+		select {
+		case sig <- os.Interrupt:
+		default:
+		}
+	})
+
 	restartRequested := false
 	select {
 	case err := <-serverErr:
@@ -353,10 +418,22 @@ func main() {
 		}
 	case <-sig:
 		logger.Info("收到退出信号，开始优雅关闭")
+		// 关闭流程期间再次收到信号：用户急于退出，跳过优雅关闭立即终止
+		go func() {
+			<-sig
+			logger.Warn("再次收到退出信号，强制退出")
+			os.Exit(130)
+		}()
 	case <-restartCh:
 		restartRequested = true
 		logger.Info("收到网页重启请求，开始优雅重启")
 	}
+	// 关闭总超时兜底：个别模块阻塞时确保进程最终退出
+	go func() {
+		time.Sleep(90 * time.Second)
+		logger.Warn("优雅关闭超时，强制退出")
+		os.Exit(1)
+	}()
 	cancel()
 	worker.Stop()
 	if backupSvc != nil {
@@ -427,6 +504,38 @@ func recomputePreset(info hardware.Info, aiCfg config.AIConfig) hardware.Preset 
 		preset.Model = aiCfg.DefaultModel
 	}
 	return preset
+}
+
+// isLocalDeploy 是否使用本机 Ollama 提供推理（single / dual+primary）；
+// dual+auxiliary 的模型在远端服务端，不做本机预检
+func isLocalDeploy(cfg *config.Config) bool {
+	return !(cfg.AI.Deploy.Mode == "dual" && cfg.AI.Deploy.Role == "auxiliary")
+}
+
+// hasModel 检查本地 Ollama 是否已拉取指定模型（名称留空视为存在）；
+// 列出模型失败时按「不存在」处理，由调用方给出对应提示
+func hasModel(ctx context.Context, client *ollama.Client, name string) bool {
+	if name == "" {
+		return true
+	}
+	models, err := client.ListModels(ctx)
+	if err != nil {
+		return false
+	}
+	for _, m := range models {
+		if m.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// disableAI 预检失败时运行态禁用 AI（浅拷贝，不回写持久化配置）：
+// 后续 AI 装配整体跳过，前端 AI 菜单给出差异化禁用提示
+func disableAI(cfg *config.Config) *config.Config {
+	out := *cfg
+	out.AI.Enabled = false
+	return &out
 }
 
 // resolveDBPath 解析元数据库位置：空 → root/metadata.db；以分隔符结尾或

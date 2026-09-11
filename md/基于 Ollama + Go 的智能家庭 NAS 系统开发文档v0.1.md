@@ -189,6 +189,8 @@ USB 可移动设备枚举（卷标/序列号）均需调用 `kernel32.dll`。v0.
 
 采用 **viper** 统一管理，支持 **TOML** 配置文件、环境变量覆盖、运行时热重载。
 
+> **v0.26 实现说明**：文档原规划使用 viper，实际因离线环境改用 `go-toml/v2` 自研等效实现（`internal/config`）——TOML 配置文件、`SMARTNAS_` 前缀 + `__` 分层的环境变量覆盖、轮询文件 mtime 的热重载。配置项写入采用**映射表调度**（`configSetters` 登记「路径 → setter」，`setByPath` 查表执行，新增配置项无需改动调度逻辑）；落盘时以 `toml.Marshal` 结果为权威键值、**逐行替换原文件中的值行**，从而保留 `config.toml` 的注释与排版（避免设置页保存抹掉手写注释）；命中启动期装配项的变更会置位「待重启」标志并下发前端提示。
+
 配置分为以下类别：
 
 | 配置类             | 说明                              |
@@ -268,6 +270,8 @@ argon2_salt_len = 16      # 盐长度（字节）
 # AI 智能管家配置
 # ----------------------------------------------------------
 [ai]
+# AI 功能总开关（默认关闭）：关闭时启动跳过 AI 初始化，其余功能不受影响
+enabled = false
 ollama_host = "http://localhost:11434"
 default_model = "qwen2:7b"
 embedding_model = "nomic-embed-text"
@@ -2478,14 +2482,22 @@ main.go
   │     ├─ storage.Service
   │     ├─ transport.Manager (tus 可恢复上传)
   │     ├─ backup.Service（v0.20：加载备份任务 / cron / USB 监控 / backup.log）
-  │     ├─ ai.Service (连接 Ollama, 检查模型)
+  │     ├─ ai.Service（v0.26：先判 [ai].enabled 总开关；开启且为本机推理时做启动预检——
+  │     │     ① Ollama 可用性（未安装/未运行/拉起失败）
+  │     │     ② 实际使用的对话模型是否已拉取（RAG 向量模型缺失仅降级知识库）
+  │     │     缺失则控制台打印 [AI] 预检失败并禁用 AI，服务继续启动，其余功能不受影响）
   │     ├─ iot.Service (连接 MQTT, 加载米家凭证)
   │     └─ automation.Engine (启动 cron)
   ├─ 6. 启动 WebSocket Hub
   ├─ 7. 注册路由 (Gin, 含 WebDAV + 插件管理 API)
   ├─ 8. 触发 system.startup 事件（通知所有插件）
   ├─ 9. 启动异步任务 Worker
-  └─ 10. 启动 HTTP Server (优雅退出: signal.Notify)
+  └─ 10. 启动 HTTP Server
+         ├─ 优雅退出: signal.Notify(SIGINT/SIGTERM) → 卸载模型 → 停托管 Ollama → 释放端口
+         ├─ v0.26 兜底: 关闭期间再次收到信号立即强制退出；关闭总超时 90 秒
+         └─ v0.26 go run 看门狗: 检测到由 go run 启动（可执行文件位于 go-build* 临时目录）时
+            监控父进程退出并触发同一优雅关闭流程——go run 不向子进程转发 Ctrl+C
+            （golang/go#40467），否则其退出后本服务会成为孤儿进程继续占用端口
 ```
 
 ### 6.2 AI 对话完整流程
@@ -2973,6 +2985,16 @@ require (
 ---
 
 ## 附录 C：版本变更记录
+
+### v0.26（2026-09-11）配置与设置完善：调度表重构 + 注释保留写回 + AI 总开关与启动预检 + 待重启标志 + 退出兜底
+- **配置调度表重构（`internal/config/config.go`）**：`setByPath` 由 100+ 分支的巨型 `switch` 改为映射表 `configSetters` + 三个构造器（`strSetter` / `parseSetter[T]` / `csvSetter`），新增配置项只需登记一行；顺带修复 `storage.trash_path` 分支漏置 `ok=true` 导致「解析成功仍报无效配置值」的 bug；移除随之失效的 `knownFields` / `containsStr` / `parseSet`。
+- **配置写回保留注释（方案 B）**：`toml.Marshal` 不保留注释，设置页保存原本会抹掉 `config.toml` 中的中文注释。新增 `writePreservingComments` —— 以 Marshal 结果作为权威键值，逐行扫描原文件仅替换对应键的值行，注释行 / 空行 / 缩进 / 行内注释 / 未知键一律保留，原文件缺失的新键按分段追加；`indexOutsideQuotes` 扫描器保证字符串内的 `=` / `#` 不被误判；原文件不存在（首次生成）时回退覆盖写。
+- **AI 总开关与启动预检（`cmd/server/main.go`）**：`[ai]` 新增 `enabled`（默认关闭）——关闭即跳过 AI 初始化；开启且为本机推理时启动预检 ① Ollama 可用性 ② 对话模型是否已拉取，缺失时控制台提示并**运行态禁用 AI**（不回写配置、不阻断其他功能）。RAG 向量模型缺失只降级知识库，且其初始化以「本机 Ollama 就绪」为前提（AI 模型起不来时不加载向量模型）。
+- **前端 AI 禁用降级与开关**：新增「启用 AI」拨动开关；AI 禁用时 `/api/ai/status` 返回 `enabled=false` + 差异化原因，点击 AI 菜单弹出自动消失提示、输入区置灰；AI 路由组改为无条件注册，保证禁用态下仍可查看原因并重新启用。
+- **待重启用 bool 标志表达（替代字段数组）**：`config.Manager` 新增 `restartRequired` / `RestartRequired()`，`UpdateConfig` 与文件热重载时对比前后配置，命中启动期装配项即置位；`/api/ai/settings` 下发 `need_restart`（bool）；前端改为设置页提示条 + 「立即重启」按钮，服务重启后标志自然重置；AI 设置同时并入统一「保存设置」按钮。
+- **AI 回复首部空白修复**：后端 `trimLeadingBlank`（非流式与流式最终文本入库前清理）+ 前端 `lstrip`（覆盖流式实时显示与历史消息渲染）。
+- **进程退出兜底（`cmd/server/parent_watch.go` / `parent_watch_windows.go` / `parent_watch_unix.go`）**：`go run` 不向子进程转发 Ctrl+C（golang/go#40467），其退出后服务成为孤儿进程继续占用端口；新增父进程看门狗（以可执行文件位于 `go-build*` 临时目录判定 go run 场景，父进程退出即触发同一优雅关闭流程），另加关闭期二次信号强制退出与 90 秒关闭总超时。
+- **测试**：新增 `internal/config` 单测（注释保留 / 行内注释 / 新分段追加 / 未知键保留 / 引号内 `=`·`#` / 待重启标志 / 端到端落盘）；`go build ./...` / `go vet ./...` / `go test ./...` 14 个包全部通过。
 
 ### v0.23（2026-09-06）AI 设置与主辅机模式：auto 自动判定 + 网页 AI 设置 + 进程重启 + AI/智能家居页签
 - **机器模式 auto 自动判定（`cmd/server/main.go` `resolveDeployMode`）**：`[ai.deploy].mode` 新增 `auto` 取值——启动时配置了服务端地址（`remote_host`）且 Ollama Ping 可达（5 秒超时）→ 以**辅机**启动；未配置或不可达 → 以**服务端**启动并记录日志。判定结果仅作用于运行态（持久化保留 `auto` 原值），运行中不因断连切换身份；配置热更新回调中同样先解析再下发 AI 服务。

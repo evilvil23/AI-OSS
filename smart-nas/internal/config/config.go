@@ -93,6 +93,7 @@ type AuthConfig struct {
 
 // ---------- AI ----------
 type AIConfig struct {
+	Enabled               bool      `toml:"enabled"` // AI 功能总开关（false 时服务启动跳过 AI 初始化，前端 AI 菜单给出禁用提示）
 	OllamaHost            string    `toml:"ollama_host"`
 	DefaultModel          string    `toml:"default_model"`
 	EmbeddingModel        string    `toml:"embedding_model"`
@@ -267,6 +268,7 @@ func DefaultConfig() *Config {
 	c.Auth.AdminUsername = "admin"
 	c.Auth.AdminPassword = "admin123"
 
+	c.AI.Enabled = false
 	c.AI.OllamaHost = "http://localhost:11434"
 	c.AI.DefaultModel = "qwen2:7b"
 	c.AI.EmbeddingModel = "nomic-embed-text"
@@ -336,6 +338,11 @@ type Manager struct {
 	mu       sync.RWMutex
 	stop     chan struct{}
 	onUpdate func(c *Config)
+
+	// restartRequired 是否存在「已保存但需重启服务才能生效」的变更（v0.26）。
+	// 启动期装配的配置项（AI 开关 / 模型 / 部署模式等）运行时热更新不改变既有行为，
+	// 置位后由前端展示待重启提示；服务重启即新进程，该标志自然重置
+	restartRequired bool
 }
 
 // NewManager 加载配置文件；文件不存在时生成默认并写盘
@@ -380,309 +387,176 @@ func applyEnvOverrides(c *Config) {
 	}
 }
 
-func knownFields() []string {
-	return []string{
-		"server.port", "server.mode", "server.read_timeout", "server.write_timeout",
-		"storage.root", "storage.disks", "storage.trash_path", "storage.metadata_db", "storage.version_keep", "storage.trash_days",
-		"storage.webdav_enabled", "storage.webdav_prefix",
-		"storage.rclone.enabled", "storage.rclone.remote", "storage.rclone.schedule",
-		"tus.enabled", "tus.path_prefix", "tus.chunk_size", "tus.max_size",
-		"tus.store_dir", "tus.concurrent_uploads", "tus.dedup",
-		"auth.jwt_secret", "auth.jwt_expire", "auth.argon2_time", "auth.argon2_memory",
-		"auth.argon2_threads", "auth.argon2_key_len", "auth.argon2_salt_len",
-		"auth.admin_username", "auth.admin_password",
-		"ai.ollama_host", "ai.default_model", "ai.embedding_model",
-		"ai.conversation_max_tokens", "ai.temperature",
-		"ai.rag.enabled", "ai.rag.store_type", "ai.rag.chunk_size",
-		"ai.rag.chunk_overlap", "ai.rag.top_k",
-		"ai.rag.qdrant.host", "ai.rag.qdrant.port", "ai.rag.qdrant.api_key",
-		"ai.rag.qdrant.collection_name",
-		"ai.ollama.managed", "ai.ollama.binary", "ai.ollama.bind_host",
-		"ai.ollama.start_timeout", "ai.ollama.auto_warmup",
-		"ai.tune.model", "ai.tune.num_ctx", "ai.tune.keep_alive", "ai.tune.num_parallel",
-		"ai.deploy.mode", "ai.deploy.role", "ai.deploy.remote_host", "ai.deploy.remote_model",
-		"ai.deploy.remote_api", "ai.deploy.remote_username", "ai.deploy.remote_password",
-		"ai.deploy.auto_switch", "ai.deploy.check_interval",
-		"ai.homeassistant.enabled", "ai.homeassistant.base_url", "ai.homeassistant.token",
-		"iot.mihome.enabled", "iot.mihome.client_id", "iot.mihome.client_secret",
-		"iot.mihome.redirect_uri", "iot.mihome.api_base",
-		"iot.mqtt.enabled", "iot.mqtt.broker", "iot.mqtt.client_id",
-		"iot.mqtt.username", "iot.mqtt.password",
-		"plugin.enabled", "plugin.dir", "plugin.auto_load", "plugin.timeout",
-		"log.level", "log.path", "log.max_size", "log.max_backups", "log.max_age",
-		"degradation.auto_disable_rag_on_high_cpu", "degradation.cpu_threshold",
-		"play.enabled", "play.max_online_height", "play.ffmpeg_path", "play.ffprobe_path",
-		"play.remux_concurrency", "play.transcode_concurrency", "play.transcode_threads",
-		"play.ticket_ttl_minutes", "play.cache_dir", "play.ip_bind",
-		"backup.enabled", "backup.db_path", "backup.log_path",
-		"backup.watch_interval", "backup.usb_poll_interval",
+// ---------- 配置项调度表 ----------
+//
+// v0.26 重构：原 setByPath 内 100+ 分支的巨型 switch 改为映射表（调度表）。
+// 新增配置项只需在 configSetters 登记，setByPath 无需改动。
+// 三类 helper 对应三种赋值形态：
+//   - strSetter   字符串直赋
+//   - parseSetter 数值 / 布尔解析（解析失败报"无效的配置值"）
+//   - csvSetter   逗号分隔列表
+
+func strSetter(f func(*Config, string)) func(*Config, string) error {
+	return func(c *Config, v string) error { f(c, v); return nil }
+}
+
+func parseSetter[T any](f func(*Config, T)) func(*Config, string) error {
+	return func(c *Config, v string) error {
+		var t T
+		if _, err := fmt.Sscan(v, &t); err != nil {
+			return fmt.Errorf("无效的配置值 %q", v)
+		}
+		f(c, t)
+		return nil
 	}
 }
 
-// setByPath 按点分路径设置配置值（支持基础类型）
+func csvSetter(f func(*Config, []string)) func(*Config, string) error {
+	return func(c *Config, v string) error { f(c, splitCSV(v)); return nil }
+}
+
+var configSetters = map[string]func(*Config, string) error{
+	// ---------- Server ----------
+	"server.port":          parseSetter(func(c *Config, v int) { c.Server.Port = v }),
+	"server.mode":          strSetter(func(c *Config, v string) { c.Server.Mode = v }),
+	"server.read_timeout":  parseSetter(func(c *Config, v int) { c.Server.ReadTimeout = v }),
+	"server.write_timeout": parseSetter(func(c *Config, v int) { c.Server.WriteTimeout = v }),
+
+	// ---------- Storage ----------
+	"storage.root":           strSetter(func(c *Config, v string) { c.Storage.Root = v }),
+	"storage.disks":          csvSetter(func(c *Config, v []string) { c.Storage.Disks = v }),
+	"storage.trash_path":     strSetter(func(c *Config, v string) { c.Storage.TrashPath = v }),
+	"storage.metadata_db":    strSetter(func(c *Config, v string) { c.Storage.MetadataDB = v }),
+	"storage.version_keep":   parseSetter(func(c *Config, v int) { c.Storage.VersionKeep = v }),
+	"storage.trash_days":     parseSetter(func(c *Config, v int) { c.Storage.TrashDays = v }),
+	"storage.webdav_enabled": parseSetter(func(c *Config, v bool) { c.Storage.WebDAVEnabled = v }),
+	"storage.webdav_prefix":  strSetter(func(c *Config, v string) { c.Storage.WebDAVPrefix = v }),
+
+	"storage.rclone.enabled":  parseSetter(func(c *Config, v bool) { c.Storage.Rclone.Enabled = v }),
+	"storage.rclone.remote":   strSetter(func(c *Config, v string) { c.Storage.Rclone.Remote = v }),
+	"storage.rclone.schedule": strSetter(func(c *Config, v string) { c.Storage.Rclone.Schedule = v }),
+
+	// ---------- Tus ----------
+	"tus.enabled":            parseSetter(func(c *Config, v bool) { c.Tus.Enabled = v }),
+	"tus.path_prefix":        strSetter(func(c *Config, v string) { c.Tus.PathPrefix = v }),
+	"tus.chunk_size":         parseSetter(func(c *Config, v int64) { c.Tus.ChunkSize = v }),
+	"tus.max_size":           parseSetter(func(c *Config, v int64) { c.Tus.MaxSize = v }),
+	"tus.store_dir":          strSetter(func(c *Config, v string) { c.Tus.StoreDir = v }),
+	"tus.concurrent_uploads": parseSetter(func(c *Config, v bool) { c.Tus.ConcurrentUploads = v }),
+	"tus.dedup":              parseSetter(func(c *Config, v bool) { c.Tus.Dedup = v }),
+
+	// ---------- Auth ----------
+	"auth.jwt_secret":     strSetter(func(c *Config, v string) { c.Auth.JWTSecret = v }),
+	"auth.jwt_expire":     parseSetter(func(c *Config, v int) { c.Auth.JWTExpire = v }),
+	"auth.argon2_time":    parseSetter(func(c *Config, v uint32) { c.Auth.Argon2Time = v }),
+	"auth.argon2_memory":  parseSetter(func(c *Config, v uint32) { c.Auth.Argon2Memory = v }),
+	"auth.argon2_threads": parseSetter(func(c *Config, v uint8) { c.Auth.Argon2Threads = v }),
+	"auth.argon2_key_len": parseSetter(func(c *Config, v uint32) { c.Auth.Argon2KeyLen = v }),
+	"auth.argon2_salt_len": parseSetter(func(c *Config, v uint32) { c.Auth.Argon2SaltLen = v }),
+	"auth.admin_username":  strSetter(func(c *Config, v string) { c.Auth.AdminUsername = v }),
+	"auth.admin_password":  strSetter(func(c *Config, v string) { c.Auth.AdminPassword = v }),
+
+	// ---------- AI ----------
+	"ai.enabled":               parseSetter(func(c *Config, v bool) { c.AI.Enabled = v }),
+	"ai.ollama_host":           strSetter(func(c *Config, v string) { c.AI.OllamaHost = v }),
+	"ai.default_model":         strSetter(func(c *Config, v string) { c.AI.DefaultModel = v }),
+	"ai.embedding_model":       strSetter(func(c *Config, v string) { c.AI.EmbeddingModel = v }),
+	"ai.conversation_max_tokens": parseSetter(func(c *Config, v int) { c.AI.ConversationMaxTokens = v }),
+	"ai.temperature":           parseSetter(func(c *Config, v float64) { c.AI.Temperature = v }),
+
+	"ai.rag.enabled":       parseSetter(func(c *Config, v bool) { c.AI.RAG.Enabled = v }),
+	"ai.rag.store_type":    strSetter(func(c *Config, v string) { c.AI.RAG.StoreType = v }),
+	"ai.rag.chunk_size":    parseSetter(func(c *Config, v int) { c.AI.RAG.ChunkSize = v }),
+	"ai.rag.chunk_overlap": parseSetter(func(c *Config, v int) { c.AI.RAG.ChunkOverlap = v }),
+	"ai.rag.top_k":         parseSetter(func(c *Config, v int) { c.AI.RAG.TopK = v }),
+
+	"ai.rag.qdrant.host":           strSetter(func(c *Config, v string) { c.AI.RAG.Qdrant.Host = v }),
+	"ai.rag.qdrant.port":           parseSetter(func(c *Config, v int) { c.AI.RAG.Qdrant.Port = v }),
+	"ai.rag.qdrant.api_key":        strSetter(func(c *Config, v string) { c.AI.RAG.Qdrant.APIKey = v }),
+	"ai.rag.qdrant.collection_name": strSetter(func(c *Config, v string) { c.AI.RAG.Qdrant.CollectionName = v }),
+
+	"ai.ollama.managed":       parseSetter(func(c *Config, v bool) { c.AI.Ollama.Managed = v }),
+	"ai.ollama.binary":        strSetter(func(c *Config, v string) { c.AI.Ollama.Binary = v }),
+	"ai.ollama.bind_host":     strSetter(func(c *Config, v string) { c.AI.Ollama.BindHost = v }),
+	"ai.ollama.start_timeout": parseSetter(func(c *Config, v int) { c.AI.Ollama.StartTimeout = v }),
+	"ai.ollama.auto_warmup":   parseSetter(func(c *Config, v bool) { c.AI.Ollama.AutoWarmup = v }),
+
+	"ai.tune.model":        strSetter(func(c *Config, v string) { c.AI.Tune.Model = v }),
+	"ai.tune.num_ctx":      parseSetter(func(c *Config, v int) { c.AI.Tune.NumCtx = v }),
+	"ai.tune.keep_alive":   strSetter(func(c *Config, v string) { c.AI.Tune.KeepAlive = v }),
+	"ai.tune.num_parallel": parseSetter(func(c *Config, v int) { c.AI.Tune.NumParallel = v }),
+
+	"ai.deploy.mode":            strSetter(func(c *Config, v string) { c.AI.Deploy.Mode = v }),
+	"ai.deploy.role":            strSetter(func(c *Config, v string) { c.AI.Deploy.Role = v }),
+	"ai.deploy.remote_host":     strSetter(func(c *Config, v string) { c.AI.Deploy.RemoteHost = v }),
+	"ai.deploy.remote_model":    strSetter(func(c *Config, v string) { c.AI.Deploy.RemoteModel = v }),
+	"ai.deploy.remote_api":      strSetter(func(c *Config, v string) { c.AI.Deploy.RemoteAPI = v }),
+	"ai.deploy.remote_username": strSetter(func(c *Config, v string) { c.AI.Deploy.RemoteUsername = v }),
+	"ai.deploy.remote_password": strSetter(func(c *Config, v string) { c.AI.Deploy.RemotePassword = v }),
+	"ai.deploy.auto_switch":     parseSetter(func(c *Config, v bool) { c.AI.Deploy.AutoSwitch = v }),
+	"ai.deploy.check_interval":  parseSetter(func(c *Config, v int) { c.AI.Deploy.CheckInterval = v }),
+
+	"ai.homeassistant.enabled":  parseSetter(func(c *Config, v bool) { c.AI.HomeAssistant.Enabled = v }),
+	"ai.homeassistant.base_url": strSetter(func(c *Config, v string) { c.AI.HomeAssistant.BaseURL = v }),
+	"ai.homeassistant.token":    strSetter(func(c *Config, v string) { c.AI.HomeAssistant.Token = v }),
+
+	// ---------- IoT ----------
+	"iot.mihome.enabled":       parseSetter(func(c *Config, v bool) { c.IoT.Mihome.Enabled = v }),
+	"iot.mihome.client_id":     strSetter(func(c *Config, v string) { c.IoT.Mihome.ClientID = v }),
+	"iot.mihome.client_secret": strSetter(func(c *Config, v string) { c.IoT.Mihome.ClientSecret = v }),
+	"iot.mihome.redirect_uri":  strSetter(func(c *Config, v string) { c.IoT.Mihome.RedirectURI = v }),
+	"iot.mihome.api_base":      strSetter(func(c *Config, v string) { c.IoT.Mihome.APIBase = v }),
+
+	"iot.mqtt.enabled":   parseSetter(func(c *Config, v bool) { c.IoT.MQTT.Enabled = v }),
+	"iot.mqtt.broker":    strSetter(func(c *Config, v string) { c.IoT.MQTT.Broker = v }),
+	"iot.mqtt.client_id": strSetter(func(c *Config, v string) { c.IoT.MQTT.ClientID = v }),
+	"iot.mqtt.username":  strSetter(func(c *Config, v string) { c.IoT.MQTT.Username = v }),
+	"iot.mqtt.password":  strSetter(func(c *Config, v string) { c.IoT.MQTT.Password = v }),
+
+	// ---------- Plugin ----------
+	"plugin.enabled":   parseSetter(func(c *Config, v bool) { c.Plugin.Enabled = v }),
+	"plugin.dir":       strSetter(func(c *Config, v string) { c.Plugin.Dir = v }),
+	"plugin.auto_load": parseSetter(func(c *Config, v bool) { c.Plugin.AutoLoad = v }),
+	"plugin.timeout":   parseSetter(func(c *Config, v int) { c.Plugin.Timeout = v }),
+
+	// ---------- Log ----------
+	"log.level":       strSetter(func(c *Config, v string) { c.Log.Level = v }),
+	"log.path":        strSetter(func(c *Config, v string) { c.Log.Path = v }),
+	"log.max_size":    parseSetter(func(c *Config, v int) { c.Log.MaxSize = v }),
+	"log.max_backups": parseSetter(func(c *Config, v int) { c.Log.MaxBackups = v }),
+	"log.max_age":     parseSetter(func(c *Config, v int) { c.Log.MaxAge = v }),
+
+	// ---------- Degradation ----------
+	"degradation.auto_disable_rag_on_high_cpu": parseSetter(func(c *Config, v bool) { c.Degradation.AutoDisableRAGOnHighCPU = v }),
+	"degradation.cpu_threshold":                parseSetter(func(c *Config, v float64) { c.Degradation.CPUThreshold = v }),
+
+	// ---------- Play ----------
+	"play.enabled":               parseSetter(func(c *Config, v bool) { c.Play.Enabled = v }),
+	"play.max_online_height":     parseSetter(func(c *Config, v int) { c.Play.MaxOnlineHeight = v }),
+	"play.ffmpeg_path":           strSetter(func(c *Config, v string) { c.Play.FFmpegPath = v }),
+	"play.ffprobe_path":          strSetter(func(c *Config, v string) { c.Play.FFprobePath = v }),
+	"play.remux_concurrency":     parseSetter(func(c *Config, v int) { c.Play.RemuxConcurrency = v }),
+	"play.transcode_concurrency": parseSetter(func(c *Config, v int) { c.Play.TranscodeConcurrency = v }),
+	"play.transcode_threads":     parseSetter(func(c *Config, v int) { c.Play.TranscodeThreads = v }),
+	"play.ticket_ttl_minutes":    parseSetter(func(c *Config, v int) { c.Play.TicketTTLMinutes = v }),
+	"play.cache_dir":             strSetter(func(c *Config, v string) { c.Play.CacheDir = v }),
+	"play.ip_bind":               parseSetter(func(c *Config, v bool) { c.Play.IPBind = v }),
+
+	// ---------- Backup ----------
+	"backup.enabled":           parseSetter(func(c *Config, v bool) { c.Backup.Enabled = v }),
+	"backup.db_path":           strSetter(func(c *Config, v string) { c.Backup.DBPath = v }),
+	"backup.log_path":          strSetter(func(c *Config, v string) { c.Backup.LogPath = v }),
+	"backup.watch_interval":    parseSetter(func(c *Config, v int) { c.Backup.WatchInterval = v }),
+	"backup.usb_poll_interval": parseSetter(func(c *Config, v int) { c.Backup.USBPollInterval = v }),
+}
+
+// setByPath 按点分路径设置配置值：查 configSetters 调度表执行，
+// 未登记的路径视为未知配置项；值解析失败由对应 setter 返回错误
 func setByPath(c *Config, path, value string) error {
-	if !containsStr(knownFields(), path) {
-		return fmt.Errorf("未知配置项: %s", path)
+	if set, ok := configSetters[path]; ok {
+		return set(c, value)
 	}
-	var ok bool
-	switch path {
-	case "server.port":
-		ok = parseSet(&c.Server.Port, value)
-	case "server.mode":
-		c.Server.Mode = value
-		ok = true
-	case "server.read_timeout":
-		ok = parseSet(&c.Server.ReadTimeout, value)
-	case "server.write_timeout":
-		ok = parseSet(&c.Server.WriteTimeout, value)
-	case "storage.root":
-		c.Storage.Root = value
-		ok = true
-	case "storage.disks":
-		c.Storage.Disks = splitCSV(value)
-		ok = true
-	case "storage.trash_path":
-		c.Storage.TrashPath = value
-	case "storage.metadata_db":
-		c.Storage.MetadataDB = value
-		ok = true
-	case "storage.version_keep":
-		ok = parseSet(&c.Storage.VersionKeep, value)
-	case "storage.trash_days":
-		ok = parseSet(&c.Storage.TrashDays, value)
-	case "storage.webdav_enabled":
-		ok = parseSet(&c.Storage.WebDAVEnabled, value)
-	case "storage.webdav_prefix":
-		c.Storage.WebDAVPrefix = value
-		ok = true
-	case "storage.rclone.enabled":
-		ok = parseSet(&c.Storage.Rclone.Enabled, value)
-	case "storage.rclone.remote":
-		c.Storage.Rclone.Remote = value
-		ok = true
-	case "storage.rclone.schedule":
-		c.Storage.Rclone.Schedule = value
-		ok = true
-	case "tus.enabled":
-		ok = parseSet(&c.Tus.Enabled, value)
-	case "tus.path_prefix":
-		c.Tus.PathPrefix = value
-		ok = true
-	case "tus.chunk_size":
-		ok = parseSet(&c.Tus.ChunkSize, value)
-	case "tus.max_size":
-		ok = parseSet(&c.Tus.MaxSize, value)
-	case "tus.store_dir":
-		c.Tus.StoreDir = value
-		ok = true
-	case "tus.concurrent_uploads":
-		ok = parseSet(&c.Tus.ConcurrentUploads, value)
-	case "tus.dedup":
-		ok = parseSet(&c.Tus.Dedup, value)
-	case "auth.jwt_secret":
-		c.Auth.JWTSecret = value
-		ok = true
-	case "auth.jwt_expire":
-		ok = parseSet(&c.Auth.JWTExpire, value)
-	case "auth.argon2_time":
-		ok = parseSet(&c.Auth.Argon2Time, value)
-	case "auth.argon2_memory":
-		ok = parseSet(&c.Auth.Argon2Memory, value)
-	case "auth.argon2_threads":
-		ok = parseSet(&c.Auth.Argon2Threads, value)
-	case "auth.argon2_key_len":
-		ok = parseSet(&c.Auth.Argon2KeyLen, value)
-	case "auth.argon2_salt_len":
-		ok = parseSet(&c.Auth.Argon2SaltLen, value)
-	case "auth.admin_username":
-		c.Auth.AdminUsername = value
-		ok = true
-	case "auth.admin_password":
-		c.Auth.AdminPassword = value
-		ok = true
-	case "ai.ollama_host":
-		c.AI.OllamaHost = value
-		ok = true
-	case "ai.default_model":
-		c.AI.DefaultModel = value
-		ok = true
-	case "ai.embedding_model":
-		c.AI.EmbeddingModel = value
-		ok = true
-	case "ai.conversation_max_tokens":
-		ok = parseSet(&c.AI.ConversationMaxTokens, value)
-	case "ai.temperature":
-		ok = parseSet(&c.AI.Temperature, value)
-	case "ai.rag.enabled":
-		ok = parseSet(&c.AI.RAG.Enabled, value)
-	case "ai.rag.store_type":
-		c.AI.RAG.StoreType = value
-		ok = true
-	case "ai.rag.chunk_size":
-		ok = parseSet(&c.AI.RAG.ChunkSize, value)
-	case "ai.rag.chunk_overlap":
-		ok = parseSet(&c.AI.RAG.ChunkOverlap, value)
-	case "ai.rag.top_k":
-		ok = parseSet(&c.AI.RAG.TopK, value)
-	case "ai.rag.qdrant.host":
-		c.AI.RAG.Qdrant.Host = value
-		ok = true
-	case "ai.rag.qdrant.port":
-		ok = parseSet(&c.AI.RAG.Qdrant.Port, value)
-	case "ai.rag.qdrant.api_key":
-		c.AI.RAG.Qdrant.APIKey = value
-		ok = true
-	case "ai.rag.qdrant.collection_name":
-		c.AI.RAG.Qdrant.CollectionName = value
-		ok = true
-	case "ai.ollama.managed":
-		ok = parseSet(&c.AI.Ollama.Managed, value)
-	case "ai.ollama.binary":
-		c.AI.Ollama.Binary = value
-		ok = true
-	case "ai.ollama.bind_host":
-		c.AI.Ollama.BindHost = value
-		ok = true
-	case "ai.ollama.start_timeout":
-		ok = parseSet(&c.AI.Ollama.StartTimeout, value)
-	case "ai.ollama.auto_warmup":
-		ok = parseSet(&c.AI.Ollama.AutoWarmup, value)
-	case "ai.tune.model":
-		c.AI.Tune.Model = value
-		ok = true
-	case "ai.tune.num_ctx":
-		ok = parseSet(&c.AI.Tune.NumCtx, value)
-	case "ai.tune.keep_alive":
-		c.AI.Tune.KeepAlive = value
-		ok = true
-	case "ai.tune.num_parallel":
-		ok = parseSet(&c.AI.Tune.NumParallel, value)
-	case "ai.deploy.mode":
-		c.AI.Deploy.Mode = value
-		ok = true
-	case "ai.deploy.role":
-		c.AI.Deploy.Role = value
-		ok = true
-	case "ai.deploy.remote_host":
-		c.AI.Deploy.RemoteHost = value
-		ok = true
-	case "ai.deploy.remote_model":
-		c.AI.Deploy.RemoteModel = value
-		ok = true
-	case "ai.deploy.remote_api":
-		c.AI.Deploy.RemoteAPI = value
-		ok = true
-	case "ai.deploy.remote_username":
-		c.AI.Deploy.RemoteUsername = value
-		ok = true
-	case "ai.deploy.remote_password":
-		c.AI.Deploy.RemotePassword = value
-		ok = true
-	case "ai.deploy.auto_switch":
-		ok = parseSet(&c.AI.Deploy.AutoSwitch, value)
-	case "ai.deploy.check_interval":
-		ok = parseSet(&c.AI.Deploy.CheckInterval, value)
-	case "ai.homeassistant.enabled":
-		ok = parseSet(&c.AI.HomeAssistant.Enabled, value)
-	case "ai.homeassistant.base_url":
-		c.AI.HomeAssistant.BaseURL = value
-		ok = true
-	case "ai.homeassistant.token":
-		c.AI.HomeAssistant.Token = value
-		ok = true
-	case "iot.mihome.enabled":
-		ok = parseSet(&c.IoT.Mihome.Enabled, value)
-	case "iot.mihome.client_id":
-		c.IoT.Mihome.ClientID = value
-		ok = true
-	case "iot.mihome.client_secret":
-		c.IoT.Mihome.ClientSecret = value
-		ok = true
-	case "iot.mihome.redirect_uri":
-		c.IoT.Mihome.RedirectURI = value
-		ok = true
-	case "iot.mihome.api_base":
-		c.IoT.Mihome.APIBase = value
-		ok = true
-	case "iot.mqtt.enabled":
-		ok = parseSet(&c.IoT.MQTT.Enabled, value)
-	case "iot.mqtt.broker":
-		c.IoT.MQTT.Broker = value
-		ok = true
-	case "iot.mqtt.client_id":
-		c.IoT.MQTT.ClientID = value
-		ok = true
-	case "iot.mqtt.username":
-		c.IoT.MQTT.Username = value
-		ok = true
-	case "iot.mqtt.password":
-		c.IoT.MQTT.Password = value
-		ok = true
-	case "plugin.enabled":
-		ok = parseSet(&c.Plugin.Enabled, value)
-	case "plugin.dir":
-		c.Plugin.Dir = value
-		ok = true
-	case "plugin.auto_load":
-		ok = parseSet(&c.Plugin.AutoLoad, value)
-	case "plugin.timeout":
-		ok = parseSet(&c.Plugin.Timeout, value)
-	case "log.level":
-		c.Log.Level = value
-		ok = true
-	case "log.path":
-		c.Log.Path = value
-		ok = true
-	case "log.max_size":
-		ok = parseSet(&c.Log.MaxSize, value)
-	case "log.max_backups":
-		ok = parseSet(&c.Log.MaxBackups, value)
-	case "log.max_age":
-		ok = parseSet(&c.Log.MaxAge, value)
-	case "degradation.auto_disable_rag_on_high_cpu":
-		ok = parseSet(&c.Degradation.AutoDisableRAGOnHighCPU, value)
-	case "degradation.cpu_threshold":
-		ok = parseSet(&c.Degradation.CPUThreshold, value)
-	case "play.enabled":
-		ok = parseSet(&c.Play.Enabled, value)
-	case "play.max_online_height":
-		ok = parseSet(&c.Play.MaxOnlineHeight, value)
-	case "play.ffmpeg_path":
-		c.Play.FFmpegPath = value
-		ok = true
-	case "play.ffprobe_path":
-		c.Play.FFprobePath = value
-		ok = true
-	case "play.remux_concurrency":
-		ok = parseSet(&c.Play.RemuxConcurrency, value)
-	case "play.transcode_concurrency":
-		ok = parseSet(&c.Play.TranscodeConcurrency, value)
-	case "play.transcode_threads":
-		ok = parseSet(&c.Play.TranscodeThreads, value)
-	case "play.ticket_ttl_minutes":
-		ok = parseSet(&c.Play.TicketTTLMinutes, value)
-	case "play.cache_dir":
-		c.Play.CacheDir = value
-		ok = true
-	case "play.ip_bind":
-		ok = parseSet(&c.Play.IPBind, value)
-	case "backup.enabled":
-		ok = parseSet(&c.Backup.Enabled, value)
-	case "backup.db_path":
-		c.Backup.DBPath = value
-		ok = true
-	case "backup.log_path":
-		c.Backup.LogPath = value
-		ok = true
-	case "backup.watch_interval":
-		ok = parseSet(&c.Backup.WatchInterval, value)
-	case "backup.usb_poll_interval":
-		ok = parseSet(&c.Backup.USBPollInterval, value)
-	}
-	if !ok {
-		return fmt.Errorf("无效的配置值 %s=%s", path, value)
-	}
-	return nil
+	return fmt.Errorf("未知配置项: %s", path)
 }
 
 // GetConfig 返回当前配置（返回副本，避免并发修改）
@@ -697,8 +571,12 @@ func (m *Manager) GetConfig() *Config {
 func (m *Manager) UpdateConfig(p map[string]interface{}) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	before := *m.cfg // 变更前快照（Config 各字段均为值类型，浅拷贝足够）
 	if err := mergeMapIntoConfig(m.cfg, p); err != nil {
 		return err
+	}
+	if needsRestart(&before, m.cfg) {
+		m.restartRequired = true
 	}
 	if m.onUpdate != nil {
 		m.onUpdate(m.cfg)
@@ -707,7 +585,28 @@ func (m *Manager) UpdateConfig(p map[string]interface{}) error {
 	return m.saveLocked()
 }
 
-// saveLocked 落盘当前配置（调用方须已持有 m.mu 写锁）
+// RestartRequired 是否存在已保存但需重启服务才生效的设置变更
+func (m *Manager) RestartRequired() bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.restartRequired
+}
+
+// needsRestart 判断配置变更是否涉及启动期装配项。
+// 这些项在启动时读取并装配（AI 开关 / Ollama 地址 / 向量模型 / 部署模式与远端地址），
+// 运行中热更新只改内存值，不改变已装配行为，须重启服务才真正生效
+func needsRestart(before, after *Config) bool {
+	return before.AI.Enabled != after.AI.Enabled ||
+		before.AI.OllamaHost != after.AI.OllamaHost ||
+		before.AI.EmbeddingModel != after.AI.EmbeddingModel ||
+		before.AI.Deploy.Mode != after.AI.Deploy.Mode ||
+		before.AI.Deploy.Role != after.AI.Deploy.Role ||
+		before.AI.Deploy.RemoteHost != after.AI.Deploy.RemoteHost ||
+		before.AI.Deploy.RemoteAPI != after.AI.Deploy.RemoteAPI
+}
+
+// saveLocked 落盘当前配置（调用方须已持有 m.mu 写锁）；
+// 写回时保留 config.toml 中原有注释（见 writePreservingComments）
 func (m *Manager) saveLocked() error {
 	if m.path == "" {
 		return nil
@@ -716,7 +615,7 @@ func (m *Manager) saveLocked() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(m.path, data, 0o644)
+	return writePreservingComments(m.path, data)
 }
 
 // mergeMapIntoConfig 将嵌套 map 合并进配置
@@ -821,7 +720,12 @@ func (m *Manager) WatchConfig() {
 					continue
 				}
 				m.mu.Lock()
+				before := *m.cfg
 				m.cfg = newCfg
+				// 外部直接编辑文件时，涉及启动期装配项的改动同样需重启才生效
+				if needsRestart(&before, newCfg) {
+					m.restartRequired = true
+				}
 				cb := m.onUpdate
 				m.mu.Unlock()
 				if cb != nil {
@@ -841,7 +745,7 @@ func (m *Manager) Stop() {
 	}
 }
 
-// Save 将当前配置写回文件
+// Save 将当前配置写回文件（保留原文件注释）
 func (m *Manager) Save() error {
 	if m.path == "" {
 		return nil
@@ -852,27 +756,204 @@ func (m *Manager) Save() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(m.path, data, 0o644)
+	return writePreservingComments(m.path, data)
+}
+
+// ---------- 注释保留写回 ----------
+//
+// 背景：toml.Marshal 只输出键值，不保留注释与排版。设置页保存 / 环境变量热更新
+// 触发落盘时若直接覆盖，config.toml 中手写的中文注释会被全部抹掉。
+//
+// 策略（文本级键值替换）：以 Marshal 结果作为「权威键值」，逐行扫描原文件，
+// 仅把对应键的值替换为新值；注释行、空行、缩进、行内注释与未知键一律原样保留；
+// 原文件中缺失的新键（代码新增配置项）按所属分段追加。
+
+// writePreservingComments 将完整 TOML 文本写回 path，尽量保留原文件注释。
+// 原文件不存在（首次生成）或合并失败时回退为直接覆盖写，保证落盘不失败。
+func writePreservingComments(path string, marshaled []byte) error {
+	out := marshaled
+	if orig, err := os.ReadFile(path); err == nil {
+		out = []byte(mergeComments(string(orig), string(marshaled)))
+	}
+	return os.WriteFile(path, out, 0o644)
+}
+
+// mergeComments 把 marshaled 的键值合并进 orig 的文本结构，保留 orig 的注释与排版。
+func mergeComments(orig, marshaled string) string {
+	type kv struct{ path, val string }
+
+	// 1. 解析 Marshal 结果：按定义顺序收集「完整路径 → 值字面量」
+	var fresh []kv
+	index := map[string]string{}
+	section := ""
+	for _, line := range strings.Split(marshaled, "\n") {
+		if sec, ok := parseTOMLSection(line); ok {
+			section = sec
+			continue
+		}
+		if k, v, _, ok := splitTOMLKV(line); ok {
+			p := joinKey(section, k)
+			fresh = append(fresh, kv{p, v})
+			index[p] = v
+		}
+	}
+
+	// 2. 逐行替换原文件中的值；同时记录各分段最后一个键值行的位置（供新增键定位）
+	hadTrailingNewline := strings.HasSuffix(orig, "\n")
+	lines := strings.Split(strings.TrimSuffix(orig, "\n"), "\n")
+	section = ""
+	replaced := map[string]bool{}
+	lastKeyLine := map[string]int{}
+	for i, line := range lines {
+		if sec, ok := parseTOMLSection(line); ok {
+			section = sec
+			continue
+		}
+		k, _, comment, ok := splitTOMLKV(line)
+		if !ok {
+			continue
+		}
+		lastKeyLine[section] = i
+		p := joinKey(section, k)
+		v, exists := index[p]
+		if !exists {
+			continue // 未知键（配置结构里没有）：原样保留，不删除用户内容
+		}
+		indent := line[:len(line)-len(strings.TrimLeft(line, " \t"))]
+		newLine := indent + k + " = " + v
+		if comment != "" {
+			newLine += "  " + comment // 行内注释原样保留
+		}
+		lines[i] = newLine
+		replaced[p] = true
+	}
+
+	// 3. 追加原文件缺失的新键：按所属分段归组，整段插入到该分段末尾
+	newBySection := map[string][]string{}
+	var sectionOrder []string
+	for _, item := range fresh {
+		if replaced[item.path] {
+			continue
+		}
+		sec, key := splitKeyPath(item.path)
+		if _, seen := newBySection[sec]; !seen {
+			sectionOrder = append(sectionOrder, sec)
+		}
+		newBySection[sec] = append(newBySection[sec], key+" = "+item.val)
+	}
+	insertAt := map[int][]string{} // 行索引 → 待插入行
+	var tail []string              // 原文件无该分段时追加到文件尾
+	for _, sec := range sectionOrder {
+		rows := newBySection[sec]
+		if idx, ok := lastKeyLine[sec]; ok && sec != "" {
+			insertAt[idx+1] = append(insertAt[idx+1], rows...)
+			continue
+		}
+		if sec != "" {
+			tail = append(tail, "", "["+sec+"]")
+		}
+		tail = append(tail, rows...)
+	}
+
+	// 4. 重组文本
+	out := make([]string, 0, len(lines)+len(tail))
+	for i := 0; i <= len(lines); i++ {
+		if extra, ok := insertAt[i]; ok {
+			out = append(out, extra...)
+		}
+		if i < len(lines) {
+			out = append(out, lines[i])
+		}
+	}
+	out = append(out, tail...)
+	result := strings.Join(out, "\n")
+	if hadTrailingNewline {
+		result += "\n"
+	}
+	return result
+}
+
+// parseTOMLSection 解析分段表头行（如 "[ai.rag]"、"[ai] # 注释"），返回分段名
+func parseTOMLSection(line string) (string, bool) {
+	s := strings.TrimSpace(line)
+	if !strings.HasPrefix(s, "[") {
+		return "", false
+	}
+	end := strings.Index(s, "]")
+	if end <= 1 {
+		return "", false
+	}
+	return strings.TrimSpace(s[1:end]), true
+}
+
+// splitTOMLKV 解析键值行，返回键、值、行内注释（含 "#" 起的部分）。
+// 忽略空行、注释行与分段表头；值内的引号与转义不会误判。
+func splitTOMLKV(line string) (key, val, comment string, ok bool) {
+	s := strings.TrimSpace(line)
+	if s == "" || strings.HasPrefix(s, "#") || strings.HasPrefix(s, "[") {
+		return "", "", "", false
+	}
+	eq := indexOutsideQuotes(s, '=')
+	if eq <= 0 {
+		return "", "", "", false
+	}
+	key = strings.TrimSpace(s[:eq])
+	rest := s[eq+1:]
+	if hash := indexOutsideQuotes(rest, '#'); hash >= 0 {
+		comment = strings.TrimSpace(rest[hash:])
+		rest = rest[:hash]
+	}
+	val = strings.TrimSpace(rest)
+	if key == "" || val == "" {
+		return "", "", "", false
+	}
+	return key, val, comment, true
+}
+
+// indexOutsideQuotes 返回 target 在 s 中首个不在引号内的下标（未找到返回 -1）；
+// 双引号内的反斜杠转义会被正确跳过
+func indexOutsideQuotes(s string, target byte) int {
+	var quote byte
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		if quote != 0 {
+			if quote == '"' && ch == '\\' {
+				i++
+				continue
+			}
+			if ch == quote {
+				quote = 0
+			}
+			continue
+		}
+		if ch == '\'' || ch == '"' {
+			quote = ch
+			continue
+		}
+		if ch == target {
+			return i
+		}
+	}
+	return -1
+}
+
+// joinKey 拼接完整配置路径
+func joinKey(section, key string) string {
+	if section == "" {
+		return key
+	}
+	return section + "." + key
+}
+
+// splitKeyPath 从完整路径还原分段名与键名
+func splitKeyPath(p string) (section, key string) {
+	if i := strings.LastIndex(p, "."); i >= 0 {
+		return p[:i], p[i+1:]
+	}
+	return "", p
 }
 
 // ---------- 小工具 ----------
-func parseSet[T any](dst *T, s string) bool {
-	v := new(T)
-	if _, err := fmt.Sscan(s, v); err != nil {
-		return false
-	}
-	*dst = *v
-	return true
-}
-
-func containsStr(list []string, s string) bool {
-	for _, it := range list {
-		if it == s {
-			return true
-		}
-	}
-	return false
-}
 
 // splitCSV 将逗号分隔的字符串拆分为去空格后的切片
 func splitCSV(s string) []string {
