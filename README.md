@@ -72,7 +72,7 @@ smart-nas/
 │   ├── templates/         # 页面模板（index.html，经 {{.WebVersion}} 注入资源缓存版本号）
 │   └── static/            # 静态资源（css/style.css + js/app.js + js/ai.js + js/smarthome.js + js/video-js-8.24.0/，经 /static/* 服务）
 ├── vendor/                # 离线依赖（已就绪）
-├── config.toml            # 主配置
+├── config.toml            # 部署主配置（随代码入库；运行时设置见 data/config/settings.toml）
 └── go.mod / go.sum
 ```
 
@@ -111,7 +111,22 @@ data/
 
 ## 3. 配置
 
-编辑项目根目录的 `config.toml`，重点关注：
+### 3.1 配置文件说明
+
+项目有两类配置文件，**职责分离、不合并**：
+
+| 文件 | 位置 | 性质 | 职责 |
+| --- | --- | --- | --- |
+| `config.toml` | 运行目录（`-config` 可指定） | 部署级配置，**随代码入库** | 服务 / 存储 / tus / 认证 / AI / IoT / 插件 / 日志 / 备份等；含 `jwt_secret`、`admin_password` 等敏感项；支持环境变量覆盖与 1 秒热轮询重载 |
+| `data/config/settings.toml` | 数据目录 `data/config/` | 运行时用户设置，**不入库**（已 gitignore） | Web 界面「管理 → 设置」可调的少量参数，由 API 保存 |
+
+同一 `data/config/` 目录下还集中存放其他运行时文件：`users.toml`（用户）、`exclude-list.txt`（备份全局排除规则）、`uploads.toml`（tus 上传任务）；启动时会自动从旧位置（`data/db`、`data/tus`）迁移，无需手工搬运。
+
+**覆盖关系（v0.27 明确）**：两类文件仅少量同义项重叠——**回收站位置、日志路径 / 大小 / 保留天数**；统一按「**界面设置非空（非 0）时覆盖 `config.toml`，留空即回退 `config.toml`**」处理。设置页输入框的默认值占位直接取自 `config.toml`，因此不会出现两处默认不一致。
+
+### 3.2 config.toml 主要配置项
+
+以下为 `config.toml` 重点项（完整中文注释见文件本身）：
 
 ```toml
 [server]
@@ -203,13 +218,8 @@ usb_poll_interval = 3        # USB 设备轮询间隔（秒）
 ```
 
 > 日志参数（位置 / 单文件最大大小 / 保留天数）可在 Web 界面「管理 → 设置」中
-> 调整并即时生效，界面设置优先于 `config.toml`。
->
-> **配置文件分工（v0.27 明确，两者不合并）**：`config.toml` 是部署级配置（随代码入库、
-> 含密钥、支持环境变量覆盖与热轮询）；`data/config/settings.toml` 是界面可改的运行时状态
-> （用户数据、不入库）。二者仅少量同义项重叠——回收站位置、日志路径/大小/保留天数，统一按
-> **「界面设置非空（非 0）时覆盖 `config.toml`，留空即回退 `config.toml`」** 处理；界面输入框
-> 的默认值占位直接取自 `config.toml`，不会出现两处默认不一致。
+> 调整并即时生效；界面设置（`data/config/settings.toml`）优先于 `config.toml`，
+> 留空则回退（详见 [§3.1 配置文件说明](#31-配置文件说明)）。
 
 所有配置都可用**环境变量覆盖**（前缀 `SMARTNAS_`，双下划线表示层级）：
 
@@ -454,7 +464,7 @@ curl.exe -s -X PUT http://localhost:8080/api/admin/users/2/permissions `
   -d '{"permissions":[{"path":"D:/","read":true,"write":true},{"path":"E:/photo","read":true,"write":false}]}'
 # 系统设置（刷新频率 / 回收站位置 / 日志位置与清理，界面"管理 → 设置"可改；仅主人可修改）
 curl.exe -s http://localhost:8080/api/admin/settings -H $AUTH
-# 设置项默认值（v0.24.3：回收站/日志/备份目录的系统默认绝对路径，供设置页占位显示）
+# 设置项默认值（v0.27：回收站/日志路径与大小/天数/备份目录的默认值统一取自 config.toml，供设置页占位显示）
 curl.exe -s http://localhost:8080/api/admin/settings/defaults -H $AUTH
 curl.exe -s -X PUT http://localhost:8080/api/admin/settings `
   -H $AUTH -H "Content-Type: application/json" `
