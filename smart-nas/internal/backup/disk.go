@@ -1,3 +1,5 @@
+//go:build windows
+
 // disk.go 备份前磁盘剩余空间校验（Windows 实现，经 purego 调用 kernel32）。
 package backup
 

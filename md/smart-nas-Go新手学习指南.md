@@ -85,7 +85,7 @@ smart-nas/
 ├── config.toml               # 主配置
 ├── go.mod / go.sum           # 依赖清单
 └── data/                     # 运行时数据（自动生成）
-    ├── db/                   # users.toml / settings.toml
+    ├── config/               # users.toml / settings.toml / exclude-list.txt / uploads.toml
     ├── files/                # 文件 blob + metadata.db(SQLite) + trash/
     ├── tus/                  # 上传临时分块
     ├── logs/                 # 日志

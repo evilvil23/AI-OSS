@@ -2274,7 +2274,7 @@ ffmpeg/ffprobe——优先使用可执行文件同目录 / 工作目录下的内
   默认预置 Windows / Linux 系统目录、开发项目产物（node_modules / .git / dist 等）
   与跨平台临时文件（Thumbs.db / ~$* / *.tmp 等）；
   显式清空被尊重，旧配置未设置时回填预设；
-  自 v0.21.2 起规则**独立存储**于数据目录 `data/db/exclude-list.txt`
+  自 v0.21.2 起规则**独立存储**于数据目录 `data/config/exclude-list.txt`
   （每行一条、支持 `#` 注释），不再写入 settings.toml，内存保留供 API 与任务预填；
 - 新建任务时：请求未携带 `exclude_patterns` → 套用全局规则（前端弹窗预填为 chip 列表，
   任务内可增删）；规则匹配语义与任务级一致（名称 / 目录 / 通配符 / 目录前缀）；
@@ -2452,8 +2452,8 @@ smart-nas/
 │   │   └── router/
 │   └── package.json
 ├── data/
+│   ├── config/             # users.toml / settings.toml / exclude-list.txt / uploads.toml
 │   ├── files/
-│   ├── db/
 │   ├── logs/
 │   └── vectors/
 ├── config.toml
@@ -2654,7 +2654,7 @@ networks:
 #### 7.4.1 备份范围与策略
 | 数据类型            | 存储位置                   | 备份方式                               | 备份频率    | 保留周期        |
 | --------------- | ---------------------- | ---------------------------------- | ------- | ----------- |
-| 元数据库（SQLite）    | data/db/smart-nas.db   | 使用 sqlite3 .backup 或直接复制（需 WAL 模式） | 每日全量    | 30 天        |
+| 元数据库（SQLite）    | data/files/metadata.db | 使用 sqlite3 .backup 或直接复制（需 WAL 模式） | 每日全量    | 30 天        |
 | 文件 Blob         | data/files/            | rclone 增量同步至远程存储（S3/WebDAV/SFTP）   | 每日增量    | 永久（按远程存储策略） |
 | 向量库（chromem-go） | data/vectors/          | 目录打包 + rclone 同步                   | 每周全量    | 30 天        |
 | 插件与配置           | plugins/ + config.toml | 直接复制                               | 每次修改后自动 | 永久          |
@@ -2669,7 +2669,7 @@ BACKUP_ROOT="/mnt/backup/nas"
 DATE=$(date +%Y%m%d)
 
 # 1. SQLite 热备（WAL 模式安全复制）
-sqlite3 /app/data/db/smart-nas.db ".backup ${BACKUP_ROOT}/db/smart-nas-${DATE}.db"
+sqlite3 /app/data/files/metadata.db ".backup ${BACKUP_ROOT}/db/smart-nas-${DATE}.db"
 
 # 2. 向量库打包
 tar -czf ${BACKUP_ROOT}/vectors/vectors-${DATE}.tar.gz -C /app/data vectors/
@@ -2686,7 +2686,7 @@ rclone sync ${BACKUP_ROOT} backup:bucket/nas-backup/ --progress
 **全量恢复步骤：**
 1. 停止服务：docker-compose down
 2. 恢复配置文件：cp /mnt/backup/config/config-latest.toml /app/config.toml
-3. 恢复元数据库：cp /mnt/backup/db/smart-nas-latest.db /app/data/db/smart-nas.db
+3. 恢复元数据库：cp /mnt/backup/db/smart-nas-latest.db /app/data/files/metadata.db
 4. 恢复文件数据：rclone sync backup:bucket/nas-backup/files/ /app/data/files/
 5. 恢复向量库：tar -xzf /mnt/backup/vectors/vectors-latest.tar.gz -C /app/data/
 6. 启动服务：docker-compose up -d

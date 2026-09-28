@@ -79,21 +79,28 @@ smart-nas/
 数据文件（启动后自动生成在 `./data`）：
 ```
 data/
-├── db/                    # 配置类 TOML（小文件）
+├── config/                # 配置文件（v0.27 起集中存放于 data/config）
 │   ├── users.toml         # 用户数据（旧 *.json 启动时自动迁移并删除）
 │   ├── settings.toml      # 界面可调的系统设置
 │   ├── exclude-list.txt   # 备份全局排除规则（v0.21.2，每行一条，支持 # 注释）
+│   ├── uploads.toml       # tus 上传任务记录（v0.27 起由 data/tus 迁入）
 │   └── file_metas.toml.migrated  # 旧版文件元数据（已迁移至 SQLite 后的备份）
 ├── files/                 # 文件 blob（按 MD5 分散存储）
 │   └── metadata.db        # 文件元数据 SQLite 库（v0.11 起，含 -wal/-shm 伴随文件）
 ├── trash/                 # 默认回收站（v0.24.3 起集中存放于运行目录 data/trash，不在各盘符/文件根下创建）
-├── tus/                   # 上传临时分块（uploads.toml 任务记录）
+├── tus/                   # 上传临时分块
 ├── backup/                # 备份元数据 SQLite（backup.db，backup_task / backup_history）；
 │                          # v0.24.3 起同时作为备份默认存放目录（全局设置为空时，备份产物按任务名存放于此）
+├── cache/                 # 转封装产物缓存（cache/video）
 ├── vectors/               # RAG 向量库（可选，store.json 为向量数据缓存）
 ├── logs/                  # 日志（smart-nas.log，按大小滚动、按天数清理）
+├── ollama.pid             # 托管 Ollama 的 PID 记录（v0.21）
 └── plugins/               # 插件数据目录
 ```
+
+> **v0.27 目录整理**：原先配置文件散落在 `data/db/`（settings.toml / users.toml /
+> exclude-list.txt）与 `data/tus/`（uploads.toml），现统一收纳到 **`data/config/`**。
+> 升级后首次启动会**自动迁移**旧位置文件（目标已存在则不覆盖，仅打印提示），无需手工搬运。
 
 > 文件元数据自 v0.11 起存于 SQLite（增量写入 + 索引，浏览大目录不再全量重写文件）；
 > 旧版 `file_metas.toml / file_versions.toml` 首次启动自动导入并保留原 ID，
@@ -197,6 +204,12 @@ usb_poll_interval = 3        # USB 设备轮询间隔（秒）
 
 > 日志参数（位置 / 单文件最大大小 / 保留天数）可在 Web 界面「管理 → 设置」中
 > 调整并即时生效，界面设置优先于 `config.toml`。
+>
+> **配置文件分工（v0.27 明确，两者不合并）**：`config.toml` 是部署级配置（随代码入库、
+> 含密钥、支持环境变量覆盖与热轮询）；`data/config/settings.toml` 是界面可改的运行时状态
+> （用户数据、不入库）。二者仅少量同义项重叠——回收站位置、日志路径/大小/保留天数，统一按
+> **「界面设置非空（非 0）时覆盖 `config.toml`，留空即回退 `config.toml`」** 处理；界面输入框
+> 的默认值占位直接取自 `config.toml`，不会出现两处默认不一致。
 
 所有配置都可用**环境变量覆盖**（前缀 `SMARTNAS_`，双下划线表示层级）：
 
@@ -542,7 +555,7 @@ curl.exe -s -X DELETE http://localhost:8080/api/play/ticket/<token> -H $AUTH
 - **全局默认**（「管理 → 设置」）：备份默认存放目录、备份默认压缩级别、
   **备份全局排除规则**——新建任务时自动套用，任务内可单独修改；
   存放目录留空时使用系统默认 `data/backup`（v0.24.3 起）；
-  规则自 v0.21.2 起独立存储于数据目录 `data/db/exclude-list.txt`
+  规则自 v0.21.2 起独立存储于数据目录 `data/config/exclude-list.txt`
   （每行一条、支持 `#` 注释）；
   排除规则已预置 Windows / Linux 系统目录、开发项目产物（node_modules、.git 等）
   与 NAS 跨平台临时文件（Thumbs.db、~$* 等），每行一条、支持通配符，
@@ -801,7 +814,7 @@ ffprobe.exe -version  # 验证
 | 日志出现 `listen tcp :8080: ... not a socket` | 受限沙箱/容器禁止 socket | 在正常的 Windows 宿主机/可开端口的服务器上运行 |
 | 日志出现 MQTT 连接失败 | 未启动 broker | 无需处理（自动降级），或参考 7.2 启动 Mosquitto |
 | 登录返回 401 | Token 过期 / 未登录 | 重新 `POST /api/auth/login` 获取新 token |
-| 忘记默认密码 | - | 主人密码由 `config.toml` 的 `[auth] admin_password` 决定，修改后重启生效；若误删主人导致无法登录，删除 `data/db/users.json` 后重启重建（会丢失全部用户数据，慎用） |
+| 忘记默认密码 | - | 主人密码由 `config.toml` 的 `[auth] admin_password` 决定，修改后重启生效；若误删主人导致无法登录，删除 `data/config/users.toml` 后重启重建（会丢失全部用户数据，慎用） |
 | 修改 `config.toml` 后热加载 | 支持 | 服务每 1 秒轮询配置文件，改动保存后自动生效（部分模块需重启） |
 | 备份状态显示"部分成功" | 部分源文件被占用/正在写入 | 属热备份正常行为（不中断）；关闭占用程序后重跑即可完整备份 |
 | 备份报"剩余空间不足" | 备份目标磁盘配额不足 | 清理目标磁盘或回收站；或修改任务存放目录 |

@@ -16,6 +16,7 @@ root = './data/files'
 # 允许 NAS 访问的磁盘根目录（为空时自动发现盘符，再回退到 root）
 disks = []
 # 全局回收站目录（留空 = 运行目录下 data/trash，集中存放，不在各盘符建 .trash）
+# 注：界面「设置」页的回收站位置非空时覆盖此项（settings.toml 为运行时覆盖层）
 trash_path = ''
 # 元数据库位置（留空 = root/metadata.db）
 metadata_db = ''
@@ -210,6 +211,7 @@ timeout = 30
 # 日志级别：debug / info / warn / error
 level = 'info'
 # 日志文件路径（留空 = 仅输出到控制台）
+# 注：界面「设置」页的日志路径/大小/保留天数非空（非 0）时覆盖以下 [log] 项
 path = './data/logs/smart-nas.log'
 # 单个日志文件大小上限（MB，超出自动滚动归档）
 max_size = 100

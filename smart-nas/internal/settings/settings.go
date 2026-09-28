@@ -1,6 +1,13 @@
 // Package settings 系统设置：可不通过配置文件在界面中调整的运行参数。
 //
 // 持久化采用 TOML（settings.toml），与 config.toml 保持一致风格。
+//
+// 与 config.toml 的关系（覆盖层语义，v0.27 明确，两者不合并）：
+//   - config.toml 是部署级配置（随代码入库、含密钥、支持环境变量覆盖与热轮询），
+//     settings.toml 是界面可改的运行时状态（用户数据、不入库）；
+//   - 两者存在少量同义项（trash_path、log_path、log_max_size、log_max_age），统一按
+//     「settings.toml 非空/非零时覆盖 config.toml，为空（或 0）时回退 config.toml」处理；
+//   - 界面「设置」页的默认值（placeholder）取自 config.toml，避免两处默认不一致。
 package settings
 
 import (
@@ -21,10 +28,10 @@ import (
 type Settings struct {
 	CPURefreshSeconds  int    `toml:"cpu_refresh_seconds" json:"cpu_refresh_seconds"`   // CPU/内存刷新频率（秒）
 	DiskRefreshSeconds int    `toml:"disk_refresh_seconds" json:"disk_refresh_seconds"` // 磁盘使用刷新频率（秒）
-	TrashPath          string `toml:"trash_path" json:"trash_path"`                     // 全局回收站目录（空=运行目录 data/trash）
-	LogPath            string `toml:"log_path" json:"log_path"`                         // 日志文件路径（空=使用 config.toml）
-	LogMaxSize         int    `toml:"log_max_size" json:"log_max_size"`                 // 单个日志文件最大大小（MB）
-	LogMaxAge          int    `toml:"log_max_age" json:"log_max_age"`                   // 日志保留天数
+	TrashPath          string `toml:"trash_path" json:"trash_path"`                     // 全局回收站目录（空=沿用 config.toml [storage].trash_path，其亦为空则用运行目录 data/trash）
+	LogPath            string `toml:"log_path" json:"log_path"`                         // 日志文件路径（空=沿用 config.toml [log].path）
+	LogMaxSize         int    `toml:"log_max_size" json:"log_max_size"`                 // 单个日志文件最大大小（MB，≤0=沿用 config.toml [log].max_size）
+	LogMaxAge          int    `toml:"log_max_age" json:"log_max_age"`                   // 日志保留天数（≤0=沿用 config.toml [log].max_age）
 	BackupOutputDir    string `toml:"backup_output_dir" json:"backup_output_dir"`         // 备份全局默认存放目录（新建任务默认值）
 	BackupCompressLevel int   `toml:"backup_compress_level" json:"backup_compress_level"` // 备份全局默认压缩级别（1-9，默认 6）
 	// 备份全局默认排除规则：独立存储于数据目录下 exclude-list.txt（每行一条，支持 # 注释），

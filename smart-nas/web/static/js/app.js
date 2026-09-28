@@ -341,8 +341,13 @@ async function loadSettings() {
     $("set-disk").value = s.disk_refresh_seconds || 60;
     applyPathInput("set-trash", s.trash_path, SET_DEFAULTS.trash_path);
     applyPathInput("set-logpath", s.log_path, SET_DEFAULTS.log_path);
-    $("set-logsize").value = s.log_max_size || 100;
-    $("set-logage").value = s.log_max_age || 30;
+    // 日志大小/保留天数：显示值优先 settings，缺省回退 config.toml 默认值，placeholder 同步显示
+    const logsizeDef = parseInt(SET_DEFAULTS.log_max_size, 10) || 100;
+    const logageDef = parseInt(SET_DEFAULTS.log_max_age, 10) || 30;
+    $("set-logsize").placeholder = "默认：" + logsizeDef;
+    $("set-logage").placeholder = "默认：" + logageDef;
+    $("set-logsize").value = s.log_max_size || logsizeDef;
+    $("set-logage").value = s.log_max_age || logageDef;
     applyPathInput("set-bkdir", s.backup_output_dir, SET_DEFAULTS.backup_output_dir);
     $("set-bklevel").value = String(s.backup_compress_level || 9);
     $("set-bkexcludes").value = (s.backup_exclude_rules || []).join("\n");

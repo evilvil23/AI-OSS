@@ -59,14 +59,17 @@ func main() {
 
 	// 2. 数据目录与系统设置（设置中包含日志位置/大小/保留天数，先于日志初始化加载）
 	dataDir, _ = filepath.Abs(dataDir)
-	metaDir := filepath.Join(dataDir, "db")
+	// 配置文件目录（v0.27）：settings.toml / users.toml / exclude-list.txt / uploads.toml
+	// 统一存放于 data/config；启动时自动从旧位置（data/db、data/tus）迁移
+	configDir := filepath.Join(dataDir, "config")
+	migrateLegacyDataFiles(dataDir, configDir)
 	fileRoot := cfg.Storage.Root
 	if !filepath.IsAbs(fileRoot) {
 		fileRoot = filepath.Join(fileRoot)
 	}
 	fileRoot, _ = filepath.Abs(fileRoot)
 
-	settingsSvc, err := settings.NewService(metaDir)
+	settingsSvc, err := settings.NewService(configDir)
 	must(err)
 	st := settingsSvc.Get()
 
@@ -111,7 +114,7 @@ func main() {
 	// 元数据库（SQLite）：默认 root/metadata.db（./data/files/metadata.db），
 	// 可在 config.toml [storage] metadata_db 指定目录或完整 .db 路径
 	dbPath := resolveDBPath(cfg.Storage.MetadataDB, fileRoot)
-	storageRepo, err := storage.NewRepository(dbPath, metaDir)
+	storageRepo, err := storage.NewRepository(dbPath, configDir)
 	must(err)
 	storageSvc, err := storage.NewService(storageRepo, fileRoot, cfg.Storage, argon2Params(cfg))
 	must(err)
@@ -119,7 +122,7 @@ func main() {
 	storageSvc.SetDefaultTrashPath(filepath.Join(dataDir, "trash"))
 
 	// 5. 用户与认证
-	userRepo, err := user.NewRepository(metaDir)
+	userRepo, err := user.NewRepository(configDir)
 	must(err)
 	userSvc := user.NewService(userRepo, argon2Params(cfg))
 	must(userSvc.EnsureMaster(cfg.Auth.AdminUsername, cfg.Auth.AdminPassword))
@@ -318,7 +321,7 @@ func main() {
 	var tusHandler *tusd.Handler
 	tusPrefix := cfg.Tus.PathPrefix
 	if cfg.Tus.Enabled {
-		tusHandler, err = tusd.NewHandler(cfg.Tus, storageSvc, tm, hub, hookEmitter, tusAuthenticate(authSvc))
+		tusHandler, err = tusd.NewHandler(cfg.Tus, configDir, storageSvc, tm, hub, hookEmitter, tusAuthenticate(authSvc))
 		must(err)
 	} else {
 		tusHandler = nil
@@ -536,6 +539,41 @@ func disableAI(cfg *config.Config) *config.Config {
 	out := *cfg
 	out.AI.Enabled = false
 	return &out
+}
+
+// migrateLegacyDataFiles 把旧版本散落的配置文件迁移到 data/config（v0.27）。
+// 旧布局：data/db/{settings.toml,users.toml,exclude-list.txt,file_metas*.toml*}、
+// data/tus/uploads.toml。仅在目标不存在时迁移（绝不覆盖已有新数据）。
+// 注意：本函数在日志初始化之前执行（settings.toml 尚未读取），故结果直接写 stderr。
+func migrateLegacyDataFiles(dataDir, configDir string) {
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：创建配置目录失败（%s）：%v\n", configDir, err)
+		return
+	}
+	names := []string{
+		"settings.toml", "users.toml", "exclude-list.txt",
+		"file_metas.toml", "file_versions.toml",
+		"file_metas.toml.migrated", "file_versions.toml.migrated",
+	}
+	for _, n := range names {
+		moveFileIfAbsent(filepath.Join(dataDir, "db", n), filepath.Join(configDir, n))
+	}
+	moveFileIfAbsent(filepath.Join(dataDir, "tus", "uploads.toml"), filepath.Join(configDir, "uploads.toml"))
+}
+
+// moveFileIfAbsent 目标不存在且源存在时移动文件（同盘 rename）；失败仅告警不阻断启动
+func moveFileIfAbsent(src, dst string) {
+	if _, err := os.Stat(dst); err == nil {
+		return // 目标已存在：保留现有数据
+	}
+	if _, err := os.Stat(src); err != nil {
+		return // 源不存在：无需迁移
+	}
+	if err := os.Rename(src, dst); err != nil {
+		fmt.Fprintf(os.Stderr, "警告：配置文件迁移失败（请手动移动）：%s → %s：%v\n", src, dst, err)
+		return
+	}
+	fmt.Fprintf(os.Stderr, "配置文件已迁移到 data/config：%s → %s\n", src, dst)
 }
 
 // resolveDBPath 解析元数据库位置：空 → root/metadata.db；以分隔符结尾或

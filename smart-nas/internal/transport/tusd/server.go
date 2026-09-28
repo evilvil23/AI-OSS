@@ -62,12 +62,17 @@ type Handler struct {
 	authenticate func(r *http.Request) (uint, error)
 }
 
-// NewHandler 创建 tus 处理器
-func NewHandler(cfg config.TusConfig, storageSvc *storage.Service, tm *transport.Manager, pub Publisher, hook HookEmitter, authenticate func(r *http.Request) (uint, error)) (*Handler, error) {
+// NewHandler 创建 tus 处理器。
+// cfg.StoreDir 存放分片临时文件；configDir 存放上传任务持久化文件（uploads.toml，v0.27 起
+// 统一收纳于 data/config，与其他配置文件集中管理）
+func NewHandler(cfg config.TusConfig, configDir string, storageSvc *storage.Service, tm *transport.Manager, pub Publisher, hook HookEmitter, authenticate func(r *http.Request) (uint, error)) (*Handler, error) {
 	if err := os.MkdirAll(cfg.StoreDir, 0o755); err != nil {
 		return nil, err
 	}
-	s, err := store.NewStore[string, *Upload](filepath.Join(cfg.StoreDir, "uploads.toml"))
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
+		return nil, err
+	}
+	s, err := store.NewStore[string, *Upload](filepath.Join(configDir, "uploads.toml"))
 	if err != nil {
 		return nil, err
 	}

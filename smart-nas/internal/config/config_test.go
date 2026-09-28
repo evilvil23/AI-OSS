@@ -115,13 +115,13 @@ func TestSplitTOMLKV(t *testing.T) {
 		comment  string
 		ok       bool
 	}{
-		{"port = 8080", "port", "8080", "", true},
-		{"  mode = 'release'  # 运行模式", "mode", "'release'", "# 运行模式", true},
-		{"url = 'http://a/b#c'", "url", "'http://a/b#c'", "", true},
-		{`path = "C:\\x#y"`, "path", `"C:\\x#y"`, "", true},
-		{"# 纯注释", "", "", "", false},
-		{"[ai.rag]", "", "", "", false},
-		{"", "", "", "", false},
+		{line: "port = 8080", key: "port", val: "8080", comment: "", ok: true},
+		{line: "  mode = 'release'  # 运行模式", key: "mode", val: "'release'", comment: "# 运行模式", ok: true},
+		{line: "url = 'http://a/b#c'", key: "url", val: "'http://a/b#c'", comment: "", ok: true},
+		{line: `path = "C:\\x#y"`, key: "path", val: `"C:\\x#y"`, comment: "", ok: true},
+		{line: "# 纯注释", key: "", val: "", comment: "", ok: false},
+		{line: "[ai.rag]", key: "", val: "", comment: "", ok: false},
+		{line: "", key: "", val: "", comment: "", ok: false},
 	}
 	for _, c := range cases {
 		key, val, comment, ok := splitTOMLKV(c.line)

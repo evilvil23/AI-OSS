@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -235,18 +236,33 @@ func (s *Server) adminGetSettings(c *gin.Context) {
 }
 
 // adminSettingsDefaults GET /api/admin/settings/defaults
-// 返回可留空设置项的系统默认值（绝对路径），供设置页 placeholder 显示：
-// trash_path = 运行目录/data/trash；log_path = config.toml 日志路径的绝对路径；
-// backup_output_dir = 运行目录/data/backup
+// 返回可留空设置项的系统默认值（绝对路径），供设置页 placeholder 显示。
+// 默认值统一取自 config.toml（settings.toml 为空/0 时即回退到此），避免两处默认不一致：
+//   - trash_path = config.toml [storage].trash_path；未配置则回退 运行目录/data/trash
+//   - log_path = config.toml [log].path 的绝对路径
+//   - log_max_size / log_max_age = config.toml [log].max_size / max_age
+//   - backup_output_dir = 运行目录/data/backup
 func (s *Server) adminSettingsDefaults(c *gin.Context) {
+	cfg := s.cfg.GetConfig()
 	defaults := map[string]string{}
 	if s.deps.Storage != nil {
 		defaults["trash_path"] = s.deps.Storage.DefaultTrashPath()
 	}
-	if lp := s.cfg.GetConfig().Log.Path; lp != "" {
+	if cfg.Storage.TrashPath != "" {
+		if abs, err := filepath.Abs(cfg.Storage.TrashPath); err == nil {
+			defaults["trash_path"] = abs
+		}
+	}
+	if lp := cfg.Log.Path; lp != "" {
 		if abs, err := filepath.Abs(lp); err == nil {
 			defaults["log_path"] = abs
 		}
+	}
+	if cfg.Log.MaxSize > 0 {
+		defaults["log_max_size"] = strconv.Itoa(cfg.Log.MaxSize)
+	}
+	if cfg.Log.MaxAge > 0 {
+		defaults["log_max_age"] = strconv.Itoa(cfg.Log.MaxAge)
 	}
 	if s.deps.DataDir != "" {
 		defaults["backup_output_dir"] = filepath.Join(s.deps.DataDir, "backup")
